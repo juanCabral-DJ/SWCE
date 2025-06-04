@@ -1,0 +1,6 @@
+@SWCE.Api_HostAddress = http://localhost:5134
+
+GET {{SWCE.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
