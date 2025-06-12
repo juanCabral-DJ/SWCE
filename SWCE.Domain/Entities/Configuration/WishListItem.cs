@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Domain
+namespace SWCE.Domain.Entities.Configuration
 {
     internal class WishListItem
     {
