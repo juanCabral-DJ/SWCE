@@ -7,7 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\Base\" />
+    <Compile Remove="Entities\Base\**" />
+    <EmbeddedResource Remove="Entities\Base\**" />
+    <None Remove="Entities\Base\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Base\" />
   </ItemGroup>
 
 </Project>
