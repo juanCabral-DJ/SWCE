@@ -12,8 +12,4 @@
     <None Remove="Entities\Base\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Base\" />
-  </ItemGroup>
-
 </Project>
