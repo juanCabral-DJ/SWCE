@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SWCE.Domain.Entities.Configuration.User_Perfil
 {
-    public class Adress 
+    public class Address 
     {
      private int id_direccion {  get; set; }
      private int id_user { get; set; }
@@ -18,7 +18,7 @@ namespace SWCE.Domain.Entities.Configuration.User_Perfil
      private string Es_predeterminada { get; set; }
      public virtual User User { get; set; }
 
-        public Adress(int id_direccion, string calle, string ciudad, string estado_provincia, 
+        public Address(int id_direccion, string calle, string ciudad, string estado_provincia, 
         string codigo_postal, string pais, string es_predeterminada, int id_user) 
         {
             this.id_direccion = id_direccion;
