@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace SWCE.Domain.Entities
 {
-    public class EnvioTerrestre : EnvioBase
+    public class EnvioAereo : EnvioBase
     {
-        public EnvioTerrestre(Pedido pedido) : base(pedido)
+        public EnvioAereo(Pedido pedido) : base(pedido)
         {
         }
 
         public override decimal CalcularCosto()
         {
-            return 50.0m;
+            throw new NotImplementedException();
         }
 
         public override string GenerarGuia()
         {
-            return "GT10322";
+            throw new NotImplementedException();
         }
     }
 }
