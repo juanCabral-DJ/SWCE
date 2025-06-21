@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SWCE.Domain.Entities.Configuration.User_Perfil
 {
-    public class WishListItem
+    public sealed class WishListItem : Base.EntityBase<int>
     {
-        private int id_item { get; set; }
-        private int id_producto { get; set; }
-        private int id_user { get; set; }
-        public virtual User User { get; set; }
+        public override int id { get; set; }
+        public int id_producto { get; set; }
+        public int id_user { get; set; }
 
-        public WishListItem(int id_item, int id_producto, int id_user)
+
+        public WishListItem(int id, int id_producto, int id_user)
         {
-            this.id_item = id_item;
+            this.id = id;
             this.id_producto = id_producto;
             this.id_user = id_user;
         }

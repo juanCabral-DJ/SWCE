@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SWCE.Domain.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,22 +7,21 @@ using System.Threading.Tasks;
 
 namespace SWCE.Domain.Entities.Configuration.User_Perfil
 {
-    public class Address 
+    public sealed class Address : Base.EntityBase<int>
     {
-     private int id_direccion {  get; set; }
-     private int id_user { get; set; }
-     private string calle {  get; set; }
-     private string ciudad {  get; set; }
-     private string estado_provincia { get; set; }
-     private string codigo_postal { get; set; }
-     private string pais {  get; set; }
-     private string Es_predeterminada { get; set; }
-     public virtual User User { get; set; }
+        public override int id { get; set; }
+        public int id_user { get; set; }
+        public string calle {  get; set; }
+        public string ciudad {  get; set; }
+        public string estado_provincia { get; set; }
+        public string codigo_postal { get; set; }
+        public string pais {  get; set; }
+        public bool Es_predeterminada { get; set; }
 
-        public Address(int id_direccion, string calle, string ciudad, string estado_provincia, 
-        string codigo_postal, string pais, string es_predeterminada, int id_user) 
+        public Address(int id, string calle, string ciudad, string estado_provincia, 
+        string codigo_postal, string pais, bool es_predeterminada, int id_user) 
         {
-            this.id_direccion = id_direccion;
+            this.id = id;
             this.id_user = id_user;
             this.calle = calle;
             this.ciudad = ciudad;

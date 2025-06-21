@@ -14,9 +14,9 @@ namespace SWCE.Persistence.Context
         {
         } 
 
-        DbSet<User> Usuarios {  get; set; }
-        DbSet<Address> Direcciones { get; set; }
-        DbSet<WishListItem> Lista_Deseos { get; set; }
+        public DbSet<User> Usuarios {  get; set; }
+        public DbSet<Address> Direcciones { get; set; }
+        public DbSet<WishListItem> Lista_Deseos { get; set; }
 
 
     }

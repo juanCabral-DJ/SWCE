@@ -7,16 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Base\" />
-    <Folder Include="Repositories\" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.17" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\SWCE.Aplicatition\SWCE.Aplicatition.csproj" />
     <ProjectReference Include="..\SWCE.Domain\SWCE.Domain.csproj" />
+    <ProjectReference Include="..\SWCE.Infraestructure\SWCE.Infraestructure.csproj" />
   </ItemGroup>
 
 </Project>
