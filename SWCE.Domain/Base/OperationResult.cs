@@ -10,7 +10,7 @@ namespace SWCE.Domain.Base
     {  
         public string Message { get; set; } = string.Empty;
         public bool IsSuccess { get; set; }
-        public dynamic Data { get; set; }
+        public dynamic? Data { get; set; }
 
         public OperationResult()
         {

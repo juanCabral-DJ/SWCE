@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SWCE.Aplicatition.Dtos.Address;
+using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Domain.Repository;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Validators.AddressValidator
 {
-    public class CreateAddressValidator : AbstractValidator<CreateAddressDto>
+    public class CreateAddressValidator : AbstractValidator<Address>
     {
         public readonly IRepositoryAddress _address;
 

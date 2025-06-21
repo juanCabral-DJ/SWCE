@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SWCE.Aplicatition.Dtos.WishListItem;
+using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Domain.Repository;
 using System;
 using System.Collections;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Validators.WishListItemValidator
 {
-    public class CreateWishListItemValidator : AbstractValidator<CreateWishListItemDto>
+    public class CreateWishListItemValidator : AbstractValidator<WishListItem>
     {
         public readonly IRepositoryWishListItem _Wish;
         public CreateWishListItemValidator(IRepositoryWishListItem wish) {

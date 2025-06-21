@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SWCE.Aplicatition.Validators.AddressValidator;
+using SWCE.Aplicatition.Validators.WishListItemValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Domain.Repository;
+using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
 using System;
@@ -18,42 +21,159 @@ namespace SWCE.Persistence.Repositories
 {
     public class WishListItemRepository : RepositoryBase<WishListItem> ,IRepositoryWishListItem
     {
+        private readonly CreateWishListItemValidator _Validator;
         private readonly E_commerceContext _Context;
-        
-        public WishListItemRepository(E_commerceContext context) : base(context) 
+        private readonly ILoggerBase<Address> _logger;
+
+        public WishListItemRepository(E_commerceContext _context, ILoggerBase<Address> _logger, CreateWishListItemValidator Validator)
+            : base(_context)
         {
-            _Context = context;
-            
+            _Validator = Validator;
+            _Context = _context;
+            _logger = _logger;
         }
 
-        public async Task<OperationResult> Createasync(WishListItem entity)
+
+        public async override Task<OperationResult> GetbyIdasync(int id)
         {
-            return await base.Createasync(entity);
-            
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                _logger.LogInformation("Retrieving InsuranceProvider entities");
+                result.Data = await base.GetbyIdasync(id);
+
+                result = OperationResult.Success("Retrieving Address entities", result.Data);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error retrieving InsuranceProvider entities", e);
+                result = OperationResult.Failure("An error occurred while retrieving InsuranceProvider entities.");
+            }
+
+            return result;
+
+        }
+        public async override Task<OperationResult> GetAllasync()
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                _logger.LogInformation("Retrieving InsuranceProvider entities");
+                result.Data = await base.GetAllasync();
+
+                result = OperationResult.Success("Retrieving Address entities", result.Data);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error retrieving InsuranceProvider entities", e);
+                result = OperationResult.Failure("An error occurred while retrieving InsuranceProvider entities.");
+            }
+
+            return result;
+        }
+        public async override Task<OperationResult> Createasync(WishListItem entity)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                _logger.LogInformation("Adding WishListItem entity: ${@Entity}", entity);
+
+                if (entity == null)
+                {
+                    _logger.LogError("Attempted to add a null WishListItem entity");
+                    return OperationResult.Failure("WishListItem entity cannot be null");
+                }
+                var validationresult = await _Validator.ValidateAsync(entity);
+
+                if (!validationresult.IsValid)
+                {
+                    _logger.LogError("WishListItem entity validation failed");
+                    return OperationResult.Failure("Validation failed: " + string.Join(", ", validationresult.Errors.Select(e => e.ErrorMessage)));
+                }
+
+                await base.Createasync(entity);
+
+                _logger.LogInformation("Adding WishListItem entity: ${@Entity}", entity);
+                result = OperationResult.Success("WishListItem entity added successfully.", entity);
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"An error occurred while adding the WishListItem type: {ex.Message}";
+                _logger.LogError("An error occurred while adding the WishListItem type: {Message}", ex);
+            }
+            finally
+            {
+
+            }
+
+            return result;
+        }
+        public async override Task<OperationResult> Updateasync(WishListItem entity)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                _logger.LogInformation("updating WishListItem entity: ${@Entity}", entity);
+
+                if (entity == null)
+                {
+                    _logger.LogError("Attempted to add a null Address entity");
+                    return OperationResult.Failure("Address entity cannot be null");
+                }
+
+                await base.Updateasync(entity);
+
+                _logger.LogInformation("updating WishListItem entity: ${@Entity}", entity);
+                result = OperationResult.Success("Address entity added successfully.", entity);
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"An error occurred while updating the WishListItem type: {ex.Message}";
+                _logger.LogError("An error occurred while updating the WishListItem type: {Message}", ex);
+            }
+            finally
+            {
+
+            }
+            return result;
+        }
+        public async override Task<bool> ExistsAsync(Expression<Func<WishListItem, bool>> filter)
+        {
+            return await base.ExistsAsync(filter);
         }
 
-        public async Task<List<WishListItem>> GetAllasync()
+        public  async Task<OperationResult> GetbyUserid(int userId)
         {
-            return await _Context.Lista_Deseos.Where(w => w.IsDeleted == false).ToListAsync();
-        }
 
-        public async Task<WishListItem> GetbyIdasync(int id)
-        {
-            return await _Context.Lista_Deseos.FindAsync(id);
-        }
+            OperationResult result = new OperationResult();
 
-        public  async Task<List<WishListItem>> GetbyUserid(int userId)
-        {
-            return await _Context.Lista_Deseos.Where(w => w.id_user == userId).ToListAsync();
-        }
+            try
+            {
+                _logger.LogInformation("Retrieving WishListItem entities for UserId");
+                var address = await _Context.Lista_Deseos
+                            .Where(a => a.id_user == userId)
+                            .FirstOrDefaultAsync();
 
-        public async Task<OperationResult> Updateasync(WishListItem entity)
-        {
-            return await base.Updateasync(entity);
-        }
-        public async Task<bool> ExistsAsync(Expression<Func<WishListItem, bool>> filter)
-        {
-            return await _Context.Lista_Deseos.AnyAsync(filter);
+
+                result = OperationResult.Success("Retrieving WishListItem entity", result.Data);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error retrieving WishListItem entities", e);
+                result = OperationResult.Failure("An error occurred while retrieving WishListItem entity.");
+            }
+
+            return result;
         }
     }
 }

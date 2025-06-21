@@ -1,4 +1,5 @@
 ﻿using SWCE.Aplicatition.Base;
+using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace SWCE.Domain.Repository
 {
     public interface IRepositoryAddress : IRepositoryBase<Address>
     {
-        public Task<Address> GetbyPredeterminada(int userid, bool predeterminada);
-        public Task<List<Address>> GetbyUserId(int userId);
+        Task<OperationResult> GetbyPredeterminada(int userid, bool predeterminada);
+        Task<OperationResult> GetbyUserId(int userId);
     }
 }

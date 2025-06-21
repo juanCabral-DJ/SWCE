@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Dtos.User
 {
-    public record UpdateUserDto
+    public record class UpdateUserDto
     {
         public int id { get; set; }
         public string email { get; set; }

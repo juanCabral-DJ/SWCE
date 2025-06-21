@@ -1,4 +1,5 @@
 ﻿using SWCE.Aplicatition.Base;
+using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,6 @@ namespace SWCE.Domain.Repository
 {
     public interface IRepositoryWishListItem : IRepositoryBase<WishListItem>
     {
-        public Task<List<WishListItem>> GetbyUserid(int userId);
+        public Task<OperationResult> GetbyUserid(int userId);
     }
 }

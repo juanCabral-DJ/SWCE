@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Dtos.User
 {
-    public record CreateUserDto
+    public record class CreateUserDto
     {
         public int id_rol { get; set; }
         public string name_user { get; set; }

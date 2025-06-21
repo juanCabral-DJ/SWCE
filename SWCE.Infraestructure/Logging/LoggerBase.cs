@@ -22,5 +22,9 @@ namespace SWCE.Infraestructure.Logging
         {
             _Logger.LogInformation(mensaje, e);
         }
+        public void LogInformation(string mensaje)
+        {
+            _Logger.LogInformation(mensaje);
+        }
     }
 }

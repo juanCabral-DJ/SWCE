@@ -12,5 +12,6 @@ namespace SWCE.Infraestructure.Logging
         void LogInformation(string mensaje, Object entity);
         void LogError(string mensaje, Exception ex);
         void LogError(string mensaje);
+        void LogInformation(string mensaje);
     }
 }

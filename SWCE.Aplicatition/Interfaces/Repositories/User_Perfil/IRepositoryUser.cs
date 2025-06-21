@@ -1,4 +1,5 @@
-﻿using SWCE.Domain.Base;
+﻿using SWCE.Aplicatition.Dtos.User;
+using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,10 @@ namespace SWCE.Domain.Repository
 {
     public interface IRepositoryUser 
     {
-        Task<User> GetbyIdasync(int id);
-        Task<List<User>> GetAllasync();
-        Task<OperationResult> Createasync(User entity);
-        Task<OperationResult> Updateasync(User entity);
+        Task<OperationResult> GetbyIdasync(int id);
+        Task<OperationResult> GetAllasync();
+        Task<OperationResult> Createasync(CreateUserDto entity);
+        Task<OperationResult> Updateasync(UpdateUserDto entity);
          Task<User> GetByEmail(string email);
         Task<bool> ExistsAsync(Expression<Func<User, bool>> filter);
     }
