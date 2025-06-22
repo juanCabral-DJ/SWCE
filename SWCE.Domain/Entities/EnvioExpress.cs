@@ -9,14 +9,13 @@ namespace SWCE.Domain.Entities
 {
     public class EnvioExpress : EnvioBase
     {
+        public EnvioExpress(Guid pedidoId) : base(pedidoId)
+        {
+        }
         public override decimal CalcularCosto()
         {
             throw new NotImplementedException();
         }
 
-        public override string GenerarGuia()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

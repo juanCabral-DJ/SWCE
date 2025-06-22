@@ -9,16 +9,18 @@ namespace SWCE.Domain.Base
 {
     public abstract class EnvioBase
     {
-        public Pedido pedido {  get; set; }
-        public string Estado {  get; set; }
-
-        public EnvioBase(Pedido pedido)
+        public Guid Id { get; set; }
+        public int UsuarioId { get; set; }
+        public DateTime FechaPedido { get; set; }
+        public string Estado { get; set; }
+        public decimal Costo { get; set; }
+        protected EnvioBase(int usuarioId)
         {
-            this.pedido = pedido;
-            this.Estado = "Pendiente";
+            UsuarioId = usuarioId;
+            FechaPedido = DateTime.Now;
+            Estado = "Pendiente";
         }
 
         public abstract decimal CalcularCosto();
-        public abstract string GenerarGuia();
     }
 }

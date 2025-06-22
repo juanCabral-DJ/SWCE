@@ -9,7 +9,7 @@ namespace SWCE.Domain.Entities
 {
     public class EnvioAereo : EnvioBase
     {
-        public EnvioAereo(Pedido pedido) : base(pedido)
+        public EnvioAereo(Guid pedidoId) : base(pedidoId)
         {
         }
 
@@ -18,9 +18,5 @@ namespace SWCE.Domain.Entities
             throw new NotImplementedException();
         }
 
-        public override string GenerarGuia()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
