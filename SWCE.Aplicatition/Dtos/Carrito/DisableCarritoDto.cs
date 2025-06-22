@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Domain.Repository
+namespace SWCE.Application.Dtos.Carrito
 {
-    internal class Class1
+    public record DisableCarritoDto
     {
+        public int Id { get; set; }
     }
 }

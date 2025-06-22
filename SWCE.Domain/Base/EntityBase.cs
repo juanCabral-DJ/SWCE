@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Domain.Entities.Configuration
+namespace SWCE.Domain.Base
 {
-    internal class Class1
+    public abstract class EntityBase<Ttype> : AuditEntity
     {
+        public abstract Ttype id { get; set; }
     }
 }
