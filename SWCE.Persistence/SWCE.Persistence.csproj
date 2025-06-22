@@ -6,4 +6,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWCE.Aplicatition\SWCE.Application.csproj" />
+    <ProjectReference Include="..\SWCE.Domain\SWCE.Domain.csproj" />
+    <ProjectReference Include="..\SWCE.Infraestructure\SWCE.Infraestructure.csproj" />
+  </ItemGroup>
+
 </Project>
