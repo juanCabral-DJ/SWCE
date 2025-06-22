@@ -11,24 +11,28 @@ using System.Data;
 using SWCE.Aplicatition.Validators;
 using System.ComponentModel.DataAnnotations;
 using SWCE.Persistence.Context;
+using Microsoft.EntityFrameworkCore.Update.Internal;
+using FluentValidation;
 
 namespace SWCE.Persistence.Repositories
 {
     public class UserRepository : IRepositoryUser
     {
         private readonly string _connectionString;
-        private readonly UserValidator _Validator;
+        private readonly CreateUserValidator _Validator;
+        private readonly UpdateUser _ValidatorUpdate;
         private readonly ILoggerBase<User> _Logger;
 
-        public UserRepository(ILoggerBase<User> _logger, IConfiguration configuration, UserValidator Validator)
+        public UserRepository(ILoggerBase<User> _logger, IConfiguration configuration, CreateUserValidator Validator,
+            UpdateUser ValidatorUpdate)
         {
-         
+            _ValidatorUpdate = ValidatorUpdate;
             _Validator = Validator;
             //_connectionString = IConfiguration[""];
             _Logger = _logger;
         }
 
-      public async Task<OperationResult> Createasync(CreateUserDto entity)
+        public async Task<OperationResult> Createasync(CreateUserDto entity)
         {
             OperationResult result = new OperationResult();
             try
@@ -41,10 +45,10 @@ namespace SWCE.Persistence.Repositories
                 {
                     _Logger.LogError("Attempted to add a null User entity");
 
-                    result = OperationResult.Failure("An error occurred while retrieving InsuranceProvider entities.");
+                    result = OperationResult.Failure("An error occurred while retrieving User entities.");
                 }
 
-                await ExecuteStoredProcedureAsync("Usuarios.CreateUser", new SqlParameter("@Nombre", entity.name_user),
+                var presult = await ExecuteStoredProcedureAsync("Usuarios.CreateUser", new SqlParameter("@Nombre", entity.name_user),
                     new SqlParameter("@Apellido", entity.apellido), new SqlParameter("@Email", entity.email)
                     , new SqlParameter("@Password_User", entity.password), new SqlParameter("@ID_Rol", entity.id_rol),
                     new SqlParameter("@Presult", System.Data.SqlDbType.VarChar)
@@ -53,13 +57,27 @@ namespace SWCE.Persistence.Repositories
                         Direction = System.Data.ParameterDirection.Output
                     });
 
-                  //await context.OpenAsync();
+                if (presult > 0)
+                {
+                    result.IsSuccess = true;
+                    result.Message = "User added successfully.";
+                    _Logger.LogInformation("User added successfully with result: {Result}", result);
+
+                }
+                else
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Failed to add User.";
+                    _Logger.LogError("Failed to add User. No rows affected.");
+
+                }
+
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
-                result.Message = $"An error occurred while adding the Address type: {ex.Message}";
-                _Logger.LogError("An error occurred while adding the Address type: {Message}", ex);
+                result.Message = $"An error occurred while adding the User: {ex.Message}";
+                _Logger.LogError("An error occurred while adding the User: {Message}", ex);
             }
             finally
             {
@@ -73,9 +91,35 @@ namespace SWCE.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> GetAllasync()
+        public async Task<OperationResult> GetAllasync()
         {
-            throw new NotImplementedException();
+
+            OperationResult result = new OperationResult();
+            try
+            {
+                _Logger.LogInformation("Retriver a User Entities");
+
+                await ExecuteReaderListAsync<GetUserDto>("Usuarios.GetAllUSer", reader => new GetUserDto
+                {
+                    id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    name_user = reader.GetString(reader.GetOrdinal("Nombre")),
+                    apellido = reader.GetString(reader.GetOrdinal("Apellido")),
+                    email = reader.GetString(reader.GetOrdinal("Email"))
+                });
+
+                result.IsSuccess = true;
+                result.Message = "Network types retrieved successfully.";
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"An error occurred while adding the User: {ex.Message}";
+                _Logger.LogError("An error occurred while adding the User: {Message}", ex);
+            }
+            finally
+            {
+            }
+            return result;
         }
 
         public Task<User> GetByEmail(string email)
@@ -88,12 +132,53 @@ namespace SWCE.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> Updateasync(UpdateUserDto entity)
+        public async Task<OperationResult> Updateasync(UpdateUserDto entity)
         {
-            throw new NotImplementedException();
-        }
+            OperationResult result = new OperationResult();
+            try
+            {
+                _Logger.LogInformation("Updating a new User ${@Entity}", entity);
 
-        private async Task ExecuteStoredProcedureAsync(string storedProcedureName, params SqlParameter[] parameters)
+                var entityvalidate = _ValidatorUpdate.Validate(entity);
+
+                if (entityvalidate != null)
+                {
+                    _Logger.LogError("Attempted to update a null User entity");
+
+                    result = OperationResult.Failure("An error occurred while retrieving User entities.");
+                }
+
+                var presult = await ExecuteStoredProcedureAsync("Usuarios.UpdateUser", new SqlParameter("@Id", entity.id),
+                    new SqlParameter("@Email", entity.email), new SqlParameter("@Password", entity.password));
+
+                if (presult > 0)
+                {
+                    result.IsSuccess = true;
+                    result.Message = "User updated successfully.";
+                    _Logger.LogInformation("User updated successfully with result: {Result}", result);
+
+                }
+                else
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Failed to updating User.";
+                    _Logger.LogError("Failed to updating User. No rows affected.");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"An error occurred while updating the User: {ex.Message}";
+                _Logger.LogError("An error occurred while updating the User: {Message}", ex);
+            }
+            finally
+            {
+            }
+            return result;
+            }
+    
+
+        private async Task<int> ExecuteStoredProcedureAsync(string storedProcedureName, params SqlParameter[] parameters)
         { 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -109,9 +194,54 @@ namespace SWCE.Persistence.Repositories
                     }
 
                     await connection.OpenAsync();
-                    await command.ExecuteNonQueryAsync(); // Para INSERT, UPDATE, DELETE
+                   return await command.ExecuteNonQueryAsync(); // Para INSERT, UPDATE, DELETE
                 }
             }
+        }
+
+        private async Task<List<T>> ExecuteReaderListAsync<T>(string sql, Func<SqlDataReader, T> map, params SqlParameter[] parameters)
+        {
+            var items = new List<T>();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand(sql, connection))
+                {
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                           
+                            items.Add(map(reader));
+                        }
+                    }
+                }
+            }
+            return items;
+        }
+        private async Task<T> ExecuteReaderSingleAsync<T>(string sql, Func<SqlDataReader, T> map, params SqlParameter[] parameters) where T : class
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.AddRange(parameters);
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+
+                        if (await reader.ReadAsync())
+                        {
+                            return map(reader);
+                        }
+                    }
+                }
+            }
+            return null;
         }
     } 
 }

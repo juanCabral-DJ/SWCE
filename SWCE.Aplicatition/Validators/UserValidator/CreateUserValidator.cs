@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Validators
 {
-    public abstract class UserValidator : AbstractValidator<CreateUserDto>
+    public abstract class CreateUserValidator : AbstractValidator<CreateUserDto>
     {
         private readonly IRepositoryUser _repositoryUser;
 
-        public UserValidator(IRepositoryUser repositoryUser)
+        public CreateUserValidator(IRepositoryUser repositoryUser)
         {
             _repositoryUser = repositoryUser;
 

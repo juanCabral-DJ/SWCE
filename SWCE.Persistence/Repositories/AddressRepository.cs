@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using SWCE.Aplicatition.Dtos.Address;
 using SWCE.Aplicatition.Validators.AddressValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
