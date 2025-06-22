@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Validators
 {
-    public class UpdateUser : AbstractValidator<UpdateUserDto>
+    public class UpdateUserValidator : AbstractValidator<UpdateUserDto>
     {
         public readonly IRepositoryUser _UserRepository;
-        public UpdateUser(IRepositoryUser repositoryUser)
+        public UpdateUserValidator(IRepositoryUser repositoryUser)
         {
             _UserRepository = repositoryUser;
 
@@ -27,7 +27,9 @@ namespace SWCE.Aplicatition.Validators
         }
         private async Task<bool> UniqueEmail(string email, CancellationToken cancellationToken)
         {
-            return await _UserRepository.GetByEmail(email) == null;
+            var result = await _UserRepository.GetByEmail(email);
+            // Es único si la operación no fue exitosa o si no devolvió datos.
+            return !result.IsSuccess || result.Data == null;
         }
     }
 }

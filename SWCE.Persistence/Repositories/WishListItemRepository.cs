@@ -23,9 +23,9 @@ namespace SWCE.Persistence.Repositories
     {
         private readonly CreateWishListItemValidator _Validator;
         private readonly E_commerceContext _Context;
-        private readonly ILoggerBase<Address> _logger;
+        private readonly ILoggerBase<WishListItem> _logger;
 
-        public WishListItemRepository(E_commerceContext _context, ILoggerBase<Address> _logger, CreateWishListItemValidator Validator)
+        public WishListItemRepository(E_commerceContext _context, ILoggerBase<WishListItem> _logger, CreateWishListItemValidator Validator)
             : base(_context)
         {
             _Validator = Validator;
@@ -40,19 +40,16 @@ namespace SWCE.Persistence.Repositories
 
             try
             {
-                _logger.LogInformation("Retrieving InsuranceProvider entities");
-                result.Data = await base.GetbyIdasync(id);
+                _logger.LogInformation("Retrieving WishListItem entities");
+                var item = await base.GetbyIdasync(id);
 
-                result = OperationResult.Success("Retrieving Address entities", result.Data);
+                return OperationResult.Success("Retrieving Address entities", item);
             }
             catch (Exception e)
             {
-                _logger.LogError("Error retrieving InsuranceProvider entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving InsuranceProvider entities.");
+                _logger.LogError("Error retrieving WishListItem entities", e);
+               return OperationResult.Failure("An error occurred while retrieving WishListItem entities.");
             }
-
-            return result;
-
         }
         public async override Task<OperationResult> GetAllasync()
         {
@@ -60,15 +57,15 @@ namespace SWCE.Persistence.Repositories
 
             try
             {
-                _logger.LogInformation("Retrieving InsuranceProvider entities");
-                result.Data = await base.GetAllasync();
+                _logger.LogInformation("Retrieving WishListItem entities");
+               var items = await base.GetAllasync();
 
-                result = OperationResult.Success("Retrieving Address entities", result.Data);
+                result = OperationResult.Success("Retrieving WishListItem entities", items);
             }
             catch (Exception e)
             {
-                _logger.LogError("Error retrieving InsuranceProvider entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving InsuranceProvider entities.");
+                _logger.LogError("Error retrieving WishListItem entities", e);
+                result = OperationResult.Failure("An error occurred while retrieving WishListItem entities.");
             }
 
             return result;
@@ -96,23 +93,17 @@ namespace SWCE.Persistence.Repositories
                 await base.Createasync(entity);
 
                 _logger.LogInformation("Adding WishListItem entity: ${@Entity}", entity);
-                result = OperationResult.Success("WishListItem entity added successfully.", entity);
-
-                return result;
-
+                return OperationResult.Success("WishListItem entity added successfully.", entity);
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = $"An error occurred while adding the WishListItem type: {ex.Message}";
                 _logger.LogError("An error occurred while adding the WishListItem type: {Message}", ex);
+                return OperationResult.Failure($"An error occurred while adding the WishListItem type: {ex.Message}");
             }
             finally
             {
 
             }
-
-            return result;
         }
         public async override Task<OperationResult> Updateasync(WishListItem entity)
         {
@@ -123,29 +114,24 @@ namespace SWCE.Persistence.Repositories
 
                 if (entity == null)
                 {
-                    _logger.LogError("Attempted to add a null Address entity");
-                    return OperationResult.Failure("Address entity cannot be null");
+                    _logger.LogError("Attempted to add a null WishListItem entity");
+                    return OperationResult.Failure("WishListItem entity cannot be null");
                 }
 
                 await base.Updateasync(entity);
 
                 _logger.LogInformation("updating WishListItem entity: ${@Entity}", entity);
-                result = OperationResult.Success("Address entity added successfully.", entity);
-
-                return result;
-
+                return OperationResult.Success("WishListItem entity added successfully.", entity);
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = $"An error occurred while updating the WishListItem type: {ex.Message}";
                 _logger.LogError("An error occurred while updating the WishListItem type: {Message}", ex);
+                return OperationResult.Failure($"An error occurred while updating the WishListItem type: {ex.Message}");
             }
             finally
             {
 
             }
-            return result;
         }
         public async override Task<bool> ExistsAsync(Expression<Func<WishListItem, bool>> filter)
         {
@@ -160,20 +146,17 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Retrieving WishListItem entities for UserId");
-                var address = await _Context.Lista_Deseos
+                var items = await _Context.Lista_Deseos
                             .Where(a => a.id_user == userId)
                             .FirstOrDefaultAsync();
 
-
-                result = OperationResult.Success("Retrieving WishListItem entity", result.Data);
+                return OperationResult.Success("Retrieving WishListItem entity",items);
             }
             catch (Exception e)
             {
                 _logger.LogError("Error retrieving WishListItem entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving WishListItem entity.");
+                return OperationResult.Failure("An error occurred while retrieving WishListItem entity.");
             }
-
-            return result;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using SWCE.Aplicatition.Dtos.Address;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Domain.Repository;
 using System;

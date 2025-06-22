@@ -20,11 +20,11 @@ namespace SWCE.Persistence.Repositories
     {
         private readonly string _connectionString;
         private readonly CreateUserValidator _Validator;
-        private readonly UpdateUser _ValidatorUpdate;
+        private readonly UpdateUserValidator _ValidatorUpdate;
         private readonly ILoggerBase<User> _Logger;
 
         public UserRepository(ILoggerBase<User> _logger, IConfiguration configuration, CreateUserValidator Validator,
-            UpdateUser ValidatorUpdate)
+            UpdateUserValidator ValidatorUpdate)
         {
             _ValidatorUpdate = ValidatorUpdate;
             _Validator = Validator;
@@ -41,7 +41,7 @@ namespace SWCE.Persistence.Repositories
 
                 var entityvalidate = _Validator.Validate(entity);
 
-                if (entityvalidate != null)
+                if (!entityvalidate.IsValid)
                 {
                     _Logger.LogError("Attempted to add a null User entity");
 
@@ -59,42 +59,37 @@ namespace SWCE.Persistence.Repositories
 
                 if (presult > 0)
                 {
-                    result.IsSuccess = true;
-                    result.Message = "User added successfully.";
                     _Logger.LogInformation("User added successfully with result: {Result}", result);
-
+                    return OperationResult.Success("User added successfully.", entity);
+                    
                 }
                 else
                 {
-                    result.IsSuccess = false;
-                    result.Message = "Failed to add User.";
                     _Logger.LogError("Failed to add User. No rows affected.");
-
+                    return OperationResult.Failure("Failed to add User.");
                 }
 
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = $"An error occurred while adding the User: {ex.Message}";
                 _Logger.LogError("An error occurred while adding the User: {Message}", ex);
+                return OperationResult.Failure($"An error occurred while adding the User: {ex.Message}");
             }
             finally
             {
 
             }
-            return result;
         }
         
-        public async Task<bool> ExistsAsync(Expression<Func<User, bool>> filter)
+        public async Task<bool> ExistsAsync(int filter)
         {
             OperationResult presult = new OperationResult();
             _Logger.LogInformation("Viendo si existe el usuario");
 
-            if (filter == null)
+            if (filter <= 0)
             {
-                _Logger.LogError("El filtro no puede ser nulo");
-                OperationResult.Failure("El filtro para buscar el usuario no puede ser nulo");
+                _Logger.LogError("El id no puede ser 0 o negativo");
+                OperationResult.Failure("El id para buscar el usuario no puede ser 0 o negativo");
             }
             var result = await ExecuteScalarStoredProcedureAsync("Usuarios.ExistsProcedure", new SqlParameter("@Id", filter));
 
@@ -109,7 +104,7 @@ namespace SWCE.Persistence.Repositories
             {
                 _Logger.LogInformation("Retriver a User Entities");
 
-                await ExecuteReaderListAsync<GetUserDto>("Usuarios.GetAllUSer", reader => new GetUserDto
+               var users = await ExecuteReaderListAsync<GetUserDto>("Usuarios.GetAllUSer", reader => new GetUserDto
                 {
                     id = reader.GetInt32(reader.GetOrdinal("Id")),
                     name_user = reader.GetString(reader.GetOrdinal("Nombre")),
@@ -117,19 +112,16 @@ namespace SWCE.Persistence.Repositories
                     email = reader.GetString(reader.GetOrdinal("Email"))
                 });
 
-                result.IsSuccess = true;
-                result.Message = "User's retrieved successfully.";
+                return OperationResult.Success("Users retrieved successfully.", users);
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = $"An error occurred while retriver the User: {ex.Message}";
+                return OperationResult.Failure($"An error occurred while retrieving all Users: {ex.Message}");
                 _Logger.LogError("An error occurred while retriver the User: {Message}", ex);
             }
             finally
             {
             }
-            return result;
         }
 
         public async Task<OperationResult> GetByEmail(string email)
@@ -140,7 +132,7 @@ namespace SWCE.Persistence.Repositories
             {
              _Logger.LogInformation("Retriver User entity by email");
 
-                await ExecuteReaderSingleAsync<GetUserDto>("Usuarios.GetByIdUser", reader => new GetUserDto
+               var user = await ExecuteReaderSingleAsync<GetUserDto>("Usuarios.GetByIdUser", reader => new GetUserDto
                 {
                     id = reader.GetInt32(reader.GetOrdinal("Id")),
                     name_user = reader.GetString(reader.GetOrdinal("Nombre")),
@@ -148,20 +140,24 @@ namespace SWCE.Persistence.Repositories
                     email = reader.GetString(reader.GetOrdinal("Email"))
                 }, new SqlParameter("@Email", email));
 
-                result.IsSuccess = true;
-                result.Message = "User retrieved successfully.";
+                if (user != null)
+                {
+                    return OperationResult.Success("User retrieved successfully.", user);
+                }
+                else
+                {
+                    return OperationResult.Failure($"User with email {email} not found.");
+                }
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = $"An error occurred while retriver the User: {ex.Message}";
                 _Logger.LogError("An error occurred while retriver the User: {Message}", ex);
+                return OperationResult.Failure($"An error occurred while retrieving the User by email: {ex.Message}");
             }
             finally
             {
 
             }
-            return result;
         }
 
         public async Task<OperationResult> GetbyIdasync(int id)
@@ -172,7 +168,7 @@ namespace SWCE.Persistence.Repositories
             {
                 _Logger.LogInformation("Retriver User entity by id");
 
-              await ExecuteReaderSingleAsync<GetUserDto>("Usuarios.GetByIdUser", reader => new GetUserDto
+                var user = await ExecuteReaderSingleAsync<GetUserDto>("Usuarios.GetByIdUser", reader => new GetUserDto
                 {
                     id = reader.GetInt32(reader.GetOrdinal("Id")),
                     name_user = reader.GetString(reader.GetOrdinal("Nombre")),
@@ -180,14 +176,19 @@ namespace SWCE.Persistence.Repositories
                     email = reader.GetString(reader.GetOrdinal("Email"))
                 }, new SqlParameter("@Id", id));
 
-                result.IsSuccess = true;
-                result.Message = "User retrieved successfully.";
+                if (user != null)
+                {
+                    return OperationResult.Success("User retrieved successfully.", user);
+                }
+                else
+                {
+                    return OperationResult.Failure($"User with id {id} not found.");
+                }
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = $"An error occurred while retriver the User: {ex.Message}";
                 _Logger.LogError("An error occurred while retriver the User: {Message}", ex);
+                return OperationResult.Failure($"An error occurred while retrieving the User by id: {ex.Message}");
             }
             finally
             {
@@ -205,7 +206,7 @@ namespace SWCE.Persistence.Repositories
 
                 var entityvalidate = _ValidatorUpdate.Validate(entity);
 
-                if (entityvalidate != null)
+                if (!entityvalidate.IsValid)
                 {
                     _Logger.LogError("Attempted to update a null User entity");
 
@@ -217,28 +218,23 @@ namespace SWCE.Persistence.Repositories
 
                 if (presult > 0)
                 {
-                    result.IsSuccess = true;
-                    result.Message = "User updated successfully.";
                     _Logger.LogInformation("User updated successfully with result: {Result}", result);
-
+                    return OperationResult.Success("User updated successfully.", entity);
                 }
                 else
                 {
-                    result.IsSuccess = false;
-                    result.Message = "Failed to updating User.";
                     _Logger.LogError("Failed to updating User. No rows affected.");
+                    return OperationResult.Failure("Failed to update User.");
                 }
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = $"An error occurred while updating the User: {ex.Message}";
                 _Logger.LogError("An error occurred while updating the User: {Message}", ex);
+                return OperationResult.Failure($"An error occurred while adding the User: {ex.Message}");
             }
             finally
             {
             }
-            return result;
         }
 
 
@@ -308,11 +304,14 @@ namespace SWCE.Persistence.Repositories
             {
                 using (var command = new SqlCommand(sql, connection))
                 {
-                    command.Parameters.AddRange(parameters);
+                    command.CommandType = CommandType.StoredProcedure; 
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
                     await connection.OpenAsync();
                     using (var reader = await command.ExecuteReaderAsync())
                     {
-
                         if (await reader.ReadAsync())
                         {
                             return map(reader);

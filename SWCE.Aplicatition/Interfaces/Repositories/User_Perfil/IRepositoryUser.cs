@@ -17,6 +17,6 @@ namespace SWCE.Domain.Repository
         Task<OperationResult> Createasync(CreateUserDto entity);
         Task<OperationResult> Updateasync(UpdateUserDto entity);
          Task<OperationResult> GetByEmail(string email);
-        Task<bool> ExistsAsync(Expression<Func<User, bool>> filter);
+        Task<bool> ExistsAsync(int filter);
     }
 }

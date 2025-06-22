@@ -60,6 +60,9 @@ namespace SWCE.Persistence.Base
             {
                 await Entity.AddAsync(entity);
                 await _context.SaveChangesAsync();
+                result.IsSuccess = true;
+                result.Message = "Entidad creada con éxito.";
+                result.Data = entity;
             }
             catch (Exception ex)
             {
@@ -77,6 +80,9 @@ namespace SWCE.Persistence.Base
             {
                 Entity.Update(entity);
                 await _context.SaveChangesAsync();
+                result.IsSuccess = true;
+                result.Message = "Entidad actualizada con éxito.";
+                result.Data = entity;
             }
             catch (Exception ex)
             {

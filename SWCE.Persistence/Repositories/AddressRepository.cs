@@ -39,15 +39,15 @@ namespace SWCE.Persistence.Repositories
 
             try
             {
-                _logger.LogInformation("Retrieving InsuranceProvider entities");
-                result.Data = await base.GetbyIdasync(id);
+                _logger.LogInformation("Retrieving Address entities");
+               var address = await base.GetbyIdasync(id);
 
-                result = OperationResult.Success("Retrieving Address entities", result.Data);
+                result = OperationResult.Success("Retrieving Address entities", address);
             }
             catch (Exception e)
             {
-                _logger.LogError("Error retrieving InsuranceProvider entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving InsuranceProvider entities.");
+                _logger.LogError("Error retrieving Address entities", e);
+                result = OperationResult.Failure("An error occurred while retrieving Address entities.");
             } 
 
             return result;
@@ -59,15 +59,15 @@ namespace SWCE.Persistence.Repositories
 
             try
             {
-                _logger.LogInformation("Retrieving InsuranceProvider entities");
-                result.Data = await base.GetAllasync();
+                _logger.LogInformation("Retrieving Address entities");
+                var adresses = await base.GetAllasync();
 
-                result = OperationResult.Success("Retrieving Address entities", result.Data);
+                result = OperationResult.Success("Retrieving Address entities", adresses);
             }
             catch (Exception e)
             {
-                _logger.LogError("Error retrieving InsuranceProvider entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving InsuranceProvider entities.");
+                _logger.LogError("Error retrieving Address entities", e);
+                result = OperationResult.Failure("An error occurred while retrieving Address entities.");
             }
 
             return result;
@@ -159,19 +159,22 @@ namespace SWCE.Persistence.Repositories
                 _logger.LogInformation("Retrieving Address entities for UserId and Predeterminada");
                 var address = await _Context.Direcciones
                             .Where(a => a.id_user == userid && a.Es_predeterminada == predeterminada)
-                            .FirstOrDefaultAsync(); 
+                            .FirstOrDefaultAsync();
 
-
-                result = OperationResult.Success("Retrieving Address entity", result.Data);
+                if (address != null)
+                {
+                    return OperationResult.Success("Default address retrieved successfully.", address);
+                }
+                else
+                {
+                    return OperationResult.Failure("Default address not found.");
+                }
             }
             catch (Exception e)
             {
                 _logger.LogError("Error retrieving Address entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving Address entity.");
+               return OperationResult.Failure("An error occurred while retrieving Address entity.");
             }
-
-            return result;
-
         }
 
         public async Task<OperationResult> GetbyUserId(int userId)
@@ -182,20 +185,18 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Retrieving Address entities for UserId");
-                var address = await _Context.Direcciones
+                var addresses = await _Context.Direcciones
                             .Where(a => a.id_user == userId)
-                            .FirstOrDefaultAsync();
+                            .ToListAsync();
 
 
-                result = OperationResult.Success("Retrieving Address entity", result.Data);
+                return OperationResult.Success("Retrieving Address entity", addresses);
             }
             catch (Exception e)
             {
                 _logger.LogError("Error retrieving Address entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving Address entity.");
+                return OperationResult.Failure("An error occurred while retrieving Address entity.");
             }
-
-            return result;
         }
     }
 }

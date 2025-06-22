@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using SWCE.Aplicatition.Dtos.WishListItem;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Domain.Repository;
 using System;
