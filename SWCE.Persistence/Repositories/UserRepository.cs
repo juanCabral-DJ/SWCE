@@ -85,10 +85,20 @@ namespace SWCE.Persistence.Repositories
             }
             return result;
         }
-
-        public Task<bool> ExistsAsync(Expression<Func<User, bool>> filter)
+        
+        public async Task<bool> ExistsAsync(Expression<Func<User, bool>> filter)
         {
-            throw new NotImplementedException();
+            OperationResult presult = new OperationResult();
+            _Logger.LogInformation("Viendo si existe el usuario");
+
+            if (filter == null)
+            {
+                _Logger.LogError("El filtro no puede ser nulo");
+                OperationResult.Failure("El filtro para buscar el usuario no puede ser nulo");
+            }
+            var result = await ExecuteScalarStoredProcedureAsync("Usuarios.ExistsProcedure", new SqlParameter("@Id", filter));
+
+            return (result != null && result != DBNull.Value && Convert.ToBoolean(result));
         }
 
         public async Task<OperationResult> GetAllasync()
@@ -108,13 +118,13 @@ namespace SWCE.Persistence.Repositories
                 });
 
                 result.IsSuccess = true;
-                result.Message = "Network types retrieved successfully.";
+                result.Message = "User's retrieved successfully.";
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
-                result.Message = $"An error occurred while adding the User: {ex.Message}";
-                _Logger.LogError("An error occurred while adding the User: {Message}", ex);
+                result.Message = $"An error occurred while retriver the User: {ex.Message}";
+                _Logger.LogError("An error occurred while retriver the User: {Message}", ex);
             }
             finally
             {
@@ -122,14 +132,68 @@ namespace SWCE.Persistence.Repositories
             return result;
         }
 
-        public Task<User> GetByEmail(string email)
+        public async Task<OperationResult> GetByEmail(string email)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            
+            try
+            {
+             _Logger.LogInformation("Retriver User entity by email");
+
+                await ExecuteReaderSingleAsync<GetUserDto>("Usuarios.GetByIdUser", reader => new GetUserDto
+                {
+                    id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    name_user = reader.GetString(reader.GetOrdinal("Nombre")),
+                    apellido = reader.GetString(reader.GetOrdinal("Apellido")),
+                    email = reader.GetString(reader.GetOrdinal("Email"))
+                }, new SqlParameter("@Email", email));
+
+                result.IsSuccess = true;
+                result.Message = "User retrieved successfully.";
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"An error occurred while retriver the User: {ex.Message}";
+                _Logger.LogError("An error occurred while retriver the User: {Message}", ex);
+            }
+            finally
+            {
+
+            }
+            return result;
         }
 
-        public Task<OperationResult> GetbyIdasync(int id)
+        public async Task<OperationResult> GetbyIdasync(int id)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                _Logger.LogInformation("Retriver User entity by id");
+
+              await ExecuteReaderSingleAsync<GetUserDto>("Usuarios.GetByIdUser", reader => new GetUserDto
+                {
+                    id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    name_user = reader.GetString(reader.GetOrdinal("Nombre")),
+                    apellido = reader.GetString(reader.GetOrdinal("Apellido")),
+                    email = reader.GetString(reader.GetOrdinal("Email"))
+                }, new SqlParameter("@Id", id));
+
+                result.IsSuccess = true;
+                result.Message = "User retrieved successfully.";
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"An error occurred while retriver the User: {ex.Message}";
+                _Logger.LogError("An error occurred while retriver the User: {Message}", ex);
+            }
+            finally
+            {
+
+            }
+            return result;
         }
 
         public async Task<OperationResult> Updateasync(UpdateUserDto entity)
@@ -175,9 +239,24 @@ namespace SWCE.Persistence.Repositories
             {
             }
             return result;
-            }
-    
+        }
 
+
+        private async Task<object> ExecuteScalarStoredProcedureAsync(string storedProcedureName, params SqlParameter[] parameters)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedureName, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddRange(parameters);
+                    await connection.OpenAsync();
+
+                    // ExecuteScalarAsync devuelve el valor de la primera columna de la primera fila del resultado.
+                    return await command.ExecuteScalarAsync();
+                }
+            }
+        }
         private async Task<int> ExecuteStoredProcedureAsync(string storedProcedureName, params SqlParameter[] parameters)
         { 
             using (var connection = new SqlConnection(_connectionString))
