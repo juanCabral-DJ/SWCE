@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Validators.AddressValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
-using SWCE.Domain.Repository;
 using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
@@ -39,8 +38,6 @@ namespace SWCE.Persistence.Repositories
 
             try
             {
-                _logger.LogInformation("Retrieving Address entities");
-               var address = await base.GetbyIdasync(id);
 
                 result = OperationResult.Success("Retrieving Address entities", address);
             }
@@ -51,7 +48,6 @@ namespace SWCE.Persistence.Repositories
             } 
 
             return result;
-
         }
         public async override Task<OperationResult> GetAllasync()
         {
@@ -61,29 +57,19 @@ namespace SWCE.Persistence.Repositories
             {
                 _logger.LogInformation("Retrieving Address entities");
                 var adresses = await base.GetAllasync();
-
-                result = OperationResult.Success("Retrieving Address entities", adresses);
             }
             catch (Exception e)
             {
                 _logger.LogError("Error retrieving Address entities", e);
                 result = OperationResult.Failure("An error occurred while retrieving Address entities.");
             }
-
-            return result;
         }
         public async override Task<OperationResult> Createasync(Address entity)
         {
-            OperationResult result = new OperationResult();
             try
             {
                 _logger.LogInformation("Adding Address entity: ${@Entity}", entity);
 
-                if (entity == null)
-                {
-                    _logger.LogError("Attempted to add a null Address entity");
-                    return OperationResult.Failure("Address entity cannot be null");
-                }
                 var validationresult = await _Validator.ValidateAsync(entity);
 
                 if (!validationresult.IsValid)
@@ -120,19 +106,6 @@ namespace SWCE.Persistence.Repositories
             {
                 _logger.LogInformation("updating Address entity: ${@Entity}", entity);
 
-                if (entity == null)
-                {
-                    _logger.LogError("Attempted to add a null Address entity");
-                    return OperationResult.Failure("Address entity cannot be null");
-                }
-
-                await base.Updateasync(entity);
-
-                _logger.LogInformation("updating Address entity: ${@Entity}", entity);
-                result = OperationResult.Success("Address entity added successfully.", entity);
-
-                return result;
-
             }
             catch (Exception ex)
             {
@@ -146,11 +119,7 @@ namespace SWCE.Persistence.Repositories
             }
             return result;
         }
-        public async override Task<bool> ExistsAsync(Expression<Func<Address, bool>> filter)
-        {
-            return await base.ExistsAsync(filter);
-        }
-        public async Task<OperationResult> GetbyPredeterminada(int userid, bool predeterminada)
+        public async Task<OperationResult> GetbyPredeterminada(int userid)
         {
             OperationResult result = new OperationResult();
 

@@ -18,17 +18,5 @@ namespace SWCE.Domain.Entities.Configuration.User_Perfil
         public string pais {  get; set; }
         public bool Es_predeterminada { get; set; }
 
-        public Address(int id, string calle, string ciudad, string estado_provincia, 
-        string codigo_postal, string pais, bool es_predeterminada, int id_user) 
-        {
-            this.id = id;
-            this.id_user = id_user;
-            this.calle = calle;
-            this.ciudad = ciudad;
-            this.estado_provincia = estado_provincia;
-            this.codigo_postal = codigo_postal;
-            this.pais = pais;
-            Es_predeterminada = es_predeterminada;
-        }
     }
 }

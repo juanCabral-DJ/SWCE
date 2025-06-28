@@ -8,9 +8,6 @@ namespace SWCE.Domain.Base
 {
     public abstract class AuditEntity
     {
-        protected AuditEntity() {
-            this.IsDeleted = false;
-        }
 
         public bool? IsDeleted { get; set; } = false;
     }

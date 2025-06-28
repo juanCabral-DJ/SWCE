@@ -3,7 +3,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
-using SWCE.Domain.Repository;
 using SWCE.Infraestructure.Logging;
 using System.Linq.Expressions;
 using SWCE.Aplicatition.Dtos.User;
@@ -81,21 +80,6 @@ namespace SWCE.Persistence.Repositories
             }
         }
         
-        public async Task<bool> ExistsAsync(int filter)
-        {
-            OperationResult presult = new OperationResult();
-            _Logger.LogInformation("Viendo si existe el usuario");
-
-            if (filter <= 0)
-            {
-                _Logger.LogError("El id no puede ser 0 o negativo");
-                OperationResult.Failure("El id para buscar el usuario no puede ser 0 o negativo");
-            }
-            var result = await ExecuteScalarStoredProcedureAsync("Usuarios.ExistsProcedure", new SqlParameter("@Id", filter));
-
-            return (result != null && result != DBNull.Value && Convert.ToBoolean(result));
-        }
-
         public async Task<OperationResult> GetAllasync()
         {
 
@@ -117,7 +101,6 @@ namespace SWCE.Persistence.Repositories
             catch (Exception ex)
             {
                 return OperationResult.Failure($"An error occurred while retrieving all Users: {ex.Message}");
-                _Logger.LogError("An error occurred while retriver the User: {Message}", ex);
             }
             finally
             {
@@ -194,7 +177,6 @@ namespace SWCE.Persistence.Repositories
             {
 
             }
-            return result;
         }
 
         public async Task<OperationResult> Updateasync(UpdateUserDto entity)

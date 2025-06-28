@@ -31,11 +31,5 @@ namespace SWCE.Aplicatition.Validators
                 .MinimumLength(8).WithMessage("Debe tener más de 8 caracteres");
         }
 
-        private async Task<bool> UniqueEmail(string email, CancellationToken cancellationToken)
-        {
-            var result = await _repositoryUser.GetByEmail(email);
-            // Es único si la operación no fue exitosa o si no devolvió datos.
-            return !result.IsSuccess || result.Data == null;
-        }
     }
 }
