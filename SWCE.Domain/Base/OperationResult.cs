@@ -32,9 +32,9 @@ namespace SWCE.Domain.Base
             return new OperationResult(false, message);
         }
 
-        public async Task<OperationResult> failure()
+        public static OperationResult Failure(string message, Exception e)
         {
-            throw new NotImplementedException();
+            return new OperationResult(false, message, e.ToString());
         }
     }
 }

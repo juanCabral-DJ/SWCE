@@ -7,9 +7,14 @@ using System.Threading.Tasks;
 
 namespace SWCE.Infraestructure.Logging
 {
-    public class LoggerBase : ILoggerBase<LoggerBase>
+    public class LoggerBase<T> : ILoggerBase<T> where T : class
     {
-        public readonly ILogger<LoggerBase> _Logger;
+        public readonly ILogger<T> _Logger;
+
+        public LoggerBase(ILogger<T> logger)
+        {
+              _Logger = logger;
+        }
         public void LogError(string mensaje, Exception ex)
         {
             _Logger.LogError(mensaje, ex);

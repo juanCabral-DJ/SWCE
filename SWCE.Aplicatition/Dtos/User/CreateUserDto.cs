@@ -9,10 +9,10 @@ namespace SWCE.Aplicatition.Dtos.User
     public record class CreateUserDto
     {
         public int id_rol { get; set; }
-        public string name_user { get; set; }
-        public string apellido { get; set; }
-        public string email { get; set; }
-        public string password { get; set; }
+        public string? name_user { get; set; }
+        public string? apellido { get; set; }
+        public string? email { get; set; }
+        public string? password { get; set; }
         public DateTime Fecha_Creacion { get; set; } = DateTime.UtcNow;
     }
 }

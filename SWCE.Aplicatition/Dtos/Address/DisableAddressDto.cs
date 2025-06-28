@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Domain.Base
+namespace SWCE.Aplicatition.Dtos.Address
 {
-    public abstract class AuditEntity
+    public record DisableAddressDto
     {
-  
-        public bool IsDeleted { get; set; } = false;
+        public int Id { get; set; }
     }
 }

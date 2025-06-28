@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using System;
 using System.Collections;
@@ -11,11 +12,11 @@ namespace SWCE.Aplicatition.Validators.WishListItemValidator
 {
     public class CreateWishListItemValidator : AbstractValidator<WishListItem>
     {
-        public readonly IRepositoryWishListItem _Wish;
-        public CreateWishListItemValidator(IRepositoryWishListItem wish) {
-            _Wish = wish;
+         
+        public CreateWishListItemValidator() {
+            
 
-            RuleFor(x => x.id_user)
+            RuleFor(x => x.Id_Usuario)
                 .NotNull().WithMessage("El id del usuario no puede ser nulo");
 
             RuleFor(x => x.id_producto)

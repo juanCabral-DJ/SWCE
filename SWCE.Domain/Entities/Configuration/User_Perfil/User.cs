@@ -12,11 +12,11 @@ namespace SWCE.Domain.Entities.Configuration.User_Perfil
     {
         public override int id {  get; set; }
         public int id_rol {  get; set; }
-        public string name_user { get; set; }
-        public string apellido {  get; set; }
-        public string email {  get; set; }
-        public string password { get; set; }
-        public DateTime Fecha_Creacion { get; set; }
+        public string? Nombre { get; set; }
+        public string? apellido {  get; set; }
+        public string? email {  get; set; }
+        public string? password { get; set; }
+        public DateTime Fecha_Creacion { get; set; } = DateTime.Now;
 
     }
 }

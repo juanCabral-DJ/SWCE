@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Domain.Base
+namespace SWCE.Aplicatition.Dtos.WishListItem
 {
-    public abstract class AuditEntity
+    public record DisableItemDto
     {
-  
-        public bool IsDeleted { get; set; } = false;
+        public int Id { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using SWCE.Aplicatition.Dtos.User;
-using SWCE.Domain.Repository;
+using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
+using SWCE.Domain.Entities.Configuration.User_Perfil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,22 +10,21 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Validators
 {
-    public class CreateUserValidator : AbstractValidator<CreateUserDto>
+    public class CreateUserValidator : AbstractValidator<User>
     {
-        private readonly IRepositoryUser _repositoryUser;
+         
 
-        public CreateUserValidator(IRepositoryUser repositoryUser)
+        public CreateUserValidator()
         {
-            _repositoryUser = repositoryUser;
+            
 
-            RuleFor(x => x.name_user)
+            RuleFor(x => x.Nombre)
                 .NotEmpty().WithMessage("El nombre es obligatorio.")
                 .MaximumLength(100).WithMessage("El nombre no puede tener más de 100 caracteres.");
 
             RuleFor(x => x.email)
             .NotEmpty().WithMessage("El email es obligatorio.")
-            .EmailAddress().WithMessage("El formato del email no es válido.")
-            .MustAsync(UniqueEmail).WithMessage("El correo electrónico ya está registrado.");
+            .EmailAddress().WithMessage("El formato del email no es válido.");
 
             RuleFor(x => x.password)
                 .NotEmpty().WithMessage("La contraseña es obligatoria")

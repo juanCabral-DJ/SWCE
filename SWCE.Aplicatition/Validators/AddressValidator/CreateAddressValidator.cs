@@ -1,19 +1,17 @@
 ﻿using FluentValidation;
+
+using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SWCE.Aplicatition.Validators.AddressValidator
 {
     public class CreateAddressValidator : AbstractValidator<Address>
     {
 
-        public CreateAddressValidator(IRepositoryAddress address)
+        public CreateAddressValidator()
         {
-            _address = address;
+
 
             RuleFor(x => x.calle)
                 .NotEmpty().WithMessage("La calle no puede estar vacia")

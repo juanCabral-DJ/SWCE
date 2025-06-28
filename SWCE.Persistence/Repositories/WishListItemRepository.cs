@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Validators.AddressValidator;
 using SWCE.Aplicatition.Validators.WishListItemValidator;
 using SWCE.Domain.Base;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,42 +26,66 @@ namespace SWCE.Persistence.Repositories
         private readonly E_commerceContext _Context;
         private readonly ILoggerBase<WishListItem> _logger;
 
-        public WishListItemRepository(E_commerceContext _context, ILoggerBase<WishListItem> _logger, CreateWishListItemValidator Validator)
+        public WishListItemRepository(E_commerceContext _context, ILoggerBase<WishListItem> logger, CreateWishListItemValidator Validator)
             : base(_context)
         {
             _Validator = Validator;
             _Context = _context;
-            _logger = _logger;
+            _logger = logger;
         }
 
+        public async override Task<OperationResult> GetAllasync(Expression<Func<WishListItem, bool>> filter)
+        {
+            OperationResult result = new OperationResult();
 
-        public async override Task<OperationResult> GetbyIdasync(int id)
+            try
+            {
+                _logger.LogInformation("Retrieving address entities");
+                result  = await base.GetAllasync(filter);
+
+                result = OperationResult.Success("Retrieving Address entities", result.Data);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error retrieving address entities", e);
+                result = OperationResult.Failure("An error occurred while retrieving address entities.");
+            }
+
+            return result;
+        }
+        public async Task<OperationResult> DisableAsync(WishListItem entity)
         {
             OperationResult result = new OperationResult();
             try
             {
-                _logger.LogInformation("Retrieving WishListItem entities");
-                var item = await base.GetbyIdasync(id);
+                if (entity is null)
+                {
+                    return OperationResult.Failure("item entity not found.");
+                }
 
-                return OperationResult.Success("Retrieving Address entities", item);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("Error retrieving WishListItem entities", e);
-               return OperationResult.Failure("An error occurred while retrieving WishListItem entities.");
-            }
+                WishListItem item = await _Context.Lista_Deseos.FindAsync(entity.id);
+                _logger.LogInformation("deleting  wishlistitem entity");
 
-            try
-            {
-                _logger.LogInformation("Retrieving WishListItem entities");
-               var items = await base.GetAllasync();
+                if (item is null)
+                {
+                    _logger.LogError("item not found.");
+                    return OperationResult.Failure("item entity not found.");
+                }
+
+                item.IsDeleted = true;
+                _Context.Lista_Deseos.Update(item);
+                await _Context.SaveChangesAsync();
+
+                _logger.LogInformation("item con ID {Id} deshabilitada con éxito.", entity.id);
+                result = OperationResult.Success("item deshabilitado con éxito.");
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError("Error retrieving WishListItem entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving WishListItem entities.");
+                result = OperationResult.Failure("Ocurrió un error al eliminar los datos");
+                _logger.LogError("An error occurred while deleting the WishListItem type: {Message}", ex);
             }
+            return result;
 
         }
         public async override Task<OperationResult> Createasync(WishListItem entity)
@@ -107,7 +133,7 @@ namespace SWCE.Persistence.Repositories
             {
                 _logger.LogInformation("Retrieving WishListItem entities for UserId");
                 var items = await _Context.Lista_Deseos
-                            .Where(a => a.id_user == userId)
+                            .Where(a => a.Id_Usuario == userId)
                             .FirstOrDefaultAsync();
 
                 return OperationResult.Success("Retrieving WishListItem entity",items);
@@ -117,6 +143,24 @@ namespace SWCE.Persistence.Repositories
                 _logger.LogError("Error retrieving WishListItem entities", e);
                 return OperationResult.Failure("An error occurred while retrieving WishListItem entity.");
             }
+        }
+
+        public async override Task<OperationResult> GetbyIdasync(int id)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                _logger.LogInformation("Retrieving Item entities");
+                var entity = await base.GetbyIdasync(id);
+
+                result = OperationResult.Success("Retrieving Item entity", entity);
+
+            }
+            catch (Exception ex)
+            {
+                result = OperationResult.Failure($"An error occurred while retrieving entity by ID {id}: {ex.Message}");
+            }
+            return result;
         }
     }
 }
