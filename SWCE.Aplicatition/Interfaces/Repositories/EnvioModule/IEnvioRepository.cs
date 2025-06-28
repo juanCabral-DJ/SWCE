@@ -1,4 +1,5 @@
-﻿using SWCE.Domain.Base;
+﻿using SWCE.Aplication.Interfaces.Repositories;
+using SWCE.Domain.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +8,8 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Interfaces.Repositories.EnvioModule
 {
-    public interface IEnvioRepository
+    public interface IEnvioRepository : IRepositoryBase<EnvioBase>
     {
-        Task<EnvioBase> ObtenerPorIdAsync(Guid id);
-        Task<List<EnvioBase>> ObtenerTodosAsync();
-        Task CrearAsync(EnvioBase envio);
-        Task ActualizarAsync(EnvioBase envio);
-        Task EliminarAsync(Guid id);
+        Task<OperationResult> GetByUserId(int userId);
     }
 }

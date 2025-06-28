@@ -14,12 +14,8 @@ namespace SWCE.Persistence.Context
         public E_commerceContext(DbContextOptions<E_commerceContext> options) : base(options)
         {
         }
-
-
-        
-        public DbSet<EnvioAereo> Envios { get; set; }
+       
         public DbSet<EnvioTerrestre> Envios { get; set; }
-        public DbSet<EnvioExpress> Envios { get; set; }
 
     }
 }

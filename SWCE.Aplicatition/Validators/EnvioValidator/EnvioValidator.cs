@@ -12,9 +12,10 @@ namespace SWCE.Aplication.Validators.EnvioValidator
     {
         public EnvioValidator()
         {
-            RuleFor(x => x.UsuarioId)
-                .NotEmpty().WithMessage("El UsuarioId no puede estar vacío.")
-                .NotNull().WithMessage("El UsuarioId no puede ser nulo.");
+            RuleFor(e => e.UsuarioId).NotEmpty();
+            RuleFor(e => e.FechaPedido).LessThanOrEqualTo(DateTime.Now);
+            RuleFor(e => e.Estado).NotEmpty().MaximumLength(50);
+            RuleFor(e => e.Costo).GreaterThan(0);
         }
     }
 }

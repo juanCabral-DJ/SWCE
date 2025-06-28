@@ -1,12 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWCE.Aplication.Interfaces.Repositories;
 using SWCE.Persistence.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using SWCE.Domain.Base;
 
 namespace SWCE.Persistence.Base
@@ -20,30 +15,58 @@ namespace SWCE.Persistence.Base
             _context = context;
             Entity = _context.Set<TEntity>();
         }
+        
+        public virtual async Task<OperationResult> GetbyIdasync(int id)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                var entity = await Entity.FindAsync(id);
+
+                if (entity != null)
+                {
+                    return OperationResult.Susscess("Obtuvo la entidad correctamente", entity);
+                }
+                else
+                {
+                    return OperationResult.Failure($"La entidad con Id {id} no ha sido encontrada");
+                }
+            }
+            catch (Exception ex) 
+            {
+                return OperationResult.Failure($"Ha ocurrido un error mientras se recuperaba la entidad con el id {id}: {ex.Message}");
+            }
+        }
+        public virtual async Task<OperationResult> GetAllasync()
+        {
+            try
+            {
+                var entities = await Entity.ToListAsync();
+
+                    return OperationResult.Susscess("Obtuvo la entidad correctamente", entities);
+            }
+            catch (Exception ex)
+            {
+                return OperationResult.Failure($"Ha ocurrido un error mientras se recuperaban todas las entidades: {ex.Message}");
+            }
+        }  
         public virtual async Task<OperationResult> Createasync(TEntity entity)
         {
             OperationResult result = new OperationResult();
             try
             {
-                Entity.Add(entity);
+                await Entity.AddAsync(entity);
                 await _context.SaveChangesAsync();
+                result.IsSuccess = true;
+                result.Message = "La entidad ha sido creada con exito";
+                result.Data = entity;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                result.Success = false;
+                result.IsSuccess = false;
                 result.Message = "Ha ocurrido un error al guardar los datos";
             }
             return result;
-        }
-
-        public virtual async Task<List<TEntity>> GetAllasync()
-        {
-            return await Entity.ToListAsync();
-        }
-
-        public virtual async Task<TEntity> GetbyIdasync(int id)
-        {
-            return await Entity.FindAsync(id);
         }
 
         public virtual async Task<OperationResult> Updateasync(TEntity entity)
@@ -54,10 +77,13 @@ namespace SWCE.Persistence.Base
             {
                 Entity.Update(entity);
                 await _context.SaveChangesAsync();
+                result.IsSuccess = true;
+                result.Message = "La entidad ha sido actualizada con exito";
+                result.Data = entity;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                result.Success = false;
+                result.IsSuccess = false;
                 result.Message = "Ocurrió un error al actualizar los datos";
             }
             return result;
@@ -69,4 +95,4 @@ namespace SWCE.Persistence.Base
         }
     }
 }
-}
+

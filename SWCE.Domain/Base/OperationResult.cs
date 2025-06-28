@@ -8,12 +8,26 @@ namespace SWCE.Domain.Base
 {
     public class OperationResult
     {
-        public OperationResult()
+        public OperationResult() { }
+        public OperationResult(bool isSuccess, string message, dynamic? data = null)
         {
-            this.Success = true;
+            IsSuccess = isSuccess;
+            Message = message;
+            Data = data;
         }
-        public string Message { get; set; }
-        public bool Success { get; set; }
-        public dynamic Data { get; set; }
+
+        public string Message { get; set; } = string.Empty;
+        public bool IsSuccess { get; set; }
+        public dynamic? Data { get; set; }
+
+        public static OperationResult Susscess(string message, dynamic? data = null)
+        {
+            return new OperationResult(true, message, data);
+        }
+
+        public static OperationResult Failure(string message)
+        {
+            return new OperationResult(false, message);
+        }
     }
 }

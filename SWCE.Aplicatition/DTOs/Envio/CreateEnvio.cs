@@ -1,0 +1,12 @@
+﻿namespace SWCE.Aplication.DTOs.Envio
+{
+    public record class CreateEnvio
+    {
+        public Guid Id { get; set; }
+        public int UsuarioId { get; set; }
+        public DateTime FechaPedido { get; set; }
+        public string? Estado { get; set; }
+        public decimal Costo { get; set; }
+
+    }
+}
