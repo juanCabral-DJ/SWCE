@@ -1,7 +1,6 @@
 ﻿using FluentNHibernate.Data;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Validators.AddressValidator;

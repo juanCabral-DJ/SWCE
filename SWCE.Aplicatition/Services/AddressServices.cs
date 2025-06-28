@@ -1,7 +1,4 @@
 ﻿
-
-using AutoMapper;
-using FluentNHibernate.Automapping;
 using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Base;
 using SWCE.Aplicatition.Dtos.Address;

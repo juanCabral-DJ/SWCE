@@ -4,14 +4,8 @@ using Microsoft.Extensions.Configuration;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Infraestructure.Logging;
-using System.Linq.Expressions;
-using SWCE.Aplicatition.Dtos.User;
 using System.Data;
 using SWCE.Aplicatition.Validators;
-using System.ComponentModel.DataAnnotations;
-using SWCE.Persistence.Context;
-using Microsoft.EntityFrameworkCore.Update.Internal;
-using FluentValidation;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 
 namespace SWCE.Persistence.Repositories
