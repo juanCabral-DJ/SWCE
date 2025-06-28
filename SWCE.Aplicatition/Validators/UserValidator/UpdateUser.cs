@@ -1,12 +1,7 @@
 ﻿using FluentValidation;
-using SWCE.Aplicatition.Dtos.User;
-using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
+ 
 using SWCE.Domain.Entities.Configuration.User_Perfil;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+ 
 
 namespace SWCE.Aplicatition.Validators
 {

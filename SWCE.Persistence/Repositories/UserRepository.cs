@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿ 
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using SWCE.Domain.Base;
@@ -233,23 +233,25 @@ namespace SWCE.Persistence.Repositories
 
                 if (presult > 0)
                 {
+                    var updatedUser = await GetbyIdasync(entity.id);
                     _Logger.LogInformation("User updated successfully with result: {Result}", result);
-                    return OperationResult.Success("User updated successfully.", entity);
+                    result = OperationResult.Success("User updated successfully.", updatedUser);
                 }
                 else
                 {
                     _Logger.LogError("Failed to updating User. No rows affected.");
-                    return OperationResult.Failure("Failed to update User.");
+                    result = OperationResult.Failure("Failed to update User.");
                 }
             }
             catch (Exception ex)
             {
                 _Logger.LogError("An error occurred while updating the User: {Message}", ex);
-                return OperationResult.Failure($"An error occurred while adding the User: {ex.Message}");
+                result = OperationResult.Failure($"An error occurred while adding the User: {ex.Message}");
             }
             finally
             {
             }
+            return result;  
         }
 
 

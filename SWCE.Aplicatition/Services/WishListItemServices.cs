@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿ 
 using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Base;
 using SWCE.Aplicatition.Dtos.WishListItem;
@@ -7,13 +7,9 @@ using SWCE.Aplicatition.Interfaces.Services;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Infraestructure.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+ 
 using System.Linq.Expressions;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+ 
 
 namespace SWCE.Aplicatition.Services
 {

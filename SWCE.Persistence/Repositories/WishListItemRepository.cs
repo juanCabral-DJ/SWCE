@@ -1,20 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+ 
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
-using SWCE.Aplicatition.Validators.AddressValidator;
+ 
 using SWCE.Aplicatition.Validators.WishListItemValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+ 
 using System.Linq.Expressions;
-
+ 
 namespace SWCE.Persistence.Repositories
 {
     public class WishListItemRepository : RepositoryBase<WishListItem> ,IRepositoryWishListItem
@@ -38,9 +34,9 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Retrieving address entities");
-                result  = await base.GetAllasync(filter);
+                var items  = await base.GetAllasync(filter);
 
-                result = OperationResult.Success("Retrieving Address entities", result.Data);
+                result = OperationResult.Success("Retrieving Address entities", items );
             }
             catch (Exception e)
             {
@@ -74,7 +70,7 @@ namespace SWCE.Persistence.Repositories
                 await _Context.SaveChangesAsync();
 
                 _logger.LogInformation("item con ID {Id} deshabilitada con éxito.", entity.id);
-                result = OperationResult.Success("item deshabilitado con éxito.");
+                result = OperationResult.Success("item deshabilitado con éxito.",  item);
 
             }
             catch (Exception ex)

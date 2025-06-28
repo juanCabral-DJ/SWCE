@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
-
-using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
+ 
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 
 

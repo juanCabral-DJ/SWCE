@@ -1,12 +1,8 @@
 ﻿using Riok.Mapperly.Abstractions;
-using SWCE.Aplicatition.Dtos.Address;
+ 
 using SWCE.Aplicatition.Dtos.User;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+ 
 
 namespace SWCE.Aplicatition.Base
 {

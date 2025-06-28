@@ -1,7 +1,7 @@
-﻿using SWCE.Aplicatition.Dtos.User;
+﻿
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
-
+ 
 namespace SWCE.Aplicatition.Interfaces.Repositories.User_Perfil
 {
     public interface IRepositoryUser

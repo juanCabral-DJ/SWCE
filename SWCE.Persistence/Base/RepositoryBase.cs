@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWCE.Aplicatition.Base;
 using SWCE.Domain.Base;
-using SWCE.Domain.Entities.Configuration.User_Perfil;
+ 
 using SWCE.Persistence.Context;
-using System.Data.Common;
-using System.Linq;
+ 
 using System.Linq.Expressions;
 
 namespace SWCE.Persistence.Base

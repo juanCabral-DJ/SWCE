@@ -1,6 +1,7 @@
-﻿using FluentNHibernate.Data;
+﻿ 
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+ 
 
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Validators.AddressValidator;
@@ -9,15 +10,9 @@ using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
+ 
 using System.Linq.Expressions;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Markup;
+ 
 
 namespace SWCE.Persistence.Repositories
 {
