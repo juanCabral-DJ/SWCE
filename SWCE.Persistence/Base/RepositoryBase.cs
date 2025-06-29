@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SWCE.Aplication.Interfaces.Repositories;
+using SWCE.Aplication.Base;
 using SWCE.Persistence.Context;
 using System.Linq.Expressions;
 using SWCE.Domain.Base;
@@ -25,7 +25,7 @@ namespace SWCE.Persistence.Base
 
                 if (entity != null)
                 {
-                    return OperationResult.Susscess("Obtuvo la entidad correctamente", entity);
+                    return OperationResult.Success("Obtuvo la entidad correctamente", entity);
                 }
                 else
                 {
@@ -43,7 +43,7 @@ namespace SWCE.Persistence.Base
             {
                 var entities = await Entity.ToListAsync();
 
-                    return OperationResult.Susscess("Obtuvo la entidad correctamente", entities);
+                    return OperationResult.Success("Obtuvo la entidad correctamente", entities);
             }
             catch (Exception ex)
             {
@@ -92,6 +92,11 @@ namespace SWCE.Persistence.Base
         public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter)
         {
             return await Entity.AnyAsync(filter);
+        }
+
+        public Task<OperationResult> GetAllasync(Expression<Func<TEntity, bool>> filter)
+        {
+            throw new NotImplementedException();
         }
     }
 }

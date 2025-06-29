@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SWCE.Aplicatition\SWCE.Aplication.csproj" />
+    <ProjectReference Include="..\SWCE.Infraestructure\SWCE.Infraestructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -20,7 +20,7 @@ namespace SWCE.Domain.Base
         public bool IsSuccess { get; set; }
         public dynamic? Data { get; set; }
 
-        public static OperationResult Susscess(string message, dynamic? data = null)
+        public static OperationResult Success(string message, dynamic? data = null)
         {
             return new OperationResult(true, message, data);
         }

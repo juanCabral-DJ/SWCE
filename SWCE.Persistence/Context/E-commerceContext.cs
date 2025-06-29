@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using System;
@@ -15,7 +16,7 @@ namespace SWCE.Persistence.Context
         {
         }
        
-        public DbSet<EnvioTerrestre> Envios { get; set; }
+        public DbSet<EnvioEntity> Envios { get; set; }
 
     }
 }

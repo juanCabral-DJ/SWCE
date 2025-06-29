@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
-using SWCE.Domain.Base;
+using SWCE.Domain.Entities;
 
 namespace SWCE.Aplication.Validators.EnvioValidator
 {
-    public class EnvioValidator : AbstractValidator<EnvioBase>
+    public class EnvioValidator : AbstractValidator<EnvioEntity>
     {
         public EnvioValidator()
         {

@@ -6,13 +6,26 @@ using System.Threading.Tasks;
 
 namespace SWCE.Domain.Entities
 {
-    public class EnvioEntity
+    public sealed class EnvioEntity
     {
-        public int Id { get; set; }
-        public string TipoEnvio { get; set; } 
-        public decimal Costo { get; set; }
+        public Guid Id { get; set; }
+        public int UsuarioId { get; set; }
         public DateTime FechaPedido { get; set; }
-        public string Estado { get; set; } 
-        public int UsuarioId { get; set; } 
+        public string? Estado { get; set; }
+        public decimal Costo { get; set; }
+        public string? TipoEnvio { get; set; }
+
+        public EnvioEntity(int usuarioId)
+        {
+            UsuarioId = usuarioId;
+            FechaPedido = DateTime.Now;
+            Estado = "Pendiente";
+        }
+
+        public EnvioEntity()
+        {
+            FechaPedido = DateTime.Now;
+            Estado = "Pendiente";
+        }
     }
 }

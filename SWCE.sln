@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infraestructure", "Infraest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWCE.Infraestructure", "SWCE.Infraestructure\SWCE.Infraestructure.csproj", "{2A8A09CA-C91D-4B4A-8751-0CE6058DE48A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWCE.Persistence", "SWCE.Persistence\SWCE.Persistence.csproj", "{67F9BA03-17DC-4971-9F64-0EC4C5A018F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWCE.Persistence", "SWCE.Persistence\SWCE.Persistence.csproj", "{67F9BA03-17DC-4971-9F64-0EC4C5A018F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{D27D2A00-FA1F-47CA-B31A-C0CFB2ADE65D}"
 EndProject

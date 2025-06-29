@@ -1,4 +1,4 @@
-﻿using SWCE.Domain.Base;
+﻿using SWCE.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace SWCE.Domain.Repository
 {
     public interface ITransportista
     {
-        void Enviar(EnvioBase envio);
+        void Enviar(EnvioEntity envio);
         string ObtenerEstado(string trackingId);
     }
 }

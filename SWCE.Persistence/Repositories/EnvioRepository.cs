@@ -1,45 +1,61 @@
 ﻿using SWCE.Aplicatition.Interfaces.Repositories.EnvioModule;
+using SWCE.Domain.Entities;
+using Microsoft.Extensions.Configuration;
+using SWCE.Aplication.Validators.EnvioValidator;
+using SWCE.Infraestructure.Logging;
+using Microsoft.Data.SqlClient;
+using System.Data;
 using SWCE.Domain.Base;
-using Microsoft.Extensions.Logging;
-using SWCE.Persistence.Context;
-using FluentValidation;
-using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
-using SWCE.Persistence.Base;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace SWCE.Persistence.Repositories
 {
-    public class EnvioRepository : RepositoryBase<EnvioBase>, IEnvioRepository
+    public class EnvioRepository : IEnvioRepository
     {
-        private readonly E_commerceContext _context;
-        private readonly ILogger<EnvioRepository> _logger;
-        private readonly IValidator<EnvioBase> _validator;
+        private readonly string _connectionString;
+        private readonly IConfiguration _configuration;
+        private readonly EnvioValidator _EnvioValidator;
+        private readonly UpdateEnvioValdiator _UpdateEnvioValdiator;
+        private readonly ILoggerBase<EnvioEntity> _logger;
 
-        public EnvioRepository(E_commerceContext context, ILogger<EnvioRepository> logger, IValidator<EnvioBase> validator) : base(context)
+        public EnvioRepository( ILoggerBase<EnvioEntity> logger, IConfiguration configuration, EnvioValidator envioValidator, UpdateEnvioValdiator updateEnvioValidator)
         {
-            _context = context; 
+            _configuration = configuration;
             _logger = logger;
-            _validator = validator;
+            _EnvioValidator = envioValidator;
+            _UpdateEnvioValdiator = updateEnvioValidator;
+            _connectionString = _configuration["ConnectionStrings:E-CommerceConnection"];
         }
         public async Task<OperationResult> GetByIdAsync(Guid id)
         {
             OperationResult result = new OperationResult();
             try
             {
-                var envio = await _context.Envios.FindAsync(id);
-                if (envio == null)
-                {
-                    _logger.LogWarning("No se encontro un envio con ID {id}", id);
-                    result = OperationResult.Failure("No se encontro envio con Id");
-                }
+                _logger.LogInformation("Recuperando Envio por Id");
 
-                _logger.LogInformation("Se obtuvo el envio con ID");
-                return OperationResult.Susscess("Se obtuvo el envio con id", id);
+                var envios = await ExecuteReaderSingleAsync<EnvioEntity>("dbo.GetEnvioById", reader => new EnvioEntity
+                {
+                    UsuarioId = reader.GetInt32(reader.GetOrdinal("Usuario Id")),
+                    FechaPedido = reader.GetDateTime(reader.GetOrdinal("Fecha Pedido")),
+                    Estado = reader.GetString(reader.GetOrdinal("Estado")),
+                    Costo = reader.GetDecimal(reader.GetOrdinal("Costo")),
+                    TipoEnvio = reader.GetString(reader.GetOrdinal("Tipo Envio"))
+                }, new SqlParameter("@Id", id));
+
+                if (envios != null)
+                {
+                    result = OperationResult.Success("Se obtuvo el envio con id", envios);
+                }
+                else
+                {
+                    result = OperationResult.Failure("No se encontro el envio con ese ID");
+
+                }
             }
-            catch (Exception ex) {
-                _logger.LogError(ex, "Error al obtener envio con ID");
-                result = OperationResult.Failure("Ocurrio un error mientras se recuperaba el envio");
+            catch (Exception ex)
+            {
+                _logger.LogError("Error al obtener envio con ID", ex);
+                result = OperationResult.Failure($"Ocurrio un error mientras se recuperaba el envio {ex.Message}");
             }
             return result;
         }
@@ -50,41 +66,53 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Recuperando Envios");
-                var envios = await base.GetAllasync();
-                result = OperationResult.Susscess("Recuperando envios", envios);
+                var envios = await ExecuteReaderListAsync<EnvioEntity>("dbo.GetAllEnvios", reader => new EnvioEntity 
+                {
+                    UsuarioId = reader.GetInt32(reader.GetOrdinal("Usuario Id")),
+                    FechaPedido = reader.GetDateTime(reader.GetOrdinal("Fecha Pedido")),
+                    Estado = reader.GetString(reader.GetOrdinal("Estado")),
+                    Costo = reader.GetDecimal(reader.GetOrdinal("Costo")),
+                    TipoEnvio = reader.GetString(reader.GetOrdinal("Tipo Envio"))
+                });
+
+                result = OperationResult.Success("Recuperando envios", envios);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError("Error recuperando envios");
-                result = OperationResult.Failure("Ha ocurrido un error recuperando los envios");
+                _logger.LogError("Error recuperando envios {Message}", ex);
+                result = OperationResult.Failure($"Ha ocurrido un error recuperando todos los envios: {ex.Message}");
             }
             return result;
         }
 
-        public async Task<OperationResult> CreateAsync(EnvioBase envio)
+        public async Task<OperationResult> CreateAsync(EnvioEntity envio)
         {
             OperationResult result = new OperationResult();
             try
             {
                 _logger.LogInformation("Agregando envio: ${@envio}", envio);
+                var entityvalidate = await _EnvioValidator.ValidateAsync(envio);
 
-                if (envio == null)
+                if (!entityvalidate.IsValid)
                 {
                     _logger.LogError("Inserte valores para agregar");
                     return OperationResult.Failure("La entidad envio no puede ser nulo");
                 }
 
-                var ValidationResult = await _validator.ValidateAsync(envio);
-                if (!ValidationResult.IsValid)
+                var presult = await ExecuteStoredProcedureAsync("dbo.CreateEnvios", new SqlParameter("@Id_usuario", envio.UsuarioId), new SqlParameter("@FechaPedido", envio.FechaPedido), new SqlParameter("@Estado", envio.Estado), new SqlParameter("@Total", envio.Costo), new SqlParameter("@TipoEnvio", envio.TipoEnvio));
+
+                if (presult > 0)
                 {
-                    _logger.LogError("Validacion Fallida al realizar envios");
-                    return OperationResult.Failure("Validation failed" + string.Join(", ", ValidationResult.Errors.Select(e => e.ErrorMessage)));
+                    _logger.LogInformation("Agregando envio: ${@envio}", envio);
+                    return OperationResult.Success("Envio Agregado exitosamente", envio);
+
                 }
+                else
+                {
+                    _logger.LogError("Hubo un fallo al agregar envio. Ninguna fila afectada");
+                    result = OperationResult.Failure("Fallo al agregar envio");
+                } 
 
-                await base.Createasync(envio);
-
-                _logger.LogInformation("Agregando envio: ${@envio}", envio);
-                result = OperationResult.Susscess("Envio Agregado exitosamente", envio);
             }
             catch (Exception ex)
             {
@@ -95,31 +123,39 @@ namespace SWCE.Persistence.Repositories
             return result; 
 
         }
-        public async Task<OperationResult> UpdateAsync(EnvioBase envio)
+        public async Task<OperationResult> UpdateAsync(EnvioEntity envio)
         {
             OperationResult result = new OperationResult();
             try
             {
                 _logger.LogInformation("Actualizando envio: ${@envio}", envio);
 
-                if (envio == null)
+                var enviovalidate = await _UpdateEnvioValdiator.ValidateAsync(envio);
+                if (!enviovalidate.IsValid)
                 {
                     _logger.LogError("Inserte valores para actualizar");
                     return OperationResult.Failure("La entidad envio no puede ser nulo");
                 }
 
-                await base.Updateasync(envio);
-
-                _logger.LogInformation("Actualizando envio: ${@envio}", envio);
-                result = OperationResult.Susscess("Envio actualizado exitosamente", envio);
+                var presult = await ExecuteStoredProcedureAsync("dbo.UpdateEnvioEstado", new SqlParameter("@Id", envio.Id), new SqlParameter("@Esatdo", envio.Estado));
+                
+                if(presult > 0)
+                {
+                    _logger.LogInformation("Envio actualizado exitosamente: ${@envio}", envio);
+                    return OperationResult.Success("Envio actualizado exitosamente", envio);
+                }
+                else
+                {
+                    _logger.LogError("Hubo un fallo al actualizar el envio. Ninguna fila afectada");
+                    return OperationResult.Failure("Fallo al actualizar el envio");
+                }
+            
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = $"Un error ha ocurrido actualizando el envio {ex.Message}";
                 _logger.LogError("Un error ha ocurrido actualizando el envio: {Message}", ex);
+                return OperationResult.Failure($"Un error ha ocurrido actualizando el envio {ex.Message}");
             }
-            return result;
         }
         public async Task<OperationResult> GetByUserId(int userId)
         {
@@ -128,9 +164,23 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Recuperando Envios mediante UserId");
-                var envios = await _context.Envios.Where(a => a.UsuarioId == userId).ToListAsync();
+                var envios = await ExecuteReaderSingleAsync<EnvioEntity>("dbo.GetEnviosByUserId", reader => new EnvioEntity
+                {
+                    UsuarioId = reader.GetInt32(reader.GetOrdinal("Usuario Id")),
+                    FechaPedido = reader.GetDateTime(reader.GetOrdinal("Fecha Pedido")),
+                    Estado = reader.GetString(reader.GetOrdinal("Estado")),
+                    Costo = reader.GetDecimal(reader.GetOrdinal("Costo")),
+                    TipoEnvio = reader.GetString(reader.GetOrdinal("Tipo Envio"))
+                }, new SqlParameter("@Id_Usuario", userId));
 
-                result = OperationResult.Susscess("Recuperando envios", envios);
+                if (envios != null)
+                {
+                    result = OperationResult.Success("Se obtuvo el envio con UserId", envios);
+                }
+                else
+                {
+                    result = OperationResult.Failure("No se encontro el envio con ese UserId");
+                }
             }
             catch (Exception)
             {
@@ -139,6 +189,78 @@ namespace SWCE.Persistence.Repositories
             }
             return result;
    
+        }
+
+        private async Task<int> ExecuteStoredProcedureAsync(string storedProcedureName, params SqlParameter[] parameters)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedureName, connection))
+                {
+
+                    command.CommandType = CommandType.StoredProcedure;
+
+
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    await connection.OpenAsync();
+                    return await command.ExecuteNonQueryAsync(); // Para INSERT, UPDATE, DELETE
+                }
+            }
+        }
+
+        private async Task<List<EnvioEntity>> ExecuteReaderListAsync<T>(string sql, Func<SqlDataReader, EnvioEntity> map, params SqlParameter[] parameters)
+        {
+            var items = new List<EnvioEntity>();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand(sql, connection))
+                {
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+
+                            items.Add(map(reader));
+                        }
+                    }
+                }
+            }
+            return items;
+        }
+
+        private async Task<T?> ExecuteReaderSingleAsync<T>(string sql, Func<SqlDataReader, T> map, params SqlParameter[] parameters) where T : class
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return map(reader);
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }
