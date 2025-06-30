@@ -1,13 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>d944001f-524e-497a-a70c-5d2f1b9a5feb</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />   
+	      <PackageReference Include="Riok.Mapperly" Version="4.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWCE.Aplicatition\SWCE.Application.csproj" />
+    <ProjectReference Include="..\SWCE.Infraestructure\SWCE.Infraestructure.csproj" />
+    <ProjectReference Include="..\SWCE.Persistence\SWCE.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

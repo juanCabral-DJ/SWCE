@@ -7,24 +7,33 @@ using System.Threading.Tasks;
 
 namespace SWCE.Infraestructure.Logging
 {
-    public class LoggerBase : ILoggerBase<LoggerBase>
+    public class LoggerBase<T> : ILoggerBase<T>
     {
-        public readonly ILogger<LoggerBase> _Logger;
+        private readonly ILogger<T> _logger;
+
+        public LoggerBase(ILogger<T> logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         public void LogError(string mensaje, Exception ex)
         {
-            _Logger.LogError(mensaje, ex);
+            _logger.LogError(ex, mensaje); // La excepción va primero en el método de extensión
         }
+
         public void LogError(string mensaje)
         {
-            _Logger.LogError(mensaje);
+            _logger.LogError(mensaje);
         }
-        public void LogInformation(string mensaje, Object e)
+
+        public void LogInformation(string mensaje, params object[] args)
         {
-            _Logger.LogInformation(mensaje, e);
+            _logger.LogInformation(mensaje, args);
         }
+
         public void LogInformation(string mensaje)
         {
-            _Logger.LogInformation(mensaje);
+            _logger.LogInformation(mensaje);
         }
     }
 }

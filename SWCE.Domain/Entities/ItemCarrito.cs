@@ -1,5 +1,4 @@
 ﻿using SWCE.Domain.Base;
-using SWCE.Domain.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +11,16 @@ namespace SWCE.Domain.Entities
     {
         // Atributos
         public override int id { get; set; }
-        public int IdProducto { get; private set; }
-        public string NombreProducto { get; private set; }
-        public decimal PrecioUnitario { get; private set; }
-        public int Cantidad { get; private set; }
-        public decimal SubTotal { get; private set; }
+        public int IdProducto { get;  set; }
+        public string NombreProducto { get;  set; }
+        public decimal PrecioUnitario { get;  set; }
+        public int Cantidad { get;  set; }
+        public decimal SubTotal { get;  set; }
 
-        public int CarritoId { get; private set; }
+        public int CarritoId { get;  set; }
 
         // Constructor
+        public ItemCarrito() { }
         public ItemCarrito(int id, int carritoId, Producto p, int cantidad)
         {
             if (p == null) throw new InvalidOperationException("Producto inválido");

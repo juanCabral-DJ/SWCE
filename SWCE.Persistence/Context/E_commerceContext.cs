@@ -10,13 +10,13 @@ namespace SWCE.Persistence.Context
 {
     public class E_commerceContext : DbContext
     {
-        public E_commerceContext(DbContextOptions<E_commerceContext> options) : base(options) 
-        { 
-        
+        public E_commerceContext(DbContextOptions<E_commerceContext> options) : base(options)
+        {
+
         }
 
         public DbSet<Carrito> Carritos { get; set; }
-        public DbSet<ItemCarrito> ItemCarritos { get; set; }
+        public DbSet<ItemCarrito> ItemsCarrito { get; set; }
 
     }
 }

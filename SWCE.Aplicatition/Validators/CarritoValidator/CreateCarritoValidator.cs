@@ -12,10 +12,8 @@ namespace SWCE.Application.Validators.CarritoValidator
     {
         public CreateCarritoValidator()
         {
-            RuleFor(x => x.IdUsuario)
+            RuleFor(x => x.ID_Usuario)
                 .GreaterThan(0).WithMessage("El Id del usuario debe ser mayor que cero.");
-
-            RuleForEach(x => x.Productos).SetValidator(new ItemCarritoValidator());
         }
     }
 }

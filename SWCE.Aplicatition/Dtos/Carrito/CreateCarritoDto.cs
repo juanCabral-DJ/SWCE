@@ -11,8 +11,6 @@ namespace SWCE.Application.Dtos.Carrito
     public record CreateCarritoDto
     {
 
-        public int IdUsuario { get; init; }
-
-        public List<CreateItemCarritoDto> Productos { get; init; } = new();
+        public int ID_Usuario { get; init; }
     }
 }

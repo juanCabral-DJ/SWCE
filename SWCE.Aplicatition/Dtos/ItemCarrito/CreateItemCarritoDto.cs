@@ -9,7 +9,8 @@ namespace SWCE.Application.Dtos.ItemCarrito
     public record CreateItemCarritoDto
     {
         public int IdProducto { get; set; }
-        public int Cantidad { get; set; }
         public decimal PrecioUnitario { get; set; }
+        public int Cantidad { get; set; }
+        public int CarritoId { get; set; }
     }
 }

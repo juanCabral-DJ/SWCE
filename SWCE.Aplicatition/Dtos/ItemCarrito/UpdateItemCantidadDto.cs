@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Dtos.ItemCarrito
 {
-    public record DisableItemCarritoDto
+    public record UpdateItemCantidadDto
     {
-        public int Id { get; set; }
-        public int CarritoId { get; set; }
+        public int ItemId { get; set; }
+        public int NewCantidad { get; set; }
     }
 }

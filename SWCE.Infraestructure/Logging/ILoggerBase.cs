@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SWCE.Infraestructure.Logging
 {
-    public interface ILoggerBase<TEntity> where TEntity : class
+    public interface ILoggerBase<T>
     {
-        void LogInformation(string mensaje, Object entity);
         void LogError(string mensaje, Exception ex);
         void LogError(string mensaje);
-        void LogInformation(string mensaje);
+        void LogInformation(string mensaje, params object[] args); // Con parámetros
+        void LogInformation(string mensaje); // Sin parámetros
     }
 }

@@ -9,6 +9,8 @@ namespace SWCE.Domain.Entities
 {
     public sealed class Carrito : EntityBase<int>
     {
+        public Carrito() { }
+
         public List<ItemCarrito> productos = new();
         private decimal total;
 
