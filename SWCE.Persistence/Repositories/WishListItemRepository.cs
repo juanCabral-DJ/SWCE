@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
- 
+using SWCE.Aplicatition.Extension.Validators_Registro.WishListItemValidator;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
- 
-using SWCE.Aplicatition.Validators.WishListItemValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
- 
+
 using System.Linq.Expressions;
- 
+
 namespace SWCE.Persistence.Repositories
 {
     public class WishListItemRepository : RepositoryBase<WishListItem> ,IRepositoryWishListItem
@@ -66,8 +64,7 @@ namespace SWCE.Persistence.Repositories
                 }
 
                 item.IsDeleted = true;
-                _Context.Lista_Deseos.Update(item);
-                await _Context.SaveChangesAsync();
+                result = await base.Updateasync(item);
 
                 _logger.LogInformation("item con ID {Id} deshabilitada con éxito.", entity.id);
                 result = OperationResult.Success("item deshabilitado con éxito.",  item);

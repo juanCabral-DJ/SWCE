@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
- 
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 
 
-namespace SWCE.Aplicatition.Validators.AddressValidator
+namespace SWCE.Aplicatition.Extension.Validators_Registro.AddressValidator
 {
     public class CreateAddressValidator : AbstractValidator<Address>
     {

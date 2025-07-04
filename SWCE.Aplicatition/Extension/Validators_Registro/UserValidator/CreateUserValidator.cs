@@ -1,17 +1,16 @@
 ﻿using FluentValidation;
- 
 using SWCE.Domain.Entities.Configuration.User_Perfil;
- 
 
-namespace SWCE.Aplicatition.Validators
+
+namespace SWCE.Aplicatition.Extension.Validators_Registro.UserValidator
 {
     public class CreateUserValidator : AbstractValidator<User>
     {
-         
+
 
         public CreateUserValidator()
         {
-            
+
 
             RuleFor(x => x.Nombre)
                 .NotEmpty().WithMessage("El nombre es obligatorio.")

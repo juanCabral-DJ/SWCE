@@ -25,7 +25,7 @@ namespace SWCE.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var result = await _services.GetAllasync(a => a.IsDeleted == false);
+            var result = await _services.GetAllAsync(a => a.IsDeleted == false);
 
             if (result.IsSuccess)
             {
@@ -42,7 +42,7 @@ namespace SWCE.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Getbyid(int id)
         {
-            var result = await _services.Getbyid(id);
+            var result = await _services.Getbyidasync(id);
 
             if (result.IsSuccess)
             {

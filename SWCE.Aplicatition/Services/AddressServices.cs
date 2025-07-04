@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Base;
 using SWCE.Aplicatition.Dtos.Address;
+using SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_address;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Interfaces.Services;
 using SWCE.Domain.Base;
@@ -17,11 +18,10 @@ namespace SWCE.Aplicatition.Services
         private readonly IRepositoryAddress _Address;
         private readonly ILoggerBase<AddressServices> _logger;
         private readonly IConfiguration _configuration;
-        private readonly AddressMapper _mapper;
 
-        public AddressServices(IRepositoryAddress address, ILoggerBase<AddressServices> logger, AddressMapper mapper, IConfiguration configuration)
+        public AddressServices(IRepositoryAddress address, ILoggerBase<AddressServices> logger,
+            IConfiguration configuration)
         {
-            _mapper = mapper;
             _Address = address;
             _logger = logger;
             _configuration = configuration;
@@ -36,7 +36,7 @@ namespace SWCE.Aplicatition.Services
                 _logger.LogInformation("creating address entity");
 
               //Falta mapear
-              var address = _mapper.MapToEntityCreate(entity);
+              Address address = AddressMapper.MapToEntityCreate(entity);
 
                 result = await _Address.Createasync(address);
 
@@ -54,23 +54,20 @@ namespace SWCE.Aplicatition.Services
             return result;
         }
 
-        public async Task<OperationResult> Disableasync(DisableAddressDto entity)
+        public async Task<OperationResult> Disableasync(UpdateOrDisableAddressDto entity)
         {
             OperationResult result = new OperationResult();
             try
             {
 
-                _logger.LogInformation("Disabling address with ID {id}.", entity.Id);
+                _logger.LogInformation("Disabling address with ID {id}.", entity.id);
 
-                //Falta mapear
-                Address addressExist = new Address()
-                {
-                    id = entity.Id,            
-                };
+                
+                Address addressExist = AddressMapper.MapToEntity(entity);
 
                 result = await _Address.DisableAsync(addressExist);
 
-                _logger.LogInformation("Successfully disabled address with ID {id}.", entity.Id);
+                _logger.LogInformation("Successfully disabled address with ID {id}.", entity.id);
             }
             catch (Exception ex)
             {
@@ -80,7 +77,7 @@ namespace SWCE.Aplicatition.Services
             return result;
         }
 
-        public async Task<OperationResult> GetAllasync(Expression<Func<Address, bool>> filter)
+        public async Task<OperationResult> GetAllAsync(Expression<Func<Address, bool>> filter)
         {
             OperationResult result = new OperationResult();
             try
@@ -176,14 +173,14 @@ namespace SWCE.Aplicatition.Services
             return result;
         }
 
-        public async Task<OperationResult> Updateasync(UpdateAddressDto entity)
+        public async Task<OperationResult> Updateasync(UpdateOrDisableAddressDto entity)
         {
             OperationResult result = new OperationResult();
 
             try
             {
                 //Falta mapear
-               var direccion = _mapper.MapToEntity(entity);
+               Address direccion = AddressMapper.MapToEntity(entity);
                result = await _Address.Updateasync(direccion);
                 _logger.LogInformation("Creating Address");
             }

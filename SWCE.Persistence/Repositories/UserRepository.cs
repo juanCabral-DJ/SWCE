@@ -1,12 +1,12 @@
-﻿ 
+﻿
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Infraestructure.Logging;
 using System.Data;
-using SWCE.Aplicatition.Validators;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
+using SWCE.Aplicatition.Extension.Validators_Registro.UserValidator;
 
 namespace SWCE.Persistence.Repositories
 {
@@ -232,10 +232,9 @@ namespace SWCE.Persistence.Repositories
                 var presult = await ExecuteStoredProcedureAsync("dbo.DisableUser", new SqlParameter("@Id", entity.id));
 
                 if (presult > 0)
-                {
-                    var updatedUser = await GetbyIdasync(entity.id);
+                {   
                     _Logger.LogInformation("User updated successfully with result: {Result}", result);
-                    result = OperationResult.Success("User updated successfully.", updatedUser);
+                    result = OperationResult.Success("User updated successfully.", entity);
                 }
                 else
                 {

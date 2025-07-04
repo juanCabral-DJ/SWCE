@@ -1,22 +1,22 @@
-﻿using Riok.Mapperly.Abstractions;
- 
+﻿
 using SWCE.Aplicatition.Dtos.WishListItem;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
- 
 
-namespace SWCE.Aplicatition.Base
+
+namespace SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_Item
 {
-    [Mapper]
-    public partial class Itemmapper
+
+    public static class Itemmapper
     {
-        public WishListItem MapToEntityCreate(CreateItemDto dto)
+        public static WishListItem MapToEntityCreate(CreateItemDto dto)
         {
-            return new WishListItem {
+            return new WishListItem
+            {
                 Id_Usuario = dto.Id_Usuario,
                 id_producto = dto.id_producto,
             };
         }
-        public WishListItem MapToEntity(DisableItemDto dto)
+        public static WishListItem MapToEntity(DisableItemDto dto)
         {
             return new WishListItem
             {

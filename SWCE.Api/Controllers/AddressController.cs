@@ -24,7 +24,7 @@ namespace SWCE.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var result = await _Services.GetAllasync(a => a.IsDeleted == false);
+            var result = await _Services.GetAllAsync(a => a.IsDeleted == false);
 
             if (result.IsSuccess)
             {
@@ -103,7 +103,7 @@ namespace SWCE.Api.Controllers
         }
 
         [HttpPost("DisableAddressDto")]
-        public async Task<IActionResult> Disable([FromBody] DisableAddressDto dto)
+        public async Task<IActionResult> Disable([FromBody] UpdateOrDisableAddressDto dto)
         {
             var result = await _Services.Disableasync(dto);
 
@@ -118,7 +118,7 @@ namespace SWCE.Api.Controllers
         }
 
         [HttpPost("UpdateAddressDto")]
-        public async Task<IActionResult> Put([FromBody] UpdateAddressDto dto)
+        public async Task<IActionResult> Put([FromBody] UpdateOrDisableAddressDto dto)
         {
             var result = await _Services.Updateasync(dto);
 

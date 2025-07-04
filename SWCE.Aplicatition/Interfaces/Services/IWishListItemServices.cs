@@ -11,12 +11,9 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplicatition.Interfaces.Services
 {
-    public interface IWishListItemServices
+    public interface IWishListItemServices : IServiceBase<WishListItem, CreateItemDto, DisableItemDto>
     {
-        Task<OperationResult> GetAllasync(Expression<Func<WishListItem, bool>> filter);
+
         Task<OperationResult> GetbyUserId(int userId);
-        Task<OperationResult> Createasync(CreateItemDto entity);
-        Task<OperationResult> Disableasync(DisableItemDto entity);
-        Task<OperationResult> Getbyid(int id);
     }
 }

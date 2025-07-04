@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Base;
 using SWCE.Aplicatition.Dtos.WishListItem;
+using SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_Item;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Interfaces.Services;
 using SWCE.Domain.Base;
@@ -16,14 +17,12 @@ namespace SWCE.Aplicatition.Services
      public sealed class WishListItemServices : IWishListItemServices
     {
         public readonly IRepositoryWishListItem _repository;
-        public readonly Itemmapper _mapper;
         private readonly ILoggerBase<WishListItemServices> _logger;
         private readonly IConfiguration _configuration;
 
-        public WishListItemServices(IRepositoryWishListItem repository, Itemmapper mapper, ILoggerBase<WishListItemServices> logger, IConfiguration configuration)
+        public WishListItemServices(IRepositoryWishListItem repository, ILoggerBase<WishListItemServices> logger, IConfiguration configuration)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _repository = repository; 
             _logger = logger;
             _configuration = configuration;
         }
@@ -36,7 +35,7 @@ namespace SWCE.Aplicatition.Services
                 _logger.LogInformation("creating WishListItem entity"); 
 
                //Falta mapear
-               var item = _mapper.MapToEntityCreate(entity);
+               WishListItem item = Itemmapper.MapToEntityCreate(entity);
                 result = await _repository.Createasync(item);
 
                 _logger.LogInformation("succefully created WishListItem entity");
@@ -61,7 +60,7 @@ namespace SWCE.Aplicatition.Services
                 _logger.LogInformation("Disabling WishListItem with ID {id}.", entity.Id);
 
                //Falta mapear
-                var ItemExist = _mapper.MapToEntity(entity);
+                WishListItem ItemExist = Itemmapper.MapToEntity(entity);
                 result = await _repository.DisableAsync(ItemExist);
 
                 _logger.LogInformation("Successfully disabled WishListItem with ID {id}.", entity.Id);
@@ -74,7 +73,7 @@ namespace SWCE.Aplicatition.Services
             return result;
         }
 
-        public async Task<OperationResult> GetAllasync(Expression<Func<WishListItem, bool>> filter)
+        public async Task<OperationResult> GetAllAsync(Expression<Func<WishListItem, bool>> filter)
         {
             OperationResult result = new OperationResult();
             try
@@ -98,7 +97,7 @@ namespace SWCE.Aplicatition.Services
             return result;
         }
 
-        public async Task<OperationResult> Getbyid(int id)
+        public async Task<OperationResult> Getbyidasync(int id)
         {
             OperationResult result = new OperationResult();
             try

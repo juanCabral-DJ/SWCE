@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SWCE.Aplicatition\SWCE.Aplicatition.csproj" />
     <ProjectReference Include="..\SWCE.Infraestructure\SWCE.Infraestructure.csproj" />
+    <ProjectReference Include="..\SWCE.IOC\SWCE.IOC.csproj" />
     <ProjectReference Include="..\SWCE.Persistence\SWCE.Persistence.csproj" />
   </ItemGroup>
 

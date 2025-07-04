@@ -1,18 +1,16 @@
-﻿ 
+﻿
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
- 
-
+using SWCE.Aplicatition.Extension.Validators_Registro.AddressValidator;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
-using SWCE.Aplicatition.Validators.AddressValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
 using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
- 
+
 using System.Linq.Expressions;
- 
+
 
 namespace SWCE.Persistence.Repositories
 {
@@ -90,8 +88,7 @@ namespace SWCE.Persistence.Repositories
                 _logger.LogInformation("deleting  Address entity");
 
                 addressexist.IsDeleted = true;
-                _Context.Direcciones.Update(addressexist);
-                await _Context.SaveChangesAsync();
+                result = await base.Updateasync(addressexist);
 
                 _logger.LogInformation("Address con ID {Id} deshabilitada con éxito.", entity.id);
 

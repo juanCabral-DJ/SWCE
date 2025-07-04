@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Base;
 using SWCE.Aplicatition.Dtos.User;
+using SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_User;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Interfaces.Services;
 using SWCE.Domain.Base;
@@ -14,14 +15,12 @@ namespace SWCE.Aplicatition.Services
     public sealed class UserServices : IUserServices
     {
         private readonly IRepositoryUser _repository;
-        private readonly UserMapper _mapper;
         private readonly ILoggerBase<User> _logger;
         private readonly IConfiguration _configuration;
 
-        public UserServices(IRepositoryUser repository, UserMapper mapper, ILoggerBase<User> logger, IConfiguration configuration)
+        public UserServices(IRepositoryUser repository, ILoggerBase<User> logger, IConfiguration configuration)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _repository = repository; 
             _logger = logger;
             _configuration = configuration;
         }
@@ -82,7 +81,7 @@ namespace SWCE.Aplicatition.Services
                 _logger.LogInformation("creating User entity");
 
                  //Falta mapear
-                 var User = _mapper.MapToEntityCreate(entity);
+                 var User = UserMapper.MapToEntityCreate(entity);
                 result = await _repository.Createasync(User);
 
                 _logger.LogInformation("succefully created User");
@@ -108,7 +107,7 @@ namespace SWCE.Aplicatition.Services
                 _logger.LogInformation("Updating User with ID {id}.", entity.id);
 
                //Falta mapear
-               var User = _mapper.MapToEntity(entity);
+               var User = UserMapper.MapToEntity(entity);
                 result = await _repository.Updateasync(User);
 
                 _logger.LogInformation("Successfully updated User with ID {id}.", entity.id);
@@ -130,10 +129,7 @@ namespace SWCE.Aplicatition.Services
                 _logger.LogInformation("Disabling User with ID {id}.", entity.id);
 
                 //Falta mapear
-                var User = new User()
-                {
-                    id = entity.id,
-                };
+                var User = UserMapper.MapToEntityDisable(entity);
                 result = await _repository.Disableasync(User);
 
                 _logger.LogInformation("Successfully disabled User with ID {id}.", entity.id);
