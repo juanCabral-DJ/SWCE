@@ -136,17 +136,17 @@ namespace SWCE.Aplicatition.Services
             OperationResult result = new OperationResult();
             try
             {
-                _logger.LogInformation("Fetching All Address by id.");
+                _logger.LogInformation("Fetching All WishListItem by id.");
 
                 result = await _repository.GetbyUserid(userId);
 
-                result = OperationResult.Success("Address retrieved successfully.", result.Data);
-                _logger.LogInformation("Successfully fetched Address.");
+                result = OperationResult.Success("WishListItem retrieved successfully.", result.Data);
+                _logger.LogInformation("Successfully fetched WishListItem.");
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occurred while getting Address.", ex);
-                result = OperationResult.Failure("An error occurred while getting Address.");
+                _logger.LogError("An error occurred while getting WishListItem.", ex);
+                result = OperationResult.Failure("An error occurred while getting WishListItem.");
             }
             finally
             {

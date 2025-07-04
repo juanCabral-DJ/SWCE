@@ -191,7 +191,7 @@ namespace SWCE.Aplicatition.Services
                 //Falta mapear
                Address direccion = AddressMapper.MapToEntity(entity);
                result = await _Address.Updateasync(direccion);
-                _logger.LogInformation("Creating Address");
+                _logger.LogInformation("Updating Address");
             }
             catch (Exception ex)
             {

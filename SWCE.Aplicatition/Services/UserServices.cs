@@ -64,7 +64,7 @@ namespace SWCE.Aplicatition.Services
                 result = await _repository.GetAllasync();
 
                 result = OperationResult.Success("User retrieved successfully.",result.Data);
-                _logger.LogInformation("Successfully fetched Address.");
+                _logger.LogInformation("Successfully fetched User.");
             }
             catch (Exception ex)
             {
