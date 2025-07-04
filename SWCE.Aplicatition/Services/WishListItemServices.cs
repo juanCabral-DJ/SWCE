@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Base;
 using SWCE.Aplicatition.Dtos.WishListItem;
 using SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_Item;
+using SWCE.Aplicatition.Extension.Validators_Registro.WishListItemValidator;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Interfaces.Services;
 using SWCE.Domain.Base;
@@ -16,12 +17,15 @@ namespace SWCE.Aplicatition.Services
 {
      public sealed class WishListItemServices : IWishListItemServices
     {
+        private readonly CreateWishListItemValidator _Validator;
         public readonly IRepositoryWishListItem _repository;
         private readonly ILoggerBase<WishListItemServices> _logger;
         private readonly IConfiguration _configuration;
 
-        public WishListItemServices(IRepositoryWishListItem repository, ILoggerBase<WishListItemServices> logger, IConfiguration configuration)
+        public WishListItemServices(IRepositoryWishListItem repository, ILoggerBase<WishListItemServices> logger, 
+            IConfiguration configuration, CreateWishListItemValidator Validator)
         {
+            _Validator = Validator;
             _repository = repository; 
             _logger = logger;
             _configuration = configuration;
@@ -36,6 +40,13 @@ namespace SWCE.Aplicatition.Services
 
                //Falta mapear
                WishListItem item = Itemmapper.MapToEntityCreate(entity);
+                var validationresult = await _Validator.ValidateAsync(item);
+
+                if (!validationresult.IsValid)
+                {
+                    _logger.LogError("WishListItem entity validation failed");
+                    return OperationResult.Failure("Validation failed: " + string.Join(", ", validationresult.Errors.Select(e => e.ErrorMessage)));
+                }
                 result = await _repository.Createasync(item);
 
                 _logger.LogInformation("succefully created WishListItem entity");

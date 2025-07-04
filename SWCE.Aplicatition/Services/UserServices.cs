@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Base;
 using SWCE.Aplicatition.Dtos.User;
 using SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_User;
+using SWCE.Aplicatition.Extension.Validators_Registro.UserValidator;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Interfaces.Services;
 using SWCE.Domain.Base;
@@ -14,12 +15,17 @@ namespace SWCE.Aplicatition.Services
 {
     public sealed class UserServices : IUserServices
     {
+        private readonly CreateUserValidator _Validator;
+        private readonly UpdateUserValidator _ValidatorUpdate;
         private readonly IRepositoryUser _repository;
         private readonly ILoggerBase<User> _logger;
         private readonly IConfiguration _configuration;
 
-        public UserServices(IRepositoryUser repository, ILoggerBase<User> logger, IConfiguration configuration)
+        public UserServices(IRepositoryUser repository, ILoggerBase<User> logger, IConfiguration configuration
+            , CreateUserValidator Validator, UpdateUserValidator ValidatorUpdate)
         {
+            _Validator = Validator;
+            _ValidatorUpdate = ValidatorUpdate;
             _repository = repository; 
             _logger = logger;
             _configuration = configuration;
@@ -82,6 +88,14 @@ namespace SWCE.Aplicatition.Services
 
                  //Falta mapear
                  var User = UserMapper.MapToEntityCreate(entity);
+                var entityvalidate = await _Validator.ValidateAsync(User);
+
+                if (!entityvalidate.IsValid)
+                {
+                    _logger.LogError("Attempted to add a null User entity");
+
+                    return OperationResult.Failure("An error occurred while retrieving User entities usuario invalido.");
+                }
                 result = await _repository.Createasync(User);
 
                 _logger.LogInformation("succefully created User");
@@ -106,8 +120,16 @@ namespace SWCE.Aplicatition.Services
 
                 _logger.LogInformation("Updating User with ID {id}.", entity.id);
 
-               //Falta mapear
+                
                var User = UserMapper.MapToEntity(entity);
+                var entityvalidate = await _ValidatorUpdate.ValidateAsync(User);
+
+                if (!entityvalidate.IsValid)
+                {
+                    _logger.LogError("Attempted to update a null User entity");
+
+                    return OperationResult.Failure("An error occurred while retrieving User entities.");
+                }
                 result = await _repository.Updateasync(User);
 
                 _logger.LogInformation("Successfully updated User with ID {id}.", entity.id);

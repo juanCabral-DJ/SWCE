@@ -16,14 +16,14 @@ namespace SWCE.Persistence.Repositories
 {
     public class AddressRepository : RepositoryBase<Address>, IRepositoryAddress
     {
-        private readonly CreateAddressValidator _Validator;
+         
         private readonly E_commerceContext _Context;
         private readonly ILoggerBase<Address> _logger;
 
-        public AddressRepository(E_commerceContext _context, ILoggerBase<Address> logger, CreateAddressValidator Validator)
+        public AddressRepository(E_commerceContext _context, ILoggerBase<Address> logger)
             : base(_context)
         {
-            _Validator = Validator;
+          
             _Context = _context;
             _logger = logger;
         }
@@ -112,14 +112,6 @@ namespace SWCE.Persistence.Repositories
                 {
                     _logger.LogError("Attempted to add a null Address entity.");
                     return OperationResult.Failure("Address entity cannot be null.");
-                }
-
-                var validationresult = await _Validator.ValidateAsync(entity);
-
-                if (!validationresult.IsValid)
-                {
-                    _logger.LogError("Address entity validation failed");
-                    return OperationResult.Failure("Validation failed");
                 }
 
                 return await base.Createasync(entity);

@@ -13,14 +13,14 @@ namespace SWCE.Persistence.Repositories
 {
     public class WishListItemRepository : RepositoryBase<WishListItem> ,IRepositoryWishListItem
     {
-        private readonly CreateWishListItemValidator _Validator;
+         
         private readonly E_commerceContext _Context;
         private readonly ILoggerBase<WishListItem> _logger;
 
-        public WishListItemRepository(E_commerceContext _context, ILoggerBase<WishListItem> logger, CreateWishListItemValidator Validator)
+        public WishListItemRepository(E_commerceContext _context, ILoggerBase<WishListItem> logger)
             : base(_context)
         {
-            _Validator = Validator;
+            
             _Context = _context;
             _logger = logger;
         }
@@ -89,13 +89,6 @@ namespace SWCE.Persistence.Repositories
                 {
                     _logger.LogError("Attempted to add a null WishListItem entity");
                     return OperationResult.Failure("WishListItem entity cannot be null");
-                }
-                var validationresult = await _Validator.ValidateAsync(entity);
-
-                if (!validationresult.IsValid)
-                {
-                    _logger.LogError("WishListItem entity validation failed");
-                    return OperationResult.Failure("Validation failed: " + string.Join(", ", validationresult.Errors.Select(e => e.ErrorMessage)));
                 }
 
                 await base.Createasync(entity);

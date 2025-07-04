@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SWCE.Aplicatition.Base;
 using SWCE.Aplicatition.Dtos.Address;
 using SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_address;
+using SWCE.Aplicatition.Extension.Validators_Registro.AddressValidator;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Interfaces.Services;
 using SWCE.Domain.Base;
@@ -14,14 +15,15 @@ namespace SWCE.Aplicatition.Services
 {
     public sealed class AddressServices : IAddressServices
     {
-  
+        private readonly CreateAddressValidator _validar;
         private readonly IRepositoryAddress _Address;
         private readonly ILoggerBase<AddressServices> _logger;
         private readonly IConfiguration _configuration;
 
-        public AddressServices(IRepositoryAddress address, ILoggerBase<AddressServices> logger,
+        public AddressServices(IRepositoryAddress address, CreateAddressValidator validar, ILoggerBase<AddressServices> logger,
             IConfiguration configuration)
         {
+            _validar = validar;
             _Address = address;
             _logger = logger;
             _configuration = configuration;
@@ -35,8 +37,15 @@ namespace SWCE.Aplicatition.Services
             {
                 _logger.LogInformation("creating address entity");
 
-              //Falta mapear
-              Address address = AddressMapper.MapToEntityCreate(entity);
+              
+              Address address  = AddressMapper.MapToEntityCreate(entity);
+              var addressValida = await _validar.ValidateAsync(address);
+
+                if (!addressValida.IsValid)
+                {
+                    _logger.LogError("Address entity validation failed");
+                    return OperationResult.Failure("Validation failed");
+                }
 
                 result = await _Address.Createasync(address);
 

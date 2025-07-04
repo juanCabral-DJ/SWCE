@@ -14,16 +14,12 @@ namespace SWCE.Persistence.Repositories
     {
         private readonly string _connectionString;
         private readonly IConfiguration _configuration;
-        private readonly CreateUserValidator _Validator;
-        private readonly UpdateUserValidator _ValidatorUpdate;
+         
         private readonly ILoggerBase<User> _Logger;
 
-        public UserRepository(ILoggerBase<User> _logger, IConfiguration configuration, CreateUserValidator Validator,
-            UpdateUserValidator ValidatorUpdate)
+        public UserRepository(ILoggerBase<User> _logger, IConfiguration configuration)
         {
-            _configuration = configuration;
-            _ValidatorUpdate = ValidatorUpdate;
-            _Validator = Validator;
+            _configuration = configuration; 
             _connectionString = _configuration["ConnectionStrings:E-commerceConnection"];
             _Logger = _logger;
         }
@@ -35,14 +31,6 @@ namespace SWCE.Persistence.Repositories
             {
                 _Logger.LogInformation("Adding a new User ${@Entity}", entity);
 
-                var entityvalidate = await _Validator.ValidateAsync(entity);
-
-                if (!entityvalidate.IsValid)
-                {
-                    _Logger.LogError("Attempted to add a null User entity");
-
-                    return OperationResult.Failure("An error occurred while retrieving User entities.");
-                }
 
                   var presult = await ExecuteStoredProcedureAsync("dbo.CreateUser", new SqlParameter("@Nombre", entity.Nombre),
                     new SqlParameter("@Apellido", entity.apellido), new SqlParameter("@Email", entity.email)
@@ -183,14 +171,6 @@ namespace SWCE.Persistence.Repositories
             {
                 _Logger.LogInformation("Updating a new User ${@Entity}", entity);
 
-                var entityvalidate = await _ValidatorUpdate.ValidateAsync(entity);
-
-                if (!entityvalidate.IsValid)
-                {
-                    _Logger.LogError("Attempted to update a null User entity");
-
-                    return OperationResult.Failure("An error occurred while retrieving User entities.");
-                }
 
                 var presult = await ExecuteStoredProcedureAsync("dbo.UpdateUser", new SqlParameter("@Id", entity.id),
                     new SqlParameter("@Email", entity.email), new SqlParameter("@Password_User", entity.password));
