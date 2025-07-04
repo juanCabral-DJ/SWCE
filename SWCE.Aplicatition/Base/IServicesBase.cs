@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Aplicatition.Interfaces.Services
+namespace SWCE.Aplicatition.Base
 {
     public interface IServiceBase<TEntity, TCreateDto, TUpdateDto>
     where TEntity : class
