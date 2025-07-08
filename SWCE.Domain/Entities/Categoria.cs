@@ -9,13 +9,13 @@ namespace SWCE.Domain.Entities
 {
     public sealed class Categoria : EntityBase<int>
     {
-        public override int id { get; set; }
+        public override int Id { get; set; }
         public string? Nombre { get; set; }
         public string Descripcion { get; set; }
 
         public Categoria(int id, string nombre, string descripcion)
         {
-            this.id = id;
+            this.Id = id;
             AsignarNombre(nombre);
             Descripcion = descripcion;
         }

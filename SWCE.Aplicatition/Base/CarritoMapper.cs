@@ -15,10 +15,10 @@ namespace SWCE.Application.Base
     {
         public partial Carrito MapToEntity(CreateCarritoDto dto);
 
-        [MapProperty(nameof(UpdateCarritoDto.Id), nameof(Carrito.id))]
+        [MapProperty(nameof(UpdateCarritoDto.Id), nameof(Carrito.Id))]
         public partial void MapToEntity(UpdateCarritoDto dto, Carrito entity);
 
-        [MapProperty(nameof(Carrito.id), nameof(GetCarritoDto.Id))]
+        [MapProperty(nameof(Carrito.Id), nameof(GetCarritoDto.Id))]
         public partial GetCarritoDto MapToGetCarritoDto(Carrito entity);
 
 

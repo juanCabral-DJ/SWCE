@@ -32,7 +32,7 @@ namespace SWCE.Api
                 options.UseSqlServer(connectionString));
 
 
-            // ¡NUEVO! Validadores de Carrito y ItemCarrito
+            //Validadores de Carrito y ItemCarrito
             builder.Services.AddTransient<IValidator<CreateCarritoDto>, CreateCarritoValidator>();
             builder.Services.AddTransient<IValidator<UpdateCarritoDto>, UpdateCarritoValidator>();
             builder.Services.AddTransient<IValidator<AddItemCarritoDto>, AddItemCarritoValidator>();
@@ -41,20 +41,20 @@ namespace SWCE.Api
             builder.Services.AddTransient<CreateCarritoValidator>();
             builder.Services.AddTransient<UpdateCarritoValidator>();
 
-            // Asumiendo que CarritoMapper tiene lógica manual (SqlDataReader), y ItemCarritoMapper es solo para Mapperly:
-            builder.Services.AddSingleton<CarritoMapper>(); // Registra si tiene lógica manual
-            builder.Services.AddSingleton<ItemCarritoMapper>(); // Registra si tiene lógica manual (Aunque dijimos que este era solo partial, registrarlo no hace daño)
+            
+            builder.Services.AddSingleton<CarritoMapper>(); 
+            builder.Services.AddSingleton<ItemCarritoMapper>();
 
             // --- Repositorios ---
 
-            // ¡NUEVO! Repositorios de Carrito y ItemCarrito
+            //Repositorios de Carrito y ItemCarrito
             builder.Services.AddScoped<ICarritoRepository, CarritoRepository>();
             builder.Services.AddScoped<IItemCarritoRepository, ItemCarritoRepository>();
 
 
             // --- Servicios ---
 
-            // ¡NUEVO! Servicios de Carrito y ItemCarrito
+            // Servicios de Carrito y ItemCarrito
             builder.Services.AddTransient<ICarritoService, CarritoService>();
             builder.Services.AddTransient<IItemCarritoService, ItemCarritoService>();
 

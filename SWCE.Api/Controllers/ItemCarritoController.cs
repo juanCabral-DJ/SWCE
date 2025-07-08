@@ -39,13 +39,4 @@ public class ItemCarritoController : ControllerBase
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-    [HttpGet("AllItemsByCarrito/{carritoId}")]
-    public async Task<IActionResult> GetItemsByCarritoId(int carritoId)
-    {
-        var result = await _itemCarritoService.GetItemsByCarritoIdAsync(carritoId);
-        if (result.IsSuccess && result.Data != null && result.Data.Any())
-            return Ok(result);
-
-        return NotFound(OperationResult.Failure($"No items found for carrito ID {carritoId}."));
-    }
 }

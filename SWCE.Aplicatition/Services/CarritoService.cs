@@ -40,7 +40,7 @@ namespace SWCE.Application.Services
 
         public async Task<OperationResult> CreateAsync(CreateCarritoDto dto)
         {
-            _logger.LogInformation("Creating carrito."); // Simpler log
+            _logger.LogInformation("Creating carrito.");
 
             var validationResult = _createValidator.Validate(dto);
             if (!validationResult.IsValid)
@@ -64,7 +64,7 @@ namespace SWCE.Application.Services
 
                 if (creationResult.IsSuccess)
                 {
-                    _logger.LogInformation("Carrito created successfully."); // Simpler log
+                    _logger.LogInformation("Carrito created successfully.");
                 }
                 else
                 {
@@ -148,7 +148,7 @@ namespace SWCE.Application.Services
             try
             {
                 
-                var repoResult = await _carritoRepository.GetByUserIdAsync(userId); // <-- ¡Necesitas implementar esto!
+                var repoResult = await _carritoRepository.GetByUserIdAsync(userId);
 
                 if (repoResult != null && repoResult.IsSuccess && repoResult.Data != null)
                 {

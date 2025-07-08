@@ -86,11 +86,11 @@ namespace SWCE.Application.Services
 
             try
             {
-                var getItemResult = await _itemCarritoRepository.GetbyIdasync(dto.ItemId);
+                var getItemResult = await _itemCarritoRepository.GetbyIdasync(dto.Id);
                 if (!getItemResult.IsSuccess || getItemResult.Data == null)
                 {
                     _logger.LogInformation("Item not found for quantity update.");
-                    return OperationResult.Failure($"Item with ID {dto.ItemId} not found.");
+                    return OperationResult.Failure($"Item with ID {dto.Id} not found.");
                 }
 
                 var itemToUpdate = getItemResult.Data as ItemCarrito;
@@ -100,11 +100,9 @@ namespace SWCE.Application.Services
                     return OperationResult.Failure("Internal error: retrieved item is not valid.");
                 }
 
-                // *** ESTA ES LA LÍNEA CLAVE QUE CAMBIA ***
                 itemToUpdate.Cantidad = dto.NewCantidad;
 
-                // Usamos el método genérico UpdateAsync de la clase base
-                var result = await base.UpdateAsync(itemToUpdate); // O simplemente _repository.UpdateAsync(itemToUpdate);
+                var result = await base.UpdateAsync(itemToUpdate); 
 
                 if (result.IsSuccess)
                 {
@@ -135,8 +133,7 @@ namespace SWCE.Application.Services
 
             try
             {
-                // El repositorio se encarga de encontrar y eliminar el item
-                var result = await _itemCarritoRepository.RemoveItemAsync(itemId); // Suponiendo un método RemoveItemAsync en el repo
+                var result = await _itemCarritoRepository.RemoveItemAsync(itemId);
 
                 if (result.IsSuccess)
                 {
@@ -155,39 +152,5 @@ namespace SWCE.Application.Services
             }
         }
 
-        public async Task<OperationResult> GetItemsByCarritoIdAsync(int carritoId)
-        {
-            _logger.LogInformation("Getting items by cart ID.");
-
-            if (carritoId <= 0)
-            {
-                _logger.LogError("Invalid cart ID for getting items.");
-                return OperationResult.Failure("The cart ID must be greater than zero.");
-            }
-
-            try
-            {
-                // El repositorio devuelve una lista de entidades ItemCarrito
-                var repoResult = await _itemCarritoRepository.GetItemsByCartIdAsync(carritoId);
-
-                if (repoResult.IsSuccess && repoResult.Data is IEnumerable<ItemCarrito> itemEntities)
-                {
-                    // Mapear la lista de entidades a una lista de DTOs de salida
-                    var itemDtos = itemEntities.Select(item => _itemCarritoMapper.MapToGetDto(item)).ToList();
-                    _logger.LogInformation("Items retrieved by cart ID successfully.");
-                    return OperationResult.Success("Items retrieved successfully.", itemDtos);
-                }
-                else
-                {
-                    _logger.LogInformation("No items found for the cart ID.");
-                    return OperationResult.Failure(repoResult.Message ?? "No items found for the specified cart ID.");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Unexpected error getting items by cart ID.", ex);
-                return OperationResult.Failure("An unexpected error occurred while retrieving items by cart ID.");
-            }
-        }
     }
 }

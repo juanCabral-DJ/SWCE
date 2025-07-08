@@ -21,12 +21,6 @@ namespace SWCE.Application.Validators.ItemCarritoValidator
             RuleFor(item => item.Cantidad)
                 .GreaterThan(0).WithMessage("La cantidad debe ser mayor a 0.");
 
-            RuleFor(item => item.PrecioUnitario)
-                .GreaterThanOrEqualTo(0).WithMessage("El precio unitario no puede ser negativo.");
-
-            RuleFor(item => item.NombreProducto)
-                .NotEmpty().WithMessage("El nombre del producto es requerido.")
-                .MaximumLength(255).WithMessage("El nombre del producto no puede exceder los 255 caracteres.");
         }
     }
 }

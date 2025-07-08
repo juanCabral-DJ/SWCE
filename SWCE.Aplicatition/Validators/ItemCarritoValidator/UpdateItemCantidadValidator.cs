@@ -12,7 +12,7 @@ namespace SWCE.Application.Validators.ItemCarritoValidator
     {
         public UpdateItemCantidadValidator()
         {
-            RuleFor(x => x.ItemId)
+            RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage("El ID del ítem debe ser mayor a cero.");
 
             RuleFor(x => x.NewCantidad)

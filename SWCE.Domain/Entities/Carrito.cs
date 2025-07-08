@@ -11,17 +11,17 @@ namespace SWCE.Domain.Entities
     {
         public Carrito() { }
 
-        public List<ItemCarrito> productos = new();
+        public List<ItemCarrito> productos { get; set; }
         private decimal total;
 
-        public override int id{ get; set; }
+        public override int Id{ get; set; }
         public int IdUsuario{ get; set; }
         public decimal SubTotal { get; set; }
         public decimal Descuento { get; set; }
         public decimal Total { get; set; }
 
         public Carrito(int id, int IdUsuario) {
-            this.id = id;
+            this.Id = id;
             this.IdUsuario= IdUsuario;
         }
 
@@ -30,7 +30,7 @@ namespace SWCE.Domain.Entities
             if (p == null) throw new InvalidOperationException("Producto inválido");
             if (cantidad <= 0) throw new InvalidOperationException("Cantidad inválida");
 
-            var existeProducto = productos.FirstOrDefault(i => i.IdProducto == p.id);
+            var existeProducto = productos.FirstOrDefault(i => i.IdProducto == p.Id);
 
             if (existeProducto != null)
             {
@@ -38,7 +38,7 @@ namespace SWCE.Domain.Entities
             }
             else
             {
-                productos.Add(new ItemCarrito(p.id, id, p, cantidad));
+                productos.Add(new ItemCarrito(p.Id, Id, p, cantidad));
             }
 
             SubTotal = CalcularSubTotal();

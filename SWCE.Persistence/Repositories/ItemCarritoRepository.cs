@@ -33,24 +33,32 @@ namespace SWCE.Persistence.Repositories
 
         public async override Task<OperationResult> GetbyIdasync(int id)
         {
-
-            OperationResult result = new OperationResult();
-
             try
             {
                 _logger.LogInformation($"Intentando recuperar ItemCarrito con ID: {id}");
-                var itemCarrito = await base.GetbyIdasync(id);
 
-                result = OperationResult.Success("ItemCarrito recuperado exitosamente.", itemCarrito);
+                var baseResult = await base.GetbyIdasync(id);
+
+                if (!baseResult.IsSuccess || baseResult.Data == null)
+                {
+                    return OperationResult.Failure(baseResult.Message ?? "ItemCarrito no encontrado.");
+                }
+
+                var item = baseResult.Data as ItemCarrito;
+                if (item == null)
+                {
+                    return OperationResult.Failure("Error interno: No se pudo convertir a ItemCarrito.");
+                }
+
+                return OperationResult.Success("ItemCarrito recuperado exitosamente.", item);
             }
             catch (Exception e)
             {
                 _logger.LogError("Error al recuperar ItemCarrito", e);
-                result = OperationResult.Failure("Ocurrió un error al recuperar el ItemCarrito");
+                return OperationResult.Failure("Ocurrió un error al recuperar el ItemCarrito");
             }
-
-            return result;
         }
+
         public async override Task<OperationResult> GetAllasync()
         {
             OperationResult result = new OperationResult();
@@ -85,7 +93,6 @@ namespace SWCE.Persistence.Repositories
                 var validationResult = await _Validator.ValidateAsync(item);
                 if (!validationResult.IsValid)
                 {
-                    // Usando LogError(string mensaje) porque no hay una excepción directa aquí
                     _logger.LogError("Fallo de validación para ItemCarrito: " + string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
                     return OperationResult.Failure("Fallo de validación: " + string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
                 }
@@ -99,7 +106,6 @@ namespace SWCE.Persistence.Repositories
                     var updateResult = await base.Updateasync(existingItem);
                     if (!updateResult.IsSuccess)
                     {
-                        // Usando LogError(string mensaje) ya que el error viene del OperationResult.Message
                         _logger.LogError("Error al actualizar la cantidad del ItemCarrito existente: " + updateResult.Message);
                         return OperationResult.Failure($"Error al actualizar la cantidad del ItemCarrito existente: {updateResult.Message}");
                     }
@@ -111,7 +117,6 @@ namespace SWCE.Persistence.Repositories
                     var createResult = await base.Createasync(item);
                     if (!createResult.IsSuccess)
                     {
-                        // Usando LogError(string mensaje) ya que el error viene del OperationResult.Message
                         _logger.LogError("Error al añadir nuevo ItemCarrito: " + createResult.Message);
                         return OperationResult.Failure($"Error al añadir nuevo ItemCarrito: {createResult.Message}");
                     }
@@ -121,7 +126,6 @@ namespace SWCE.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                // Usando LogError(string mensaje, Exception ex)
                 _logger.LogError("Error inesperado al añadir/actualizar ItemCarrito: {@Item}", ex);
                 return OperationResult.Failure($"Ocurrió un error inesperado al añadir/actualizar el ItemCarrito: {ex.Message}");
             }
@@ -133,7 +137,7 @@ namespace SWCE.Persistence.Repositories
             {
                 _logger.LogInformation($"Recuperando items para Carrito con ID: {carritoId}");
                 var items = await _context.Set<ItemCarrito>()
-                                        .Where(i => i.CarritoId == carritoId)
+                                        .Where(i => i.CarritoId == carritoId && i.IsDeleted == false)
                                         .ToListAsync();
 
                 if (items == null || !items.Any())
@@ -147,7 +151,6 @@ namespace SWCE.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                // Usando LogError(string mensaje, Exception ex)
                 _logger.LogError($"Error al recuperar items para Carrito con ID: {carritoId}", ex);
                 return OperationResult.Failure($"Ocurrió un error al recuperar los items del carrito: {ex.Message}");
             }
@@ -175,7 +178,6 @@ namespace SWCE.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                // Usando LogError(string mensaje, Exception ex)
                 _logger.LogError($"Error inesperado al eliminar ItemCarrito con ID: {itemId}", ex);
                 return OperationResult.Failure($"Ocurrió un error inesperado al eliminar el ItemCarrito: {ex.Message}");
             }
@@ -196,7 +198,6 @@ namespace SWCE.Persistence.Repositories
                 var validationResult = await _Validator.ValidateAsync(item);
                 if (!validationResult.IsValid)
                 {
-                    // Usando LogError(string mensaje)
                     _logger.LogError("Fallo de validación para la actualización de ItemCarrito: " + string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
                     return OperationResult.Failure("Fallo de validación: " + string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
                 }
@@ -205,7 +206,6 @@ namespace SWCE.Persistence.Repositories
 
                 if (!updateResult.IsSuccess)
                 {
-                    // Usando LogError(string mensaje)
                     _logger.LogError("Error al actualizar ItemCarrito: " + updateResult.Message);
                     return OperationResult.Failure($"Error al actualizar ItemCarrito: {updateResult.Message}");
                 }
@@ -215,36 +215,34 @@ namespace SWCE.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                // Usando LogError(string mensaje, Exception ex)
                 _logger.LogError("Error inesperado al actualizar ItemCarrito: {@Item}", ex);
                 return OperationResult.Failure($"Ocurrió un error inesperado al actualizar el ItemCarrito: {ex.Message}");
             }
         }
 
-        public async Task<OperationResult> UpdateItemQuantityAsync(int itemId, int newQuantity)
+        public async Task<OperationResult> UpdateItemQuantityAsync(int Id, int newQuantity)
         {
             try
             {
-                _logger.LogInformation($"Intentando actualizar la cantidad del ItemCarrito con ID: {itemId} a {newQuantity}");
+                _logger.LogInformation($"Intentando actualizar la cantidad del ItemCarrito con ID: {Id} a {newQuantity}");
 
                 if (newQuantity <= 0)
                 {
-                    _logger.LogError($"Cantidad inválida ({newQuantity}) para la actualización del ItemCarrito con ID: {itemId}.");
+                    _logger.LogError($"Cantidad inválida ({newQuantity}) para la actualización del ItemCarrito con ID: {Id}.");
                     return OperationResult.Failure("La nueva cantidad debe ser mayor a 0.");
                 }
 
-                var getItemResult = await base.GetbyIdasync(itemId);
+                var getItemResult = await base.GetbyIdasync(Id);
                 if (!getItemResult.IsSuccess || getItemResult.Data == null)
                 {
-                    // Usando LogError(string mensaje) o LogWarning, dependiendo de la severidad
-                    _logger.LogInformation($"ItemCarrito con ID {itemId} no encontrado para la actualización de cantidad.");
-                    return OperationResult.Failure(getItemResult.Message ?? $"ItemCarrito con ID {itemId} no encontrado.");
+                    _logger.LogInformation($"ItemCarrito con ID {Id} no encontrado para la actualización de cantidad.");
+                    return OperationResult.Failure(getItemResult.Message ?? $"ItemCarrito con ID {Id} no encontrado.");
                 }
 
                 var itemToUpdate = getItemResult.Data as ItemCarrito;
                 if (itemToUpdate == null)
                 {
-                    _logger.LogError($"Error interno: No se pudo convertir el ItemCarrito recuperado para ID: {itemId}.");
+                    _logger.LogError($"Error interno: No se pudo convertir el ItemCarrito recuperado para ID: {Id}.");
                     return OperationResult.Failure($"Error interno: No se pudo convertir el ItemCarrito recuperado.");
                 }
 
@@ -254,18 +252,16 @@ namespace SWCE.Persistence.Repositories
 
                 if (!updateResult.IsSuccess)
                 {
-                    // Usando LogError(string mensaje)
                     _logger.LogError("Error al actualizar la cantidad del ItemCarrito: " + updateResult.Message);
                     return OperationResult.Failure($"Error al actualizar la cantidad del ItemCarrito: {updateResult.Message}");
                 }
 
-                _logger.LogInformation($"Cantidad de ItemCarrito con ID {itemId} actualizada exitosamente a {newQuantity}.");
+                _logger.LogInformation($"Cantidad de ItemCarrito con ID {Id} actualizada exitosamente a {newQuantity}.");
                 return OperationResult.Success("Cantidad del ItemCarrito actualizada exitosamente.", itemToUpdate);
             }
             catch (Exception ex)
             {
-                // Usando LogError(string mensaje, Exception ex)
-                _logger.LogError($"Error inesperado al actualizar la cantidad del ItemCarrito con ID: {itemId}.", ex);
+                _logger.LogError($"Error inesperado al actualizar la cantidad del ItemCarrito con ID: {Id}.", ex);
                 return OperationResult.Failure($"Ocurrió un error inesperado al actualizar la cantidad del ItemCarrito: {ex.Message}");
             }
         }
@@ -287,7 +283,6 @@ namespace SWCE.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                // Suponiendo que tengas logger en el repo
                 _logger.LogError("Error al vaciar el carrito.", ex);
                 return OperationResult.Failure("Error inesperado al vaciar el carrito.");
             }

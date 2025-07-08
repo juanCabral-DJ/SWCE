@@ -10,7 +10,7 @@ namespace SWCE.Infraestructure.Logging
     {
         void LogError(string mensaje, Exception ex);
         void LogError(string mensaje);
-        void LogInformation(string mensaje, params object[] args); // Con parámetros
-        void LogInformation(string mensaje); // Sin parámetros
+        void LogInformation(string mensaje, params object[] args);
+        void LogInformation(string mensaje);
     }
 }

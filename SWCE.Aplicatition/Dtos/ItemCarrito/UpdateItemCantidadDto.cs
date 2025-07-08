@@ -9,7 +9,7 @@ namespace SWCE.Application.Dtos.ItemCarrito
 {
     public record UpdateItemCantidadDto
     {
-        public int ItemId { get; set; }
+        public int Id { get; set; }
         public int NewCantidad { get; set; }
     }
 }

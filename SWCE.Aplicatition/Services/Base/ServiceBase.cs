@@ -26,7 +26,6 @@ namespace SWCE.Application.Services.Base
             try
             {
                 _logger.LogInformation($"Recuperando {typeof(TEntity).Name} con ID: {id}");
-                // Asumimos que GetbyIdasync del repositorio devuelve TEntity
                 var entity = await _repository.GetbyIdasync(id);
 
                 if (entity == null)
@@ -50,7 +49,6 @@ namespace SWCE.Application.Services.Base
             try
             {
                 _logger.LogInformation($"Recuperando todos los {typeof(TEntity).Name}s.");
-                // Asumimos que GetAllasync del repositorio devuelve List<TEntity>
                 var entities = await _repository.GetAllasync();
 
                 if (entities == null)
@@ -80,7 +78,6 @@ namespace SWCE.Application.Services.Base
                     return OperationResult.Failure($"El {typeof(TEntity).Name} no puede ser nulo.");
                 }
 
-                // El repositorio devuelve OperationResult
                 var result = await _repository.Createasync(entity);
 
                 if (!result.IsSuccess)
@@ -110,7 +107,6 @@ namespace SWCE.Application.Services.Base
                     return OperationResult.Failure($"El {typeof(TEntity).Name} no puede ser nulo para la actualización.");
                 }
 
-                // El repositorio devuelve OperationResult
                 var result = await _repository.Updateasync(entity);
 
                 if (!result.IsSuccess)
@@ -145,7 +141,6 @@ namespace SWCE.Application.Services.Base
                 var entityToDisable = getResult.Data as TEntity;
                 if (entityToDisable == null)
                 {
-                    // Esto no debería ocurrir si TEntity es AuditEntity, pero es una buena verificación de seguridad.
                     _logger.LogError($"Error interno: Objeto recuperado para {typeof(TEntity).Name} {id} no es del tipo correcto.");
                     return OperationResult.Failure("Error interno al procesar la entidad.");
                 }
@@ -158,11 +153,6 @@ namespace SWCE.Application.Services.Base
 
                 entityToDisable.IsDeleted = true;
 
-                /* if (entityToDisable is IAuditable auditableEntity)
-                   {
-                     auditableEntity.UpdatedDate = DateTime.UtcNow;
-                   }
-                */
                 var updateResult = await _repository.Updateasync(entityToDisable);
 
                 if (!updateResult.IsSuccess)

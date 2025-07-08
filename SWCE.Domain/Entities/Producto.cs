@@ -10,7 +10,7 @@ namespace SWCE.Domain.Entities
 {
     public sealed class Producto : EntityBase<int>
     {
-        public override int id { get; set; }
+        public override int Id { get; set; }
         public string Nombre { get; set; }
         public string Marca { get; set; }
         public Categoria Categoria { get; set; }
@@ -19,7 +19,7 @@ namespace SWCE.Domain.Entities
         
         public Producto(int id, string nombre, string marca, Categoria categoria, decimal precio, int stock, int stockMinimo)
         {
-            this.id = id;
+            this.Id = id;
             Nombre = nombre;
             Marca = marca;
             Categoria = categoria;

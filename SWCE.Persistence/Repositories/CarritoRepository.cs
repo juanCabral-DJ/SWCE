@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using SWCE.Application.Base;
 using SWCE.Application.Dtos.Carrito;
+using SWCE.Application.Dtos.ItemCarrito;
 using SWCE.Application.Interfaces.Repositories;
 using SWCE.Application.Validators.CarritoValidator;
 using SWCE.Domain.Base;
@@ -97,12 +98,18 @@ namespace SWCE.Persistence.Repositories
                         {
                             while (await reader.ReadAsync())
                             {
-                                carritos.Add(new GetCarritoDto
+                                var carrito = new GetCarritoDto
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     IdUsuario = reader.GetInt32(reader.GetOrdinal("ID_Usuario")),
-                                    Total = reader.GetDecimal(reader.GetOrdinal("Total"))
-                                });
+                                    Total = reader.GetDecimal(reader.GetOrdinal("Total")),
+                                    IsDeleted = reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
+                                    Productos = new List<GetItemCarritoDto>()
+                                };
+
+                                carrito.Productos = await GetItemsByCarritoIdAsync(carrito.Id);
+
+                                carritos.Add(carrito);
                             }
                         }
                     }
@@ -147,8 +154,14 @@ namespace SWCE.Persistence.Repositories
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     IdUsuario = reader.GetInt32(reader.GetOrdinal("ID_Usuario")),
-                                    Total = reader.GetDecimal(reader.GetOrdinal("Total"))
+                                    Total = reader.GetDecimal(reader.GetOrdinal("Total")),
+                                    Productos = new List<GetItemCarritoDto>()
                                 };
+
+                                reader.Close();
+
+                                var Productos = await GetItemsByCarritoIdAsync(carrito.Id);
+                                carrito.Productos = Productos;
 
                                 result.IsSuccess = true;
                                 result.Data = carrito;
@@ -193,7 +206,8 @@ namespace SWCE.Persistence.Repositories
                 await ExecuteStoredProcedureAsync("dbo.ModifyCarrito",
                     new SqlParameter("@Id", entity.Id),
                     new SqlParameter("@ID_Usuario", entity.IdUsuario),
-                    new SqlParameter("@Total", entity.Total)
+                    new SqlParameter("@Total", entity.Total),
+                    new SqlParameter("@IsDeleted", entity.IsDeleted)
                 );
 
                 result.IsSuccess = true;
@@ -216,13 +230,11 @@ namespace SWCE.Persistence.Repositories
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    // Usamos sp_ para denotar "Stored Procedure", una buena práctica.
                     using (var command = new SqlCommand("dbo.CarritoExistsById", (SqlConnection)connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.Add(new SqlParameter("@Id", id));
 
-                        // Un parámetro de salida es la forma más eficiente de devolver un valor simple.
                         var outputParam = new SqlParameter("@Existe", SqlDbType.Bit)
                         {
                             Direction = ParameterDirection.Output
@@ -232,7 +244,6 @@ namespace SWCE.Persistence.Repositories
                         await ((SqlConnection)connection).OpenAsync();
                         await command.ExecuteNonQueryAsync();
 
-                        // Convertimos el resultado del parámetro de salida a booleano.
                         return (bool)outputParam.Value;
                     }
                 }
@@ -240,7 +251,6 @@ namespace SWCE.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError($"Error al obtener el carrito por ID: {id}", ex);
-                // Si ocurre un error, es más seguro asumir que no existe o notificar el fallo.
                 return false;
             }
         }
@@ -265,7 +275,6 @@ namespace SWCE.Persistence.Repositories
             {
                 _logger.LogInformation("Iniciando eliminación del carrito con ID: {CarritoId}", entity.Id);
 
-                // Llamamos al Stored Procedure pasándole el ID del carrito a eliminar.
                 await ExecuteStoredProcedureAsync("dbo.DisableCarrito",
                     new SqlParameter("@Id", entity.Id)
                 );
@@ -275,7 +284,6 @@ namespace SWCE.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                // Usamos structured logging para capturar los detalles del error.
                 _logger.LogError("Ocurrió un error al eliminar el carrito", ex);
                 result.IsSuccess = false;
                 result.Message = "Ocurrió un error al eliminar el carrito.";
@@ -324,7 +332,6 @@ namespace SWCE.Persistence.Repositories
                         {
                             if (await reader.ReadAsync())
                             {
-                                // Use the mapper to convert SqlDataReader to GetCarritoDto
                                 var carrito = _carritoMapper.MapToGetCarritoDtoFromReader(reader);
                                 result.IsSuccess = true;
                                 result.Data = carrito;
@@ -348,6 +355,47 @@ namespace SWCE.Persistence.Repositories
             return result;
         }
 
+        public async Task<List<GetItemCarritoDto>> GetItemsByCarritoIdAsync(int carritoId)
+        {
+            var items = new List<GetItemCarritoDto>();
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    using (var command = new SqlCommand("dbo.GetItemCarritoByCarritoId", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add(new SqlParameter("@CarritoId", carritoId));
+
+                        await connection.OpenAsync();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                items.Add(new GetItemCarritoDto
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    CarritoId = reader.GetInt32(reader.GetOrdinal("CarritoId")),
+                                    ProductoId = reader.GetInt32(reader.GetOrdinal("ID_Producto")),
+                                    NombreProducto = reader.GetString(reader.GetOrdinal("NombreProducto")),
+                                    PrecioUnitario = reader.GetDecimal(reader.GetOrdinal("PrecioUnitario")),
+                                    Cantidad = reader.GetInt32(reader.GetOrdinal("Cantidad")),
+                                    Subtotal = reader.GetDecimal(reader.GetOrdinal("SubTotal"))
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error al obtener los items del carrito", ex);
+            }
+
+            return items;
+        }
     }
 
 }

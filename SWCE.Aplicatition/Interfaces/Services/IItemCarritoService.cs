@@ -15,6 +15,5 @@ namespace SWCE.Application.Interfaces.Services
         Task<OperationResult> AddItemToCarritoAsync(AddItemCarritoDto dto);
         Task<OperationResult> UpdateItemCantidadAsync(UpdateItemCantidadDto dto);
         Task<OperationResult> RemoveItemFromCarritoAsync(int itemId);
-        Task<OperationResult> GetItemsByCarritoIdAsync(int carritoId);
     }
 }

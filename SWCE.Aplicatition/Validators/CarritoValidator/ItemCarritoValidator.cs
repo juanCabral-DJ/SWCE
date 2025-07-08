@@ -18,8 +18,6 @@ namespace SWCE.Application.Validators.CarritoValidator
             RuleFor(x => x.Cantidad)
                 .GreaterThan(0).WithMessage("La cantidad debe ser mayor que 0.");
 
-            RuleFor(x => x.PrecioUnitario)
-                .GreaterThan(0).WithMessage("El precio debe ser mayor que 0.");
         }
     }
 }
