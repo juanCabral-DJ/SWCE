@@ -19,11 +19,10 @@ namespace SWCE.Aplication.Base
             {
                 return new EnvioEntity
                 {
-                    Id = Dto.Id,
                     UsuarioId = Dto.UsuarioId,
                     FechaPedido = Dto.FechaPedido,
-                    Costo = Dto.Costo,
                     Estado = Dto.Estado,
+                    Costo = Dto.Costo,
                     TipoEnvio = Dto.TipoEnvio
                 };
             }

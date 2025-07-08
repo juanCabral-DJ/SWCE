@@ -12,13 +12,13 @@ namespace SWCE.Persistence.Repositories
 {
     public class EnvioRepository : IEnvioRepository
     {
-        private readonly string _connectionString;
+        private readonly string? _connectionString;
         private readonly IConfiguration _configuration;
         private readonly EnvioValidator _EnvioValidator;
-        private readonly UpdateEnvioValdiator _UpdateEnvioValdiator;
+        private readonly UpdateEnvioValidator _UpdateEnvioValdiator;
         private readonly ILoggerBase<EnvioEntity> _logger;
 
-        public EnvioRepository( ILoggerBase<EnvioEntity> logger, IConfiguration configuration, EnvioValidator envioValidator, UpdateEnvioValdiator updateEnvioValidator)
+        public EnvioRepository( ILoggerBase<EnvioEntity> logger, IConfiguration configuration, EnvioValidator envioValidator, UpdateEnvioValidator updateEnvioValidator)
         {
             _configuration = configuration;
             _logger = logger;
@@ -26,20 +26,21 @@ namespace SWCE.Persistence.Repositories
             _UpdateEnvioValdiator = updateEnvioValidator;
             _connectionString = _configuration["ConnectionStrings:E-CommerceConnection"];
         }
-        public async Task<OperationResult> GetByIdAsync(Guid id)
+        public async Task<OperationResult> GetByIdAsync(int id)
         {
             OperationResult result = new OperationResult();
             try
             {
                 _logger.LogInformation("Recuperando Envio por Id");
 
-                var envios = await ExecuteReaderSingleAsync<EnvioEntity>("dbo.GetEnvioById", reader => new EnvioEntity
+                var envios = await ExecuteReaderSingleAsync<EnvioEntity>("GetEnvioById", reader => new EnvioEntity
                 {
-                    UsuarioId = reader.GetInt32(reader.GetOrdinal("Usuario Id")),
-                    FechaPedido = reader.GetDateTime(reader.GetOrdinal("Fecha Pedido")),
+                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    UsuarioId = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
+                    FechaPedido = reader.GetDateTime(reader.GetOrdinal("FechaPedido")),
                     Estado = reader.GetString(reader.GetOrdinal("Estado")),
                     Costo = reader.GetDecimal(reader.GetOrdinal("Costo")),
-                    TipoEnvio = reader.GetString(reader.GetOrdinal("Tipo Envio"))
+                    TipoEnvio = reader.GetString(reader.GetOrdinal("TipoEnvio"))
                 }, new SqlParameter("@Id", id));
 
                 if (envios != null)
@@ -66,16 +67,18 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Recuperando Envios");
-                var envios = await ExecuteReaderListAsync<EnvioEntity>("dbo.GetAllEnvios", reader => new EnvioEntity 
+                var envios = await ExecuteReaderListAsync<EnvioEntity>("GetAllEnvios", reader => new EnvioEntity 
                 {
-                    UsuarioId = reader.GetInt32(reader.GetOrdinal("Usuario Id")),
-                    FechaPedido = reader.GetDateTime(reader.GetOrdinal("Fecha Pedido")),
+                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    UsuarioId = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
+                    FechaPedido = reader.GetDateTime(reader.GetOrdinal("FechaPedido")),
                     Estado = reader.GetString(reader.GetOrdinal("Estado")),
                     Costo = reader.GetDecimal(reader.GetOrdinal("Costo")),
-                    TipoEnvio = reader.GetString(reader.GetOrdinal("Tipo Envio"))
+                    TipoEnvio = reader.GetString(reader.GetOrdinal("TipoEnvio"))
                 });
 
                 result = OperationResult.Success("Recuperando envios", envios);
+                _logger.LogInformation($"Total envios recuperados: {envios.Count}");
             }
             catch (Exception ex)
             {
@@ -95,8 +98,8 @@ namespace SWCE.Persistence.Repositories
 
                 if (!entityvalidate.IsValid)
                 {
-                    _logger.LogError("Inserte valores para agregar");
-                    return OperationResult.Failure("La entidad envio no puede ser nulo");
+                    _logger.LogError("Intento agregar una Entidad nula");
+                    return OperationResult.Failure("Ocurrio un error mientras se recuperaba la entidad");
                 }
 
                 var presult = await ExecuteStoredProcedureAsync("dbo.CreateEnvios", new SqlParameter("@Id_usuario", envio.UsuarioId), new SqlParameter("@FechaPedido", envio.FechaPedido), new SqlParameter("@Estado", envio.Estado), new SqlParameter("@Total", envio.Costo), new SqlParameter("@TipoEnvio", envio.TipoEnvio));
@@ -137,7 +140,7 @@ namespace SWCE.Persistence.Repositories
                     return OperationResult.Failure("La entidad envio no puede ser nulo");
                 }
 
-                var presult = await ExecuteStoredProcedureAsync("dbo.UpdateEnvioEstado", new SqlParameter("@Id", envio.Id), new SqlParameter("@Esatdo", envio.Estado));
+                var presult = await ExecuteStoredProcedureAsync("dbo.UpdateEnvioEstado", new SqlParameter("@Id", envio.Id), new SqlParameter("@Estado", envio.Estado));
                 
                 if(presult > 0)
                 {

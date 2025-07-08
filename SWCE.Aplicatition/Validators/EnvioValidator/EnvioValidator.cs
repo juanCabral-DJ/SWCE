@@ -12,10 +12,10 @@ namespace SWCE.Aplication.Validators.EnvioValidator
     {
         public EnvioValidator()
         {
-            RuleFor(e => e.UsuarioId).NotEmpty();
-            RuleFor(e => e.FechaPedido).LessThanOrEqualTo(DateTime.Now);
-            RuleFor(e => e.Estado).NotEmpty().MaximumLength(50);
-            RuleFor(e => e.Costo).GreaterThan(0);
+            RuleFor(x => x.UsuarioId).NotEmpty().WithMessage("El id del usuario no puede estar vacio");
+            RuleFor(x => x.FechaPedido).LessThanOrEqualTo(DateTime.Now);
+            RuleFor(x => x.Estado).NotEmpty().WithMessage("El estado del pedido no puede estar vacio").MaximumLength(50).WithMessage("El limite de caracteres son 50");
+            RuleFor(x => x.Costo).GreaterThan(-1).WithMessage("El costo debe tener algun valor");
         }
     }
 }

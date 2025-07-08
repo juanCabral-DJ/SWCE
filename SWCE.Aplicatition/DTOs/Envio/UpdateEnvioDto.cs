@@ -8,7 +8,7 @@ namespace SWCE.Aplication.DTOs.Envio
 {
     public record class UpdateEnvioDto
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string? Estado { get; set; }
     }
 }

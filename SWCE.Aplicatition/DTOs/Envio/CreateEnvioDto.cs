@@ -2,7 +2,6 @@
 {
     public record class CreateEnvioDto
     {
-        public Guid Id { get; set; }
         public int UsuarioId { get; set; }
         public DateTime FechaPedido { get; set; }
         public string? Estado { get; set; }

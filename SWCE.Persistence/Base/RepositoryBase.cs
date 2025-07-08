@@ -37,7 +37,7 @@ namespace SWCE.Persistence.Base
                 return OperationResult.Failure($"Ha ocurrido un error mientras se recuperaba la entidad con el id {id}: {ex.Message}");
             }
         }
-        public virtual async Task<OperationResult> GetAllasync()
+        public virtual async Task<OperationResult> GetAllasync(Expression<Func<TEntity, bool>> filter)
         {
             try
             {
@@ -89,15 +89,6 @@ namespace SWCE.Persistence.Base
             return result;
         }
 
-        public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter)
-        {
-            return await Entity.AnyAsync(filter);
-        }
-
-        public Task<OperationResult> GetAllasync(Expression<Func<TEntity, bool>> filter)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
 

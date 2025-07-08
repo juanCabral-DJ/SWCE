@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SWCE.Aplication.Validators.EnvioValidator
 {
-    public class UpdateEnvioValdiator : AbstractValidator<EnvioEntity>
+    public class UpdateEnvioValidator : AbstractValidator<EnvioEntity>
     {
-        public UpdateEnvioValdiator()
+        public UpdateEnvioValidator()
         {
             RuleFor(e => e.Estado).NotEmpty().MaximumLength(50);
         }

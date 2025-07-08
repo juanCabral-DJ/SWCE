@@ -29,5 +29,6 @@ namespace SWCE.Domain.Base
         {
             return new OperationResult(false, message);
         }
+
     }
 }

@@ -24,7 +24,7 @@ namespace SWCE.Aplication.Services
             _configuration = configuration;
         }
 
-        public async Task<OperationResult> GetByIdAsync(Guid Id)
+        public async Task<OperationResult> GetByIdAsync(int Id)
         {
             OperationResult result = new OperationResult();
             try
@@ -53,16 +53,16 @@ namespace SWCE.Aplication.Services
             OperationResult result = new OperationResult();
             try
             {
-                _logger.LogInformation("Fetching all Envio.");
+                _logger.LogInformation("Recuperando todos los envios.");
 
                 result = await _repository.GetAllAsync();
 
-                result = OperationResult.Success("Envio retrieved successfully.", result.Data);
-                _logger.LogInformation("Successfully fetched Address.");
+                result = OperationResult.Success("Envio recuperado satisfactoriamente.", result.Data);
+                _logger.LogInformation("Successfully fetched envio.");
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occurred while getting Envio.", ex);
+                _logger.LogError("Ha ocurrido un error mientras se recuperaban los envios.", ex);
                 result = OperationResult.Failure("An error occurred while getting Envio.");
             }
             finally

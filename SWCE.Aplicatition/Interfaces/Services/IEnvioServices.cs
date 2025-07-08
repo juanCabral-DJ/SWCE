@@ -12,7 +12,7 @@ namespace SWCE.Aplication.Interfaces.Services
     public interface IEnvioServices
     {
         Task<OperationResult> GetByUserId(int userId);
-        Task<OperationResult> GetByIdAsync(Guid id);
+        Task<OperationResult> GetByIdAsync(int id);
         Task<OperationResult> GetAllAsync();
         Task<OperationResult> CreateAsync(CreateEnvioDto entity);
         Task<OperationResult> UpdateAsync(UpdateEnvioDto entity);
