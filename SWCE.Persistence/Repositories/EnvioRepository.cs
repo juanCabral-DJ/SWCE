@@ -1,11 +1,11 @@
 ﻿using SWCE.Aplicatition.Interfaces.Repositories.EnvioModule;
 using SWCE.Domain.Entities;
 using Microsoft.Extensions.Configuration;
-using SWCE.Aplication.Validators.EnvioValidator;
 using SWCE.Infraestructure.Logging;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using SWCE.Domain.Base;
+using SWCE.Aplication.Extension.Validators.EnvioValidator;
 
 
 namespace SWCE.Persistence.Repositories

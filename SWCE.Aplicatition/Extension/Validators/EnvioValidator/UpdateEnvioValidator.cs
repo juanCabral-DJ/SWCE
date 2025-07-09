@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Aplication.Validators.EnvioValidator
+namespace SWCE.Aplication.Extension.Validators.EnvioValidator
 {
     public class UpdateEnvioValidator : AbstractValidator<EnvioEntity>
     {

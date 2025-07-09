@@ -1,13 +1,12 @@
-﻿using Riok.Mapperly.Abstractions;
+﻿using SWCE.Aplication.DTOs.Envio;
 using SWCE.Domain.Entities;
-using SWCE.Aplication.DTOs.Envio;
 
-namespace SWCE.Aplication.Base
+
+namespace SWCE.Aplication.Extension.MapeoEnvio
 {
-    [Mapper]
-    public partial class EnvioMapper
+    public static class EnvioMapper
     {
-        public EnvioEntity MapToEntity(UpdateEnvioDto Dto)
+        public static EnvioEntity MapToEntity(UpdateEnvioDto Dto)
         {
             return new EnvioEntity
             {
@@ -15,7 +14,8 @@ namespace SWCE.Aplication.Base
                 Estado = Dto.Estado
             };
         }
-        public EnvioEntity MapToEntityCreate(CreateEnvioDto Dto) {
+        public static EnvioEntity MapToEntityCreate(CreateEnvioDto Dto)
+        {
             {
                 return new EnvioEntity
                 {
@@ -27,7 +27,5 @@ namespace SWCE.Aplication.Base
                 };
             }
         }
-
-        
     }
 }

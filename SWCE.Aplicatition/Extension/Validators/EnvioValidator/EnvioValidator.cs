@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using SWCE.Domain.Entities;
 
-namespace SWCE.Aplication.Validators.EnvioValidator
+namespace SWCE.Aplication.Extension.Validators.EnvioValidator
 {
     public class EnvioValidator : AbstractValidator<EnvioEntity>
     {

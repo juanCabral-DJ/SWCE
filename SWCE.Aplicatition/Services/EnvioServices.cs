@@ -6,20 +6,19 @@ using Microsoft.Extensions.Configuration;
 using SWCE.Aplication.Base;
 using SWCE.Infraestructure.Logging;
 using SWCE.Aplication.DTOs.Envio;
+using SWCE.Aplication.Extension.MapeoEnvio;
 
 namespace SWCE.Aplication.Services
 {
     public sealed class EnvioServices : IEnvioServices
     {
         private readonly IEnvioRepository _repository;
-        private readonly EnvioMapper _mapper;
         private readonly ILoggerBase<EnvioEntity> _logger;
         private readonly IConfiguration _configuration;
 
-        public EnvioServices(IEnvioRepository repository, EnvioMapper mapper, ILoggerBase<EnvioEntity> logger, IConfiguration configuration)
+        public EnvioServices(IEnvioRepository repository, ILoggerBase<EnvioEntity> logger, IConfiguration configuration)
         {
             _repository = repository;
-            _mapper = mapper;
             _logger = logger;
             _configuration = configuration;
         }
@@ -81,7 +80,7 @@ namespace SWCE.Aplication.Services
                 _logger.LogInformation("Creating Envio entity");
 
                 //Falta mapear
-                var Envio = _mapper.MapToEntityCreate(entity);
+                var Envio = EnvioMapper.MapToEntityCreate(entity);
                 result = await _repository.CreateAsync(Envio);
 
                 _logger.LogInformation("Succefully created Envio");
@@ -107,7 +106,7 @@ namespace SWCE.Aplication.Services
                 _logger.LogInformation("Updating Envio with Id {Id}.", entity.Id);
 
                 //Falta mapear
-                var Envio = _mapper.MapToEntity(entity);
+                var Envio = EnvioMapper.MapToEntity(entity);
                 result = await _repository.UpdateAsync(Envio);
 
                 _logger.LogInformation("Successfully updated Envio with Id {Id}.", entity.Id);
