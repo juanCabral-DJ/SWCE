@@ -10,6 +10,5 @@ namespace SWCE.Application.Dtos.AdministracionModule.CategoriaDto
     {
         public int Id { get; set; }
         public bool IsDisabled { get; set; }
-        public DateTime FechaDeshabilitacion { get; set; } = DateTime.Now;
     }
 }

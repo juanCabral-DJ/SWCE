@@ -8,11 +8,12 @@ namespace SWCE.Domain.Entities
 {
     public sealed class CuponMontoFijo : Base.Cupon
     {
-        public decimal Monto { get; private set; }
+        public decimal Monto { get; set; }
 
-        public CuponMontoFijo(string codigo, decimal monto, DateTime expiracion)
+        public CuponMontoFijo() { }
+        public CuponMontoFijo(int id, decimal monto, DateTime expiracion)
         {
-            Codigo = codigo;
+            this.id = id;
             Monto = monto;
             FechaExpiracion = expiracion;
         }

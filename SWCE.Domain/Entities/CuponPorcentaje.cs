@@ -8,11 +8,12 @@ namespace SWCE.Domain.Entities
 {
     public sealed class CuponPorcentaje : Base.Cupon
     {
-        public decimal Porcentaje { get; private set; }
+        public decimal Porcentaje { get; set; }
 
-        public CuponPorcentaje(string codigo, decimal porcentaje, DateTime expiracion)
+        public CuponPorcentaje() { }
+        public CuponPorcentaje(int id, decimal porcentaje, DateTime expiracion)
         {
-            Codigo = codigo;
+            this.id = id;
             Porcentaje = porcentaje;
             FechaExpiracion = expiracion;
         }

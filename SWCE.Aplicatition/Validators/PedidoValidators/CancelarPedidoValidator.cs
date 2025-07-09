@@ -14,10 +14,6 @@ namespace SWCE.Application.Validators.PedidoValidators
         {
             RuleFor(x => x.PedidoId)
                 .GreaterThan(0).WithMessage("El ID del pedido debe ser mayor que 0");
-
-            RuleFor(x => x.FechaCancelacion)
-                .LessThanOrEqualTo(DateTime.Now)
-                .WithMessage("La fecha de cancelación no puede ser futura");
         }
     }
 }

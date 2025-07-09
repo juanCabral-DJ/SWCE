@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWCE.Application.Base;
 using SWCE.Domain.Base;
+
 using SWCE.Persistence.Context;
-using System.Data.Common;
+
 using System.Linq.Expressions;
 
 namespace SWCE.Persistence.Base
@@ -39,7 +40,7 @@ namespace SWCE.Persistence.Base
             }
         }
 
-        public virtual async Task<OperationResult> GetAllasync()
+        public virtual async Task<OperationResult> GetAllasync(Expression<Func<TEntity, bool>> filter)
         {
             try
             {
@@ -60,30 +61,30 @@ namespace SWCE.Persistence.Base
             {
                 await Entity.AddAsync(entity);
                 await _context.SaveChangesAsync();
+                result = OperationResult.Success("Entidad creada con éxito.", entity);
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = "Ha ocurrido un error al guardar los datos";
+                /*result.IsSuccess = false;
+                result.Message = "Ha ocurrido un error al guardar los datos";*/
+                result = OperationResult.Failure("Ha ocurrido un error al guardar los datos", ex);
             }
             return result;
         }
 
         public virtual async Task<OperationResult> Updateasync(TEntity entity)
         {
-            OperationResult result = new OperationResult();
-
             try
             {
                 Entity.Update(entity);
                 await _context.SaveChangesAsync();
+
+                return OperationResult.Success("Entidad actualizada con éxito.", entity);
             }
             catch (Exception ex)
             {
-                result.IsSuccess = false;
-                result.Message = "Ocurrió un error al actualizar los datos";
+                return OperationResult.Failure("Ocurrió un error al actualizar los datos", ex);
             }
-            return result;
         }
 
         public virtual async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter)

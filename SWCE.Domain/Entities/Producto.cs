@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,20 +12,27 @@ namespace SWCE.Domain.Entities
     public sealed class Producto : EntityBase<int>
     {
         public override int id { get; set; }
-        public string Nombre { get; set; }
-        public string Marca { get; set; }
-        public Categoria Categoria { get; set; }
+        public string? Nombre { get; set; }
+        public string? Marca { get; set; }
+
+        [Column("IdCategoria")]
+        public int IdCategoria { get; set; }
+
+        [ForeignKey("IdCategoria")]
+        public Categoria? Categoria { get; set; }
         public decimal Precio { get; set; }
         public int Stock { get; set; }
-        
-        public Producto(int id, string nombre, string marca, Categoria categoria, decimal precio, int stock, int stockMinimo)
+
+        public Producto() { }
+
+        public Producto(int id, string nombre, string marca, int idCategoria, decimal precio, int stock)
         {
             this.id = id;
             Nombre = nombre;
             Marca = marca;
-            Categoria = categoria;
-            Precio = 0;
-            Stock = 0;
+            IdCategoria = idCategoria;
+            Precio = precio;
+            Stock = stock;
         }
 
         public void AjustarStock(int cantidad)

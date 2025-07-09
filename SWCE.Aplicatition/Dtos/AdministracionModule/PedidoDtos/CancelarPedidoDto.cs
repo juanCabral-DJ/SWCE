@@ -9,6 +9,5 @@ namespace SWCE.Application.Dtos.AdministracionModule.PedidoDtos
     public record CancelarPedidoDto
     {
         public int PedidoId { get; set; }
-        public DateTime FechaCancelacion { get; set; }
     }
 }

@@ -9,7 +9,6 @@ using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -19,129 +18,144 @@ namespace SWCE.Persistence.Repositories
     {
         private readonly E_commerceContext _context;
         private readonly ILoggerBase<Producto> _logger;
-        private readonly CreateProductoValidator _validator;
+        private readonly CreateProductoValidator _createValidator;
+        private readonly UpdateProductoValidator _updateValidator;
 
-        public ProductoRepository(E_commerceContext context, ILoggerBase<Producto> logger, CreateProductoValidator validator)
-            : base(context)
+        public ProductoRepository(
+            E_commerceContext context,
+            ILoggerBase<Producto> logger,
+            CreateProductoValidator createValidator,
+            UpdateProductoValidator updateValidator
+        ) : base(context)
         {
             _context = context;
             _logger = logger;
-            _validator = validator;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
-        public async override Task<OperationResult> GetbyIdasync(int id)
+        public override async Task<OperationResult> GetAllasync(Expression<Func<Producto, bool>> filter)
         {
-            OperationResult result = new OperationResult();
             try
             {
-                _logger.LogInformation("Obteniendo entidad Producto por ID");
-                var entity = await base.GetbyIdasync(id);
-                result = OperationResult.Success("Producto obtenido correctamente", entity);
+                _logger.LogInformation("Obteniendo todos los productos.");
+                var productos = await base.GetAllasync(filter);
+                return OperationResult.Success("Productos obtenidos correctamente.", productos);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error al obtener el Producto por ID", ex);
-                result = OperationResult.Failure("Ocurrió un error al obtener el Producto.");
+                _logger.LogError("Error al obtener productos: {Message}", ex);
+                return OperationResult.Failure("Ocurrió un error al obtener los productos.");
             }
-
-            return result;
         }
 
-        public async override Task<OperationResult> GetAllasync()
+        public override async Task<OperationResult> GetbyIdasync(int id)
         {
-            OperationResult result = new OperationResult();
             try
             {
-                _logger.LogInformation("Obteniendo todas las entidades Producto");
-                var entities = await base.GetAllasync();
-                result = OperationResult.Success("Productos obtenidos correctamente", entities);
+                _logger.LogInformation("Obteniendo producto por ID: {Id}", id);
+                var producto = await base.GetbyIdasync(id);
+                return OperationResult.Success("Producto obtenido correctamente.", producto);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error al obtener todos los Productos", ex);
-                result = OperationResult.Failure("Ocurrió un error al obtener los Productos.");
+                _logger.LogError("Error al obtener producto: {Message}", ex);
+                return OperationResult.Failure("Ocurrió un error al obtener el producto.");
             }
-
-            return result;
         }
 
-        public async override Task<OperationResult> Createasync(Producto entity)
+        public override async Task<OperationResult> Createasync(Producto entity)
         {
-            OperationResult result = new OperationResult();
-
             try
             {
-                _logger.LogInformation("Creando entidad Producto");
+                if (entity is not Producto producto)
+                    return OperationResult.Failure("Entidad no válida para crear un producto.");
+
+                var validation = await _createValidator.ValidateAsync(new CreateProductoDto
+                {
+                    Nombre = producto.Nombre,
+                    Marca = producto.Marca,
+                    //Categoria = producto.Categoria,
+                    Precio = producto.Precio,
+                    Stock = producto.Stock
+                });
+
+                if (!validation.IsValid)
+                    return OperationResult.Failure("Validación fallida: " + string.Join(", ", validation.Errors.Select(e => e.ErrorMessage)));
+
+                return await base.Createasync(producto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error al crear el producto: {Message}", ex);
+                return OperationResult.Failure("Ocurrió un error al crear el producto.");
+            }
+        }
+
+        public override async Task<OperationResult> Updateasync(Producto entity)
+        {
+            try
+            {
+                _logger.LogInformation("Intentando actualizar producto: {@Producto}", entity);
 
                 if (entity == null)
                 {
-                    _logger.LogError("El Producto es nulo");
-                    return OperationResult.Failure("La entidad Producto no puede ser nula.");
+                    _logger.LogError("Se intentó actualizar un producto nulo.");
+                    return OperationResult.Failure("El producto no puede ser nulo para la actualización.");
                 }
 
-                await base.Createasync(entity);
-                result = OperationResult.Success("Producto creado correctamente", entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error al crear el Producto", ex);
-                result = OperationResult.Failure($"Ocurrió un error al crear el Producto: {ex.Message}");
-            }
-
-            return result;
-        }
-
-        public async override Task<OperationResult> Updateasync(Producto entity)
-        {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                _logger.LogInformation("Actualizando entidad Producto");
-
-                if (entity == null)
+                var validationResult = await _updateValidator.ValidateAsync(entity);
+                if (!validationResult.IsValid)
                 {
-                    _logger.LogError("El Producto es nulo");
-                    return OperationResult.Failure("La entidad Producto no puede ser nula.");
+                    var errores = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+                    _logger.LogError("Fallo de validación para la actualización de producto: " + errores);
+                    return OperationResult.Failure("Fallo de validación: " + errores);
                 }
 
-                await base.Updateasync(entity);
-                result = OperationResult.Success("Producto actualizado correctamente", entity);
+                var updateResult = await base.Updateasync(entity);
+
+                if (!updateResult.IsSuccess)
+                {
+                    _logger.LogError("Error al actualizar producto: " + updateResult.Message);
+                    return OperationResult.Failure($"Error al actualizar producto: {updateResult.Message}");
+                }
+
+                _logger.LogInformation("Producto actualizado exitosamente: {@Producto}", entity);
+                return OperationResult.Success("Producto actualizado exitosamente.", entity);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error al actualizar el Producto", ex);
-                result = OperationResult.Failure($"Ocurrió un error al actualizar el Producto: {ex.Message}");
+                _logger.LogError("Error inesperado al actualizar producto: {Exception}", ex);
+                return OperationResult.Failure("Ocurrió un error inesperado al actualizar el producto: " + ex.Message);
             }
-
-            return result;
         }
-
-        public async override Task<bool> ExistsAsync(Expression<Func<Producto, bool>> filter)
+        public async Task<OperationResult> DisableAsync(int id)
         {
-            return await base.ExistsAsync(filter);
-        }
-
-        public async Task<OperationResult> ObtenerPorCategoriaAsync(int categoriaId)
-        {
-            OperationResult result = new OperationResult();
             try
             {
-                _logger.LogInformation("Obteniendo Productos por ID de categoría");
+                _logger.LogInformation("Intentando deshabilitar el producto con ID: {Id}", id);
 
-                var productos = await _context.Productos
-                    .Where(p => p.Categoria.id == categoriaId)
-                    .ToListAsync();
+                var productoExistente = await _context.Productos.FindAsync(id);
 
-                result = OperationResult.Success("Productos obtenidos correctamente por categoría", productos);
+                if (productoExistente == null)
+                {
+                    _logger.LogError("No se encontró un producto con el ID");
+                    return OperationResult.Failure("Producto no encontrado.");
+                }
+
+                productoExistente.IsDeleted = true;
+
+                _context.Productos.Update(productoExistente);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Producto con ID {Id} deshabilitado correctamente.", id);
+                return OperationResult.Success("Producto deshabilitado correctamente.", productoExistente);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error al obtener los Productos por ID de categoría", ex);
-                result = OperationResult.Failure("Ocurrió un error al obtener los Productos por categoría.");
+                _logger.LogError("Error al deshabilitar el producto");
+                return OperationResult.Failure("Error interno al deshabilitar el producto.", ex);
             }
-
-            return result;
         }
     }
 }

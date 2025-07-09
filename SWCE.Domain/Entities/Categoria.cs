@@ -16,21 +16,7 @@ namespace SWCE.Domain.Entities
         public Categoria(int id, string nombre, string descripcion)
         {
             this.id = id;
-            AsignarNombre(nombre);
-            Descripcion = descripcion;
-        }
-
-        public void AsignarNombre(string nombre)
-        {
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new ArgumentException("El nombre de la categoría no puede estar vacío.");
             Nombre = nombre;
-        }
-
-        public void ModificarDescripcion(string descripcion)
-        {
-            if (string.IsNullOrWhiteSpace(descripcion))
-                throw new ArgumentException("La descripción de la categoría no puede estar vacía.");
             Descripcion = descripcion;
         }
     }

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace SWCE.Domain.Base
 {
-    public abstract class Cupon
+    public abstract class Cupon : EntityBase<int>
     {
-        protected string? Codigo { get; set; }
-        protected DateTime FechaExpiracion { get; set; }
+        public override int id { get; set; }
+        public DateTime FechaExpiracion { get; set; }
 
         public bool EstaVigente() => FechaExpiracion >= DateTime.Today;
 

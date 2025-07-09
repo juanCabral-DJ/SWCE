@@ -20,5 +20,29 @@ namespace SWCE.Persistence.Context
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Cupon> Cupones { get; set; }
         public DbSet<Pedido> Envios { get; set; }
+        public DbSet<Pedido> Pedidos { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Cupon>()
+                .HasDiscriminator<string>("TipoCupon")
+                .HasValue<CuponMontoFijo>("MontoFijo")
+                .HasValue<CuponPorcentaje>("Porcentaje");
+
+            modelBuilder.Entity<CuponMontoFijo>()
+                        .Property(c => c.Monto)
+                        .HasColumnName("Monto");
+
+            modelBuilder.Entity<CuponPorcentaje>()
+                        .Property(c => c.Porcentaje)
+                        .HasColumnName("Porcentaje");
+
+            modelBuilder.Entity<Producto>()
+        .HasOne(p => p.Categoria)
+        .WithMany()
+        .HasForeignKey(p => p.IdCategoria);
+        }
     }
 }

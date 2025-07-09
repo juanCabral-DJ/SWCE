@@ -12,9 +12,9 @@ namespace SWCE.Application.Dtos.AdministracionModule.ProductoDtos
         public int id { get; set; }
         public string? Nombre { get; set; }
         public string? Marca { get; set; }
-        public Categoria? Categoria { get; set; }
+        //public Categoria? Categoria { get; set; }
+        public int IdCategoria{ get; set; }
         public decimal Precio { get; set; }
         public int Stock { get; set; }
-        public DateTime FechaCreacion { get; set; } = DateTime.Now;
     }
 }
