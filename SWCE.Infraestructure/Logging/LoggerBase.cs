@@ -7,6 +7,10 @@ namespace SWCE.Infraestructure.Logging
     {
         public readonly ILogger<T> _Logger;
 
+        public LoggerBase()
+        {
+
+        }
         public LoggerBase(ILogger<T> logger)
         {
               _Logger = logger;

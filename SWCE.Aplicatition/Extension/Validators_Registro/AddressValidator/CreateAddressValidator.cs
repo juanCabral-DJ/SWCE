@@ -9,7 +9,9 @@ namespace SWCE.Aplicatition.Extension.Validators_Registro.AddressValidator
 
         public CreateAddressValidator()
         {
-
+            RuleFor(x => x.ID_Usuario)
+                .NotEmpty().WithMessage("El id del usuario no puede estar vacio")
+                .GreaterThan(0).WithMessage("El id del usuario debe ser mayor que 0");
 
             RuleFor(x => x.calle)
                 .NotEmpty().WithMessage("La calle no puede estar vacia")

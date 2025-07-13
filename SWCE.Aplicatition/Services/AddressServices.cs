@@ -43,8 +43,9 @@ namespace SWCE.Aplicatition.Services
 
                 if (!addressValida.IsValid)
                 {
-                    _logger.LogError("Address entity validation failed");
-                    return OperationResult.Failure("Validation failed");
+                    var errorMessages = string.Join(", ", addressValida.Errors.Select(e => e.ErrorMessage));
+                    _logger.LogError("Address validation failed");
+                    return OperationResult.Failure("La validación falló: " + errorMessages);
                 }
 
                 result = await _Address.Createasync(address);

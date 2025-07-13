@@ -86,15 +86,16 @@ namespace SWCE.Aplicatition.Services
             {
                 _logger.LogInformation("creating User entity");
 
-                 //Falta mapear
-                 var User = UserMapper.MapToEntityCreate(entity);
+                //Falta mapear
+                var User = UserMapper.MapToEntityCreate(entity);
                 var entityvalidate = await _Validator.ValidateAsync(User);
 
                 if (!entityvalidate.IsValid)
                 {
-                    _logger.LogError("Attempted to add a null User entity");
-
-                    return OperationResult.Failure("An error occurred while retrieving User entities usuario invalido.");
+                   
+                    var errorMessages = string.Join(", ", entityvalidate.Errors.Select(e => e.ErrorMessage));
+                    _logger.LogError("User validation failed");
+                    return OperationResult.Failure("La validación falló: " + errorMessages);
                 }
                 result = await _repository.Createasync(User);
 
@@ -126,9 +127,9 @@ namespace SWCE.Aplicatition.Services
 
                 if (!entityvalidate.IsValid)
                 {
-                    _logger.LogError("Attempted to update a null User entity");
-
-                    return OperationResult.Failure("An error occurred while retrieving User entities.");
+                    var errorMessages = string.Join(", ", entityvalidate.Errors.Select(e => e.ErrorMessage));
+                    _logger.LogError("User validation failed");
+                    return OperationResult.Failure("La validación falló: " + errorMessages);
                 }
                 result = await _repository.Updateasync(User);
 

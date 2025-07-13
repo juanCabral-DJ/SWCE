@@ -7,6 +7,9 @@ using SWCE.Infraestructure.Logging;
 using System.Data;
 using SWCE.Aplicatition.Interfaces.Repositories.User_Perfil;
 using SWCE.Aplicatition.Extension.Validators_Registro.UserValidator;
+using FluentNHibernate.Data;
+using FluentNHibernate.Conventions;
+using static NHibernate.Engine.Query.CallableParser;
 
 namespace SWCE.Persistence.Repositories
 {
@@ -31,7 +34,11 @@ namespace SWCE.Persistence.Repositories
             {
                 _Logger.LogInformation("Adding a new User ${@Entity}", entity);
 
-
+                if(entity == null)
+                {
+                    _Logger.LogError("El user no puede ser nulo");
+                    return OperationResult.Failure("User cannot be null");
+                }
                   var presult = await ExecuteStoredProcedureAsync("dbo.CreateUser", new SqlParameter("@Nombre", entity.Nombre),
                     new SqlParameter("@Apellido", entity.apellido), new SqlParameter("@Email", entity.email)
                     , new SqlParameter("@Password_User", entity.password), new SqlParameter("@ID_Rol", entity.id_rol));
@@ -82,7 +89,7 @@ namespace SWCE.Persistence.Repositories
             catch (Exception ex)
             {
                 _Logger.LogError("An error occurred while retriver the User: {Message}", ex);
-                result = OperationResult.Failure($"An error occurred while retrieving all Users: {ex.Message}");
+                result = OperationResult.Failure("An error occurred while retrieving all Users");
             }
             finally
             {
@@ -98,7 +105,13 @@ namespace SWCE.Persistence.Repositories
             {
              _Logger.LogInformation("Retriver User entity by email");
 
-               var user = await ExecuteReaderSingleAsync<User>("dbo.GetUserByEmail", reader => new User
+                if (email == null)
+                {
+                    _Logger.LogError("El email no puede ser nulo");
+                    return OperationResult.Failure("Email cannot be null or empty");
+                }
+
+                var user = await ExecuteReaderSingleAsync<User>("dbo.GetUserByEmail", reader => new User
                 {
                     id = reader.GetInt32(reader.GetOrdinal("Id")),
                     Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
@@ -134,6 +147,12 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _Logger.LogInformation("Retriver User entity by id");
+
+                if (id == 0)
+                {
+                    _Logger.LogError("El id no puede ser nulo");
+                    return OperationResult.Failure("Id cannot be zero or negative");
+                }
 
                 var user = await ExecuteReaderSingleAsync<User>("GetUserById", reader => new User
                 {
@@ -171,6 +190,11 @@ namespace SWCE.Persistence.Repositories
             {
                 _Logger.LogInformation("Updating a new User ${@Entity}", entity);
 
+                if (entity == null)
+                {
+                    _Logger.LogError("El user no puede ser nulo");
+                    return OperationResult.Failure("User cannot be null");
+                }
 
                 var presult = await ExecuteStoredProcedureAsync("dbo.UpdateUser", new SqlParameter("@Id", entity.id),
                     new SqlParameter("@Email", entity.email), new SqlParameter("@Password_User", entity.password));
@@ -204,9 +228,8 @@ namespace SWCE.Persistence.Repositories
 
                 if (entity == null)
                 {
-                    _Logger.LogError("Attempted to update a null User entity");
-
-                    return OperationResult.Failure("An error occurred while retrieving User entities.");
+                    _Logger.LogError("El user no puede ser nulo");
+                    return OperationResult.Failure("User cannot be null");
                 }
 
                 var presult = await ExecuteStoredProcedureAsync("dbo.DisableUser", new SqlParameter("@Id", entity.id));
