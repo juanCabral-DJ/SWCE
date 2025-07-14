@@ -60,6 +60,7 @@ namespace SWCE.Persistence.Base
             OperationResult result = new OperationResult();
             try
             {
+                 
                 await Entity.AddAsync(entity);
                 await _context.SaveChangesAsync();
                 result = OperationResult.Success("Entidad creada con éxito.", entity);

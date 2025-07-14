@@ -31,15 +31,15 @@ namespace SWCE.Persistence.Repositories
 
             try
             {
-                _logger.LogInformation("Retrieving address entities");
+                _logger.LogInformation("Retrieving item entities");
                 var items  = await base.GetAllasync(filter);
 
-                result = OperationResult.Success("Retrieving Address entities", items );
+                result = OperationResult.Success("Retrieving item entities", items );
             }
             catch (Exception e)
             {
-                _logger.LogError("Error retrieving address entities", e);
-                result = OperationResult.Failure("An error occurred while retrieving address entities.");
+                _logger.LogError("Error retrieving item entities", e);
+                result = OperationResult.Failure("An error occurred while retrieving item entities.");
             }
 
             return result;
@@ -115,6 +115,12 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Retrieving WishListItem entities for UserId");
+
+                if (userId == 0)
+                {
+                    return OperationResult.Failure("El id tiene que ser positivo");
+                }
+
                 var items = await _Context.Lista_Deseos
                             .Where(a => a.Id_Usuario == userId)
                             .FirstOrDefaultAsync();
@@ -134,6 +140,11 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Retrieving Item entities");
+
+                if(id == 0)
+                {
+                    return OperationResult.Failure("El id debe ser positivo");
+                }
                 var entity = await base.GetbyIdasync(id);
 
                 result = OperationResult.Success("Retrieving Item entity", entity);

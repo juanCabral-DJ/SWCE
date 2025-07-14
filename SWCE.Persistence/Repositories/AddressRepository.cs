@@ -54,6 +54,12 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Retrieving address entities");
+
+                if (id <= 0)
+                {
+                    return OperationResult.Failure("El id tiene que ser positivo");
+                }
+
                 var entity = await base.GetbyIdasync(id);
 
                 result = OperationResult.Success("Retrieving Address entity", entity);
@@ -74,7 +80,7 @@ namespace SWCE.Persistence.Repositories
             {
                 if (entity is null)
                 {
-                    return OperationResult.Failure("Address entity not found.");
+                    return OperationResult.Failure("Address entity cannot be null");
                 }
 
                 Address? addressexist = await _Context.Direcciones.FindAsync(entity.id);
@@ -137,8 +143,9 @@ namespace SWCE.Persistence.Repositories
                 if (entity == null)
                 {
                     _logger.LogError("Attempted to update a null Address entity.");
-                    result = OperationResult.Failure("update entity cannot be null.");
+                    return OperationResult.Failure("Address entity cannot be null");
                 }
+
                 _logger.LogInformation("updating Address entity: ${@Entity}", entity);
 
                 Address addressupdate = await _Context.Direcciones.FindAsync(entity.id);
@@ -168,6 +175,12 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Retrieving Address entities for UserId and Predeterminada");
+
+                if (userid <= 0)
+                {
+                    return OperationResult.Failure("El id tiene que ser positivo");
+                }
+
                 var address = await _Context.Direcciones
                             .Where(a => a.ID_Usuario == userid && a.Es_predeterminada == true)
                             .FirstOrDefaultAsync();
@@ -197,6 +210,12 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Retrieving Address entities for UserId");
+
+                if (userId <= 0)
+                {
+                    return OperationResult.Failure("El id tiene que ser positivo");
+                }  
+
                 var addresses = await _Context.Direcciones
                             .Where(a => a.ID_Usuario == userId)
                             .ToListAsync();
