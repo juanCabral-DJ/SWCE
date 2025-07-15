@@ -18,10 +18,10 @@ namespace SWCE.Aplicatition.Services
         private readonly CreateUserValidator _Validator;
         private readonly UpdateUserValidator _ValidatorUpdate;
         private readonly IRepositoryUser _repository;
-        private readonly ILoggerBase<User> _logger;
+        private readonly ILoggerBase<UserServices> _logger;
         private readonly IConfiguration _configuration;
 
-        public UserServices(IRepositoryUser repository, ILoggerBase<User> logger, IConfiguration configuration
+        public UserServices(IRepositoryUser repository, ILoggerBase<UserServices> logger, IConfiguration configuration
             , CreateUserValidator Validator, UpdateUserValidator ValidatorUpdate)
         {
             _Validator = Validator;
