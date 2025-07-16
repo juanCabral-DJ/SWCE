@@ -2,20 +2,20 @@ using FluentValidation;
 using SWCE.Application.Base;
 using SWCE.Application.Dtos.Carrito;
 using SWCE.Application.Dtos.ItemCarrito;
-using SWCE.Application.Interfaces.Repositories; // Para IRepositoryBase<T>, ICarritoRepository, IItemCarritoRepository
+using SWCE.Application.Interfaces.Repositories; 
 using SWCE.Application.Interfaces.Repositories.CarritoModule;
-using SWCE.Application.Interfaces.Services; // Para ICarritoService, IItemCarritoService
-using SWCE.Application.Services; // Para CarritoService, ItemCarritoService
+using SWCE.Application.Interfaces.Services; 
+using SWCE.Application.Services; 
 using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
-using SWCE.Persistence.Repositories;// Asumo que aquí están tus implementaciones concretas
+using SWCE.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SWCE.Domain.Repository;
 using SWCE.Application.Extension.Validators.CarritoValidator;
 using SWCE.Application.Extension.Validators.ItemCarritoValidator;
 using SWCE.Application.Extension.Validators.ProductoValidators;
-
+using SWCE.IOC.Dependencies;
 
 namespace SWCE.Api
 {
@@ -26,45 +26,15 @@ namespace SWCE.Api
 
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             // --- Conexión a la BD ---
             var connectionString = builder.Configuration.GetConnectionString("E-commerceConnection");
             builder.Services.AddDbContext<E_commerceContext>(options =>
                 options.UseSqlServer(connectionString));
 
-
-            //Validadores de Carrito y ItemCarrito
-            builder.Services.AddTransient<IValidator<CreateCarritoDto>, CreateCarritoValidator>();
-            builder.Services.AddTransient<IValidator<UpdateCarritoDto>, UpdateCarritoValidator>();
-            builder.Services.AddTransient<IValidator<AddItemCarritoDto>, AddItemCarritoValidator>();
-            builder.Services.AddTransient<IValidator<UpdateItemCantidadDto>, UpdateItemCantidadValidator>();
-            builder.Services.AddTransient<CreateItemCarritoValidator>();
-            builder.Services.AddTransient<CreateCarritoValidator>();
-            builder.Services.AddTransient<UpdateCarritoValidator>();
-            builder.Services.AddTransient<CreateProductoValidator>();
-            builder.Services.AddTransient<UpdateProductoValidator>();
-
-
-            // --- Repositorios ---
-
-            //Repositorios de Carrito y ItemCarrito
-            builder.Services.AddScoped<ICarritoRepository, CarritoRepository>();
-            builder.Services.AddScoped<IItemCarritoRepository, ItemCarritoRepository>();
-
-            //Repositorio de Productos
-            builder.Services.AddScoped<IRepositorioProducto, ProductoRepository>();
-
-
-            // --- Servicios ---
-
-            // Servicios de Carrito y ItemCarrito
-            builder.Services.AddTransient<ICarritoService, CarritoService>();
-            builder.Services.AddTransient<IItemCarritoService, ItemCarritoService>();
+            builder.Services.AddCarritoDependencies();
 
             // --- Logger ---
             builder.Services.AddSingleton(typeof(ILoggerBase<>), typeof(LoggerBase<>));
-
 
             // --- Configuración de API ---
             builder.Services.AddEndpointsApiExplorer();

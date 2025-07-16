@@ -34,16 +34,6 @@ namespace SWCE.Persistence.Repositories
 
         public async Task<OperationResult> Createasync(CreateCarritoDto entity)
         {
-            var connection = new SqlConnection(_connectionString);
-
-            if (connection.State == System.Data.ConnectionState.Open)
-            {
-                Console.WriteLine("La conexión está abierta y lista");
-            }
-            else
-            {
-                Console.WriteLine("La conexión NO está abierta");
-            }
 
             OperationResult result = new OperationResult();
             var validation = _createValidator.Validate(entity);
@@ -86,37 +76,10 @@ namespace SWCE.Persistence.Repositories
             {
                 _logger.LogInformation("Obteniendo todos los carritos");
 
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    using (var command = new SqlCommand("dbo.GetCarrito", connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-
-                        await connection.OpenAsync();
-
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            while (await reader.ReadAsync())
-                            {
-                                var carrito = new GetCarritoDto
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    IdUsuario = reader.GetInt32(reader.GetOrdinal("ID_Usuario")),
-                                    Total = reader.GetDecimal(reader.GetOrdinal("Total")),
-                                    IsDeleted = reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
-                                    Productos = new List<GetItemCarritoDto>()
-                                };
-
-                                carrito.Productos = await GetItemsByCarritoIdAsync(carrito.Id);
-
-                                carritos.Add(carrito);
-                            }
-                        }
-                    }
-                }
+                var carrito = await ExecuteReaderListAsync("dbo.GetCarrito", CarritoMapper.MapToGetCarritoDto);
 
                 result.IsSuccess = true;
-                result.Data = carritos;
+                result.Data = carrito;
                 result.Message = "Carritos obtenidos exitosamente.";
             }
             catch (Exception ex)
@@ -137,44 +100,18 @@ namespace SWCE.Persistence.Repositories
             {
                 _logger.LogInformation("Buscando carrito por ID: {Id}", id);
 
-                using (var connection = new SqlConnection(_connectionString))
+                var carrito = await ExecuteReaderSingleAsync("dbo.GetCarritoById", CarritoMapper.MapToGetCarritoDto, new SqlParameter("@Id", id));
+
+                if (carrito != null)
                 {
-                    using (var command = new SqlCommand("dbo.GetCarritoById", connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.Add(new SqlParameter("@Id", id));
-
-                        await connection.OpenAsync();
-
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                var carrito = new GetCarritoDto
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    IdUsuario = reader.GetInt32(reader.GetOrdinal("ID_Usuario")),
-                                    Total = reader.GetDecimal(reader.GetOrdinal("Total")),
-                                    IsDeleted = reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
-                                    Productos = new List<GetItemCarritoDto>()
-                                };
-
-                                reader.Close();
-
-                                var Productos = await GetItemsByCarritoIdAsync(carrito.Id);
-                                carrito.Productos = Productos;
-
-                                result.IsSuccess = true;
-                                result.Data = carrito;
-                                result.Message = "Carrito encontrado.";
-                            }
-                            else
-                            {
-                                result.IsSuccess = false;
-                                result.Message = "Carrito no encontrado.";
-                            }
-                        }
-                    }
+                    result.IsSuccess = true;
+                    result.Data = carrito;
+                    result.Message = "Carrito encontrado.";
+                }
+                else
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Carrito no encontrado.";
                 }
             }
             catch (Exception ex)
@@ -187,6 +124,35 @@ namespace SWCE.Persistence.Repositories
             return result;
         }
 
+        public async Task<OperationResult> GetByUserIdAsync(int userId)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                _logger.LogInformation("Attempting to retrieve carrito by user ID: {UserId}", userId);
+
+                var carrito = await ExecuteReaderSingleAsync("dbo.sp_Carrito_ExistsByUserId", CarritoMapper.MapToGetCarritoDto, new SqlParameter("@ID_Usuario", userId));
+
+                if (carrito != null)
+                {
+                    result.IsSuccess = true;
+                    result.Data = carrito;
+                    result.Message = "Carrito found for the user.";
+                }
+                else
+                {
+                    result.IsSuccess = false;
+                    result.Message = "No carrito found for the specified user ID.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error retrieving carrito", ex);
+                result.IsSuccess = false;
+                result.Message = "An error occurred while retrieving the carrito for the user.";
+            }
+            return result;
+        }
         public async Task<OperationResult> Updateasync(UpdateCarritoDto entity)
         {
             var result = new OperationResult();
@@ -206,7 +172,7 @@ namespace SWCE.Persistence.Repositories
 
                 await ExecuteStoredProcedureAsync("dbo.ModifyCarrito",
                     new SqlParameter("@Id", entity.Id),
-                    new SqlParameter("@ID_Usuario", entity.IdUsuario),
+                    new SqlParameter("@ID_Usuario", entity.ID_Usuario),
                     new SqlParameter("@Total", entity.Total),
                     new SqlParameter("@IsDeleted", entity.IsDeleted)
                 );
@@ -256,8 +222,6 @@ namespace SWCE.Persistence.Repositories
             }
         }
 
-        
-
         public async Task<OperationResult> DeleteAsync(DisableCarritoDto entity)
         {
             var result = new OperationResult();
@@ -292,6 +256,8 @@ namespace SWCE.Persistence.Repositories
 
             return result;
         }
+
+        // Metodos Helper
         private async Task ExecuteStoredProcedureAsync(string storedProcedureName, params SqlParameter[] parameters)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -313,91 +279,56 @@ namespace SWCE.Persistence.Repositories
             }
         }
 
-        public async Task<OperationResult> GetByUserIdAsync(int userId)
+        private async Task<List<T>> ExecuteReaderListAsync<T>(string storedProcedureName, Func<SqlDataReader, T> map, params SqlParameter[] parameters)
         {
-            OperationResult result = new OperationResult();
-            try
+            var items = new List<T>();
+            using (var connection = new SqlConnection(_connectionString))
             {
-                _logger.LogInformation("Attempting to retrieve carrito by user ID: {UserId}", userId);
-
-                using (var connection = new SqlConnection(_connectionString))
+                using (var command = new SqlCommand(storedProcedureName, connection))
                 {
-                    using (var command = new SqlCommand("dbo.sp_Carrito_ExistsByUserId", connection)) 
+                    command.CommandType = CommandType.StoredProcedure;
+                    if (parameters != null)
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.Add(new SqlParameter("@ID_Usuario", userId));
-
-                        await connection.OpenAsync();
-
-                        using (var reader = await command.ExecuteReaderAsync())
+                        command.Parameters.AddRange(parameters);
+                    }
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
                         {
-                            if (await reader.ReadAsync())
-                            {
-                                var carrito = CarritoMapper.MapToGetCarritoDtoFromReader(reader);
-                                result.IsSuccess = true;
-                                result.Data = carrito;
-                                result.Message = "Carrito found for the user.";
-                            }
-                            else
-                            {
-                                result.IsSuccess = false;
-                                result.Message = "No carrito found for the specified user ID.";
-                            }
+                            items.Add(map(reader));
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error retrieving carrito", ex);
-                result.IsSuccess = false;
-                result.Message = "An error occurred while retrieving the carrito for the user.";
-            }
-            return result;
-        }
-
-        public async Task<List<GetItemCarritoDto>> GetItemsByCarritoIdAsync(int carritoId)
-        {
-            var items = new List<GetItemCarritoDto>();
-
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    using (var command = new SqlCommand("dbo.GetItemCarritoByCarritoId", connection))
-                    {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.Add(new SqlParameter("@CarritoId", carritoId));
-
-                        await connection.OpenAsync();
-
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            while (await reader.ReadAsync())
-                            {
-                                items.Add(new GetItemCarritoDto
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    CarritoId = reader.GetInt32(reader.GetOrdinal("CarritoId")),
-                                    IdProducto = reader.GetInt32(reader.GetOrdinal("ID_Producto")),
-                                    NombreProducto = reader.GetString(reader.GetOrdinal("NombreProducto")),
-                                    PrecioUnitario = reader.GetDecimal(reader.GetOrdinal("PrecioUnitario")),
-                                    Cantidad = reader.GetInt32(reader.GetOrdinal("Cantidad")),
-                                    Subtotal = reader.GetDecimal(reader.GetOrdinal("SubTotal"))
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error al obtener los items del carrito", ex);
-            }
-
             return items;
         }
-        
+
+        private async Task<T?> ExecuteReaderSingleAsync<T>(string storedProcedureName, Func<SqlDataReader, T> map, params SqlParameter[] parameters) where T : class
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedureName, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return map(reader);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+
 
     }
 

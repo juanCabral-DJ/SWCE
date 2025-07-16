@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using SWCE.Application.Base;
+using SWCE.Application.Dtos.ItemCarrito;
 using SWCE.Application.Extension.Validators.ItemCarritoValidator;
 using SWCE.Application.Interfaces.Repositories.CarritoModule;
 using SWCE.Domain.Base;
@@ -9,6 +12,7 @@ using SWCE.Persistence.Context;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Net;
@@ -102,14 +106,21 @@ namespace SWCE.Persistence.Repositories
 
                 if (existingItem != null)
                 {
+                    existingItem.PrecioUnitario = item.PrecioUnitario;
+
                     existingItem.Cantidad += item.Cantidad;
+
+                    existingItem.SubTotal = existingItem.Cantidad * existingItem.PrecioUnitario;
+
                     var updateResult = await base.Updateasync(existingItem);
+
                     if (!updateResult.IsSuccess)
                     {
                         _logger.LogError("Error al actualizar la cantidad del ItemCarrito existente: " + updateResult.Message);
                         return OperationResult.Failure($"Error al actualizar la cantidad del ItemCarrito existente: {updateResult.Message}");
                     }
-                    _logger.LogInformation("Actualizando cantidad de ItemCarrito existente: {@Item}", existingItem);
+
+                    _logger.LogInformation("Actualizando cantidad y subtotal de ItemCarrito existente: {@Item}", existingItem);
                     return OperationResult.Success("Cantidad de ItemCarrito existente actualizada exitosamente.", existingItem);
                 }
                 else
@@ -131,29 +142,34 @@ namespace SWCE.Persistence.Repositories
             }
         }
 
-        public async Task<OperationResult> GetItemsByCartIdAsync(int carritoId)
+        public async Task<List<GetItemCarritoDto>> GetItemsByCarritoIdAsync(int carritoId)
         {
+
             try
             {
                 _logger.LogInformation($"Recuperando items para Carrito con ID: {carritoId}");
-                var items = await _context.Set<ItemCarrito>()
-                                        .Where(i => i.CarritoId == carritoId && i.IsDeleted == false)
-                                        .ToListAsync();
 
-                if (items == null || !items.Any())
+                var entityItems = await _context.ItemsCarrito
+                    .Where(i => i.CarritoId == carritoId && i.IsDeleted == false)
+                    .ToListAsync();
+
+                if (entityItems == null || !entityItems.Any())
                 {
-                    _logger.LogInformation($"No se encontraron items para el Carrito con ID: {carritoId}");
-                    return OperationResult.Failure($"No se encontraron items para el carrito con ID: {carritoId}.");
+                    _logger.LogInformation($"No se encontraron items para el carrito con ID: {carritoId}");
+                    return new List<GetItemCarritoDto>(); 
                 }
 
-                _logger.LogInformation($"Se recuperaron {items.Count} items para el Carrito con ID: {carritoId}");
-                return OperationResult.Success("Items del carrito recuperados exitosamente.", items);
+                var items = entityItems.Select(ItemCarritoMapper.MapToGetDto).ToList();
+
+                _logger.LogInformation($"Se recuperaron {items.Count} items para el carrito con ID: {carritoId}");
+                return items;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error al recuperar items para Carrito con ID: {carritoId}", ex);
-                return OperationResult.Failure($"Ocurrió un error al recuperar los items del carrito: {ex.Message}");
+                _logger.LogError($"Error al obtener los items del carrito con ID: {carritoId}", ex);
+                return new List<GetItemCarritoDto>(); 
             }
+
         }
 
         public async Task<OperationResult> RemoveItemAsync(int itemId)
@@ -183,88 +199,6 @@ namespace SWCE.Persistence.Repositories
             }
         }
 
-        public async Task<OperationResult> UpdateItemAsync(ItemCarrito item)
-        {
-            try
-            {
-                _logger.LogInformation("Intentando actualizar ItemCarrito: {@Item}", item);
-
-                if (item == null)
-                {
-                    _logger.LogError("Se intentó actualizar un ItemCarrito nulo.");
-                    return OperationResult.Failure("El ItemCarrito no puede ser nulo para la actualización.");
-                }
-
-                var validationResult = await _Validator.ValidateAsync(item);
-                if (!validationResult.IsValid)
-                {
-                    _logger.LogError("Fallo de validación para la actualización de ItemCarrito: " + string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
-                    return OperationResult.Failure("Fallo de validación: " + string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
-                }
-
-                var updateResult = await base.Updateasync(item);
-
-                if (!updateResult.IsSuccess)
-                {
-                    _logger.LogError("Error al actualizar ItemCarrito: " + updateResult.Message);
-                    return OperationResult.Failure($"Error al actualizar ItemCarrito: {updateResult.Message}");
-                }
-
-                _logger.LogInformation("ItemCarrito actualizado exitosamente: {@Item}", item);
-                return OperationResult.Success("ItemCarrito actualizado exitosamente.", item);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error inesperado al actualizar ItemCarrito: {@Item}", ex);
-                return OperationResult.Failure($"Ocurrió un error inesperado al actualizar el ItemCarrito: {ex.Message}");
-            }
-        }
-
-        public async Task<OperationResult> UpdateItemQuantityAsync(int Id, int newQuantity)
-        {
-            try
-            {
-                _logger.LogInformation($"Intentando actualizar la cantidad del ItemCarrito con ID: {Id} a {newQuantity}");
-
-                if (newQuantity <= 0)
-                {
-                    _logger.LogError($"Cantidad inválida ({newQuantity}) para la actualización del ItemCarrito con ID: {Id}.");
-                    return OperationResult.Failure("La nueva cantidad debe ser mayor a 0.");
-                }
-
-                var getItemResult = await base.GetbyIdasync(Id);
-                if (!getItemResult.IsSuccess || getItemResult.Data == null)
-                {
-                    _logger.LogInformation($"ItemCarrito con ID {Id} no encontrado para la actualización de cantidad.");
-                    return OperationResult.Failure(getItemResult.Message ?? $"ItemCarrito con ID {Id} no encontrado.");
-                }
-
-                var itemToUpdate = getItemResult.Data as ItemCarrito;
-                if (itemToUpdate == null)
-                {
-                    _logger.LogError($"Error interno: No se pudo convertir el ItemCarrito recuperado para ID: {Id}.");
-                    return OperationResult.Failure($"Error interno: No se pudo convertir el ItemCarrito recuperado.");
-                }
-
-                itemToUpdate.Cantidad = newQuantity;
-
-                var updateResult = await base.Updateasync(itemToUpdate);
-
-                if (!updateResult.IsSuccess)
-                {
-                    _logger.LogError("Error al actualizar la cantidad del ItemCarrito: " + updateResult.Message);
-                    return OperationResult.Failure($"Error al actualizar la cantidad del ItemCarrito: {updateResult.Message}");
-                }
-
-                _logger.LogInformation($"Cantidad de ItemCarrito con ID {Id} actualizada exitosamente a {newQuantity}.");
-                return OperationResult.Success("Cantidad del ItemCarrito actualizada exitosamente.", itemToUpdate);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error inesperado al actualizar la cantidad del ItemCarrito con ID: {Id}.", ex);
-                return OperationResult.Failure($"Ocurrió un error inesperado al actualizar la cantidad del ItemCarrito: {ex.Message}");
-            }
-        }
         public async Task<OperationResult> ClearItemsByCarritoIdAsync(int carritoId)
         {
             try

@@ -1,4 +1,5 @@
-﻿using SWCE.Application.Dtos.ItemCarrito;
+﻿using SWCE.Application.Dtos.Base;
+using SWCE.Application.Dtos.ItemCarrito;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Dtos.Carrito
 {
-    public record CreateCarritoDto
+    public record CreateCarritoDto : CarritoBaseDto
     {
 
-        public int ID_Usuario { get; init; }
     }
 }

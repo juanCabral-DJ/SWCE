@@ -8,7 +8,6 @@ using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using SWCE.Domain.Repository;
 using SWCE.Infraestructure.Logging;
-using SWCE.Application.Services.Base;
 
 namespace SWCE.Application.Services
 {
@@ -72,7 +71,7 @@ namespace SWCE.Application.Services
                 var precioUnitario = producto.Precio;
                 var subtotal = precioUnitario * dto.Cantidad;
 
-                var itemCarritoEntity = ItemCarritoMapper.MapToEntity(dto);
+                var itemCarritoEntity = ItemCarritoMapper.MapToEntity(dto, producto.Nombre);
                 itemCarritoEntity.PrecioUnitario = precioUnitario;
                 itemCarritoEntity.SubTotal = subtotal;
 
@@ -124,7 +123,6 @@ namespace SWCE.Application.Services
                     return OperationResult.Failure("Internal error: retrieved item is not valid.");
                 }
 
-                // Aquí obtenemos el producto para actualizar precio y subtotal
                 var productoResult = await _ProductoRepository.GetbyIdasync(itemToUpdate.IdProducto);
                 if (!productoResult.IsSuccess || productoResult.Data == null)
                 {
@@ -138,7 +136,6 @@ namespace SWCE.Application.Services
                     return OperationResult.Failure("Internal error: product data is invalid.");
                 }
 
-                // Actualizamos la cantidad, precio unitario y subtotal
                 itemToUpdate.Cantidad = dto.NewCantidad;
                 itemToUpdate.PrecioUnitario = producto.Precio;
                 itemToUpdate.SubTotal = producto.Precio * dto.NewCantidad;

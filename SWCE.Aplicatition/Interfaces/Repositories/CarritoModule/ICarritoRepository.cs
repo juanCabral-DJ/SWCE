@@ -21,7 +21,6 @@ namespace SWCE.Application.Interfaces.Repositories
         Task<bool> ExistsByIdAsync(int id);
         Task<OperationResult> GetByUserIdAsync(int userId);
         Task<OperationResult> DeleteAsync(DisableCarritoDto entity);
-        Task<List<GetItemCarritoDto>> GetItemsByCarritoIdAsync(int carritoId);
     }
 }
 

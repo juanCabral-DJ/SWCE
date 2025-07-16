@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Dtos.Base
 {
-    internal class CarritoBaseDto
+    public record CarritoBaseDto
     {
+        public int ID_Usuario { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SWCE.Application.Dtos.ItemCarrito;
+﻿using SWCE.Application.Dtos.Base;
+using SWCE.Application.Dtos.ItemCarrito;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Dtos.Carrito
 {
-    public record GetCarritoDto
+    public record GetCarritoDto : CarritoBaseDto
     {
         public int Id { get; set; }
-        public int IdUsuario { get; set; }
         public decimal Total { get; set; }
         public DateTime CreateAt { get; set; }
         public bool? IsDeleted { get; set; }

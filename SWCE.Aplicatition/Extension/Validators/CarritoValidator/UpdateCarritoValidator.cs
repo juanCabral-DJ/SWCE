@@ -15,7 +15,7 @@ namespace SWCE.Application.Extension.Validators.CarritoValidator
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage("El Id del carrito debe ser mayor que cero.");
 
-            RuleFor(x => x.IdUsuario)
+            RuleFor(x => x.ID_Usuario)
                 .GreaterThan(0).WithMessage("El Id del usuario debe ser mayor que cero.");
 
             RuleFor(x => x.Total)

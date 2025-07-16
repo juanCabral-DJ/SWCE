@@ -1,4 +1,5 @@
-﻿using SWCE.Application.Dtos.Carrito;
+﻿using SWCE.Application.Base;
+using SWCE.Application.Dtos.Carrito;
 using SWCE.Application.Dtos.ItemCarrito;
 using SWCE.Application.Extension.Validators.CarritoValidator;
 using SWCE.Application.Interfaces.Repositories;
@@ -120,13 +121,20 @@ namespace SWCE.Application.Services
 
                 if (result.IsSuccess && result.Data is IEnumerable<GetCarritoDto> carritos)
                 {
-                    _logger.LogInformation("Todos los carritos obtenidos exitosamente.");
+                    foreach (var carrito in carritos)
+                    {
+                        var items = await _itemCarritoRepository.GetItemsByCarritoIdAsync(carrito.Id);
+                        carrito.Productos = items;
+                    }
+
+                    _logger.LogInformation("Todos los carritos obtenidos exitosamente con sus items.");
+                    return OperationResult.Success("Carritos obtenidos con items.", carritos);
                 }
                 else
                 {
                     _logger.LogError("Fallo al obtener todos los carritos.");
+                    return OperationResult.Failure("Fallo al obtener todos los carritos.");
                 }
-                return result;
             }
             catch (Exception ex)
             {
@@ -145,34 +153,33 @@ namespace SWCE.Application.Services
                 return OperationResult.Failure("El ID del usuario debe ser mayor que cero.");
             }
 
-            var result = new OperationResult();
             try
             {
-                
-                var repoResult = await _carritoRepository.GetByUserIdAsync(userId);
+                var carritoResult = await _carritoRepository.GetByUserIdAsync(userId);
 
-                if (repoResult != null && repoResult.IsSuccess && repoResult.Data != null)
+                if (!carritoResult.IsSuccess || carritoResult.Data == null)
                 {
-                    result.IsSuccess = true;
-                    result.Data = repoResult.Data;
-                    result.Message = "Carrito activo encontrado para el usuario.";
-                    _logger.LogInformation("Carrito activo encontrado para el usuario.");
-                }
-                else
-                {
-                    result.IsSuccess = false;
-                    result.Message = "No se encontró un carrito activo para el usuario.";
                     _logger.LogInformation("No se encontró carrito activo para el usuario.");
+                    return OperationResult.Failure("No se encontró un carrito activo para el usuario.");
                 }
+
+                var carritoDto = carritoResult.Data as GetCarritoDto;
+                if (carritoDto == null)
+                {
+                    return OperationResult.Failure("Error al mapear el carrito.");
+                }
+
+                var items = await _itemCarritoRepository.GetItemsByCarritoIdAsync(carritoDto.Id);
+                carritoDto.Productos = items;
+
+                _logger.LogInformation("Carrito activo encontrado para el usuario con items.");
+                return OperationResult.Success("Carrito activo encontrado con items.", carritoDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Ocurrió un error al buscar carrito activo para el usuario.", ex);
-                result.IsSuccess = false;
-                result.Message = "Ocurrió un error al buscar el carrito activo.";
+                return OperationResult.Failure("Ocurrió un error al buscar el carrito activo.");
             }
-
-            return result;
         }
 
         public async Task<OperationResult> GetByIdAsync(int id)
@@ -187,17 +194,25 @@ namespace SWCE.Application.Services
 
             try
             {
-                var result = await _carritoRepository.GetbyIdasync(id);
+                var carritoResult = await _carritoRepository.GetbyIdasync(id);
 
-                if (result.IsSuccess && result.Data != null)
-                {
-                    _logger.LogInformation("Carrito obtenido exitosamente.");
-                }
-                else
+                if (!carritoResult.IsSuccess || carritoResult.Data == null)
                 {
                     _logger.LogError("Carrito no encontrado o fallo al obtenerlo.");
+                    return carritoResult;
                 }
-                return result;
+
+                var carritoDto = carritoResult.Data as GetCarritoDto;
+                if (carritoDto == null)
+                {
+                    return OperationResult.Failure("Error al mapear el carrito.");
+                }
+
+                var items = await _itemCarritoRepository.GetItemsByCarritoIdAsync(carritoDto.Id);
+                carritoDto.Productos = items;
+
+                _logger.LogInformation("Carrito obtenido exitosamente con items.");
+                return OperationResult.Success("Carrito obtenido con items.", carritoDto);
             }
             catch (Exception ex)
             {
@@ -270,29 +285,24 @@ namespace SWCE.Application.Services
             }
         }
 
-
-        // Ubicación: SWCE.Application.Services/CarritoService.cs
-
         public async Task UpdateCarritoTotal(int carritoId)
         {
             _logger.LogInformation($"Actualizando total del carrito con ID: {carritoId}");
 
             try
             {
-                // 1. Obtener los items como entidades del dominio (lo que el repo devuelve)
-                var items = await _carritoRepository.GetItemsByCarritoIdAsync(carritoId);
 
-                // Si no hay items o la operación falló, podríamos establecer el total en 0.
+                var items = await _itemCarritoRepository.GetItemsByCarritoIdAsync(carritoId);
+
                 decimal nuevoTotal = 0;
 
                 if (items != null && items.Any())
                 {
-                    nuevoTotal = items.Sum(i => i.Subtotal);
+                    nuevoTotal = items.Sum(i => i.SubTotal);
                 }
 
                 _logger.LogInformation($"Nuevo total calculado para el carrito {carritoId}: {nuevoTotal}");
 
-                // 4. Obtener el DTO del carrito para tener sus datos actuales
                 var carritoResult = await _carritoRepository.GetbyIdasync(carritoId);
                 if (!carritoResult.IsSuccess || carritoResult.Data == null)
                 {
@@ -300,19 +310,12 @@ namespace SWCE.Application.Services
                     return;
                 }
 
-                // El GetbyIdasync de tu repo devuelve un GetCarritoDto, eso está bien.
                 var carritoDto = carritoResult.Data as GetCarritoDto;
 
-                // 5. Crear el DTO de actualización con el nuevo total
-                var updateDto = new UpdateCarritoDto
-                {
-                    Id = carritoDto.Id,
-                    IdUsuario = carritoDto.IdUsuario,
-                    Total = nuevoTotal, // Usamos el total recién calculado
-                    IsDeleted = carritoDto.IsDeleted
-                };
 
-                // 6. Llamar al repositorio para guardar los cambios
+                var updateDto = CarritoMapper.MapToUpdateDto(carritoDto, nuevoTotal);
+
+
                 var updateResult = await _carritoRepository.Updateasync(updateDto);
 
                 if (!updateResult.IsSuccess)

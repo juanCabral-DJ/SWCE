@@ -12,7 +12,6 @@ namespace SWCE.Domain.Entities
         public Carrito() { }
 
         public List<ItemCarrito> productos { get; set; }
-        private decimal total;
 
         public override int Id{ get; set; }
         public int IdUsuario{ get; set; }

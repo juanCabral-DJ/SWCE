@@ -5,14 +5,15 @@ namespace SWCE.Application.Base
 {
     public static class ItemCarritoMapper
     {
-        public static ItemCarrito MapToEntity(AddItemCarritoDto dto)
+        public static ItemCarrito MapToEntity(AddItemCarritoDto dto, string nombreProducto)
         {
             return new ItemCarrito
             {
                 CarritoId = dto.CarritoId,
                 IdProducto = dto.IdProducto,
-                Cantidad = dto.Cantidad
-                // PrecioUnitario y SubTotal los llenas luego en el servicio (como ya haces)
+                Cantidad = dto.Cantidad,
+                NombreProducto = nombreProducto
+                // PrecioUnitario y SubTotal se calculan y asignan en el servicio.
             };
         }
 
@@ -26,7 +27,7 @@ namespace SWCE.Application.Base
                 Cantidad = entity.Cantidad,
                 NombreProducto = entity.NombreProducto,
                 PrecioUnitario = entity.PrecioUnitario,
-                Subtotal = entity.SubTotal
+                SubTotal = entity.SubTotal
             };
         }
     }
