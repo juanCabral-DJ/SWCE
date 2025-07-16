@@ -25,53 +25,5 @@ namespace SWCE.Domain.Entities
             this.IdUsuario= IdUsuario;
         }
 
-        public void AgregarItem (Producto p, int cantidad)
-        {
-            if (p == null) throw new InvalidOperationException("Producto inválido");
-            if (cantidad <= 0) throw new InvalidOperationException("Cantidad inválida");
-
-            var existeProducto = productos.FirstOrDefault(i => i.IdProducto == p.Id);
-
-            if (existeProducto != null)
-            {
-                existeProducto.incrementarCantidad(cantidad);
-            }
-            else
-            {
-                productos.Add(new ItemCarrito(p.Id, Id, p, cantidad));
-            }
-
-            SubTotal = CalcularSubTotal();
-        }
-        
-        public void EliminarItem (int IdProducto)
-        {
-            var producto = productos.FirstOrDefault(i => i.IdProducto == IdProducto);
-            
-            if (producto != null)
-            {
-                productos.Remove(producto);
-            }
-        }
-
-        public decimal CalcularSubTotal()
-        {
-            decimal subt = 0m;
-
-            foreach (var item in productos)
-            {
-                subt = + item.SubTotal;
-            }
-
-            return subt;
-        }
-
-        // Falta implementar mejor el apartado de cupones para verificar como hacer los descuentos
-        public decimal CalcularTotal()
-        {
-            return total = SubTotal - Descuento;
-
-        }
-
     }
 }

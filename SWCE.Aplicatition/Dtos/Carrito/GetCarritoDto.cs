@@ -13,7 +13,7 @@ namespace SWCE.Application.Dtos.Carrito
         public int IdUsuario { get; set; }
         public decimal Total { get; set; }
         public DateTime CreateAt { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
 
         public List<GetItemCarritoDto> Productos { get; set; } = new();
     }

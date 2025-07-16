@@ -13,5 +13,6 @@ namespace SWCE.Application.Interfaces.Services
         Task<OperationResult> DisableAsync(DisableCarritoDto dto);
         Task<OperationResult> GetActiveCarritoByUserIdAsync(int userId);
         Task<OperationResult> ClearCarritoAsync(int carritoId);
+        Task UpdateCarritoTotal(int carritoId);
     }
 }

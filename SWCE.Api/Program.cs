@@ -6,13 +6,15 @@ using SWCE.Application.Interfaces.Repositories; // Para IRepositoryBase<T>, ICar
 using SWCE.Application.Interfaces.Repositories.CarritoModule;
 using SWCE.Application.Interfaces.Services; // Para ICarritoService, IItemCarritoService
 using SWCE.Application.Services; // Para CarritoService, ItemCarritoService
-using SWCE.Application.Validators.CarritoValidator; // ¡NUEVO! Para validadores de Carrito
-using SWCE.Application.Validators.ItemCarritoValidator; // ¡NUEVO! Para validadores de ItemCarrito
 using SWCE.Infraestructure.Logging;
 using SWCE.Persistence.Base;
 using SWCE.Persistence.Context;
 using SWCE.Persistence.Repositories;// Asumo que aquí están tus implementaciones concretas
 using Microsoft.EntityFrameworkCore;
+using SWCE.Domain.Repository;
+using SWCE.Application.Extension.Validators.CarritoValidator;
+using SWCE.Application.Extension.Validators.ItemCarritoValidator;
+using SWCE.Application.Extension.Validators.ProductoValidators;
 
 
 namespace SWCE.Api
@@ -40,16 +42,18 @@ namespace SWCE.Api
             builder.Services.AddTransient<CreateItemCarritoValidator>();
             builder.Services.AddTransient<CreateCarritoValidator>();
             builder.Services.AddTransient<UpdateCarritoValidator>();
+            builder.Services.AddTransient<CreateProductoValidator>();
+            builder.Services.AddTransient<UpdateProductoValidator>();
 
-            
-            builder.Services.AddSingleton<CarritoMapper>(); 
-            builder.Services.AddSingleton<ItemCarritoMapper>();
 
             // --- Repositorios ---
 
             //Repositorios de Carrito y ItemCarrito
             builder.Services.AddScoped<ICarritoRepository, CarritoRepository>();
             builder.Services.AddScoped<IItemCarritoRepository, ItemCarritoRepository>();
+
+            //Repositorio de Productos
+            builder.Services.AddScoped<IRepositorioProducto, ProductoRepository>();
 
 
             // --- Servicios ---

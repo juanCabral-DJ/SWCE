@@ -1,5 +1,6 @@
 ﻿using SWCE.Application.Base;
 using SWCE.Application.Dtos.Carrito;
+using SWCE.Application.Dtos.ItemCarrito;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using System;
@@ -20,6 +21,7 @@ namespace SWCE.Application.Interfaces.Repositories
         Task<bool> ExistsByIdAsync(int id);
         Task<OperationResult> GetByUserIdAsync(int userId);
         Task<OperationResult> DeleteAsync(DisableCarritoDto entity);
+        Task<List<GetItemCarritoDto>> GetItemsByCarritoIdAsync(int carritoId);
     }
 }
 

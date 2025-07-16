@@ -12,6 +12,6 @@ namespace SWCE.Application.Dtos.Carrito
         public int Id { get; set; }
         public int IdUsuario { get; set; }
         public decimal Total { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }

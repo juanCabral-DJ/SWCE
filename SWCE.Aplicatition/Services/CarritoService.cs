@@ -1,9 +1,10 @@
 ﻿using SWCE.Application.Dtos.Carrito;
+using SWCE.Application.Dtos.ItemCarrito;
+using SWCE.Application.Extension.Validators.CarritoValidator;
 using SWCE.Application.Interfaces.Repositories;
 using SWCE.Application.Interfaces.Repositories.CarritoModule;
 using SWCE.Application.Interfaces.Services;
 using SWCE.Application.Services.Base;
-using SWCE.Application.Validators.CarritoValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using SWCE.Infraestructure.Logging;
@@ -266,6 +267,66 @@ namespace SWCE.Application.Services
             {
                 _logger.LogError("Ocurrió un error inesperado al limpiar el carrito.", ex);
                 return OperationResult.Failure("Ocurrió un error inesperado al limpiar el carrito.");
+            }
+        }
+
+
+        // Ubicación: SWCE.Application.Services/CarritoService.cs
+
+        public async Task UpdateCarritoTotal(int carritoId)
+        {
+            _logger.LogInformation($"Actualizando total del carrito con ID: {carritoId}");
+
+            try
+            {
+                // 1. Obtener los items como entidades del dominio (lo que el repo devuelve)
+                var items = await _carritoRepository.GetItemsByCarritoIdAsync(carritoId);
+
+                // Si no hay items o la operación falló, podríamos establecer el total en 0.
+                decimal nuevoTotal = 0;
+
+                if (items != null && items.Any())
+                {
+                    nuevoTotal = items.Sum(i => i.Subtotal);
+                }
+
+                _logger.LogInformation($"Nuevo total calculado para el carrito {carritoId}: {nuevoTotal}");
+
+                // 4. Obtener el DTO del carrito para tener sus datos actuales
+                var carritoResult = await _carritoRepository.GetbyIdasync(carritoId);
+                if (!carritoResult.IsSuccess || carritoResult.Data == null)
+                {
+                    _logger.LogError($"No se pudo encontrar el carrito {carritoId} para actualizar su total.");
+                    return;
+                }
+
+                // El GetbyIdasync de tu repo devuelve un GetCarritoDto, eso está bien.
+                var carritoDto = carritoResult.Data as GetCarritoDto;
+
+                // 5. Crear el DTO de actualización con el nuevo total
+                var updateDto = new UpdateCarritoDto
+                {
+                    Id = carritoDto.Id,
+                    IdUsuario = carritoDto.IdUsuario,
+                    Total = nuevoTotal, // Usamos el total recién calculado
+                    IsDeleted = carritoDto.IsDeleted
+                };
+
+                // 6. Llamar al repositorio para guardar los cambios
+                var updateResult = await _carritoRepository.Updateasync(updateDto);
+
+                if (!updateResult.IsSuccess)
+                {
+                    _logger.LogError($"Error al guardar el nuevo total del carrito {carritoId}. Mensaje: {updateResult.Message}");
+                }
+                else
+                {
+                    _logger.LogInformation($"Total del carrito {carritoId} actualizado exitosamente a {nuevoTotal}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Excepción inesperada al actualizar el total del carrito {carritoId}.", ex);
             }
         }
 

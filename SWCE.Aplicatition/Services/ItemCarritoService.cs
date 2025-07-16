@@ -6,34 +6,36 @@ using SWCE.Application.Interfaces.Services;
 using SWCE.Application.Services.Base;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
+using SWCE.Domain.Repository;
 using SWCE.Infraestructure.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SWCE.Application.Services.Base;
 
 namespace SWCE.Application.Services
 {
     public sealed class ItemCarritoService : ServiceBase<ItemCarrito>, IItemCarritoService
     {
+
         private readonly IItemCarritoRepository _itemCarritoRepository;
-        private readonly ItemCarritoMapper _itemCarritoMapper;
         private readonly IValidator<AddItemCarritoDto> _addItemValidator;
         private readonly IValidator<UpdateItemCantidadDto> _updateItemCantidadValidator;
+
+        private readonly IRepositorioProducto _ProductoRepository;
+        private readonly ICarritoService _carritoService;
 
         public ItemCarritoService(
             IItemCarritoRepository itemCarritoRepository,
             ILoggerBase<ServiceBase<ItemCarrito>> logger,
-            ItemCarritoMapper itemCarritoMapper,
             IValidator<AddItemCarritoDto> addItemValidator,
-            IValidator<UpdateItemCantidadDto> updateItemCantidadValidator)
+            IValidator<UpdateItemCantidadDto> updateItemCantidadValidator,
+            IRepositorioProducto productoRepository,
+            ICarritoService carritoService)
             : base(itemCarritoRepository, logger)
         {
             _itemCarritoRepository = itemCarritoRepository;
-            _itemCarritoMapper = itemCarritoMapper;
             _addItemValidator = addItemValidator;
             _updateItemCantidadValidator = updateItemCantidadValidator;
+            _ProductoRepository = productoRepository;
+            _carritoService = carritoService;
         }
 
         public async Task<OperationResult> AddItemToCarritoAsync(AddItemCarritoDto dto)
@@ -50,14 +52,36 @@ namespace SWCE.Application.Services
 
             try
             {
-                var itemCarritoEntity = _itemCarritoMapper.MapToEntity(dto);
+                var productoResult = await _ProductoRepository.GetbyIdasync(dto.IdProducto);
+                if (!productoResult.IsSuccess || productoResult.Data == null)
+                {
+                    return OperationResult.Failure("Producto no encontrado.");
+                }
+
+                var producto = productoResult.Data as Producto;
+                if (producto == null)
+                {
+                    return OperationResult.Failure("Error interno: no se pudo obtener el producto.");
+                }
+
+                if (producto == null)
+                {
+                    return OperationResult.Failure("Error interno: no se pudo obtener el producto.");
+                }
+
+                var precioUnitario = producto.Precio;
+                var subtotal = precioUnitario * dto.Cantidad;
+
+                var itemCarritoEntity = ItemCarritoMapper.MapToEntity(dto);
+                itemCarritoEntity.PrecioUnitario = precioUnitario;
+                itemCarritoEntity.SubTotal = subtotal;
 
                 var result = await _itemCarritoRepository.AddItemAsync(itemCarritoEntity);
 
                 if (result.IsSuccess)
                 {
                     _logger.LogInformation("Item added to cart successfully.");
-
+                    await _carritoService.UpdateCarritoTotal(dto.CarritoId);
                 }
                 else
                 {
@@ -100,18 +124,37 @@ namespace SWCE.Application.Services
                     return OperationResult.Failure("Internal error: retrieved item is not valid.");
                 }
 
-                itemToUpdate.Cantidad = dto.NewCantidad;
+                // Aquí obtenemos el producto para actualizar precio y subtotal
+                var productoResult = await _ProductoRepository.GetbyIdasync(itemToUpdate.IdProducto);
+                if (!productoResult.IsSuccess || productoResult.Data == null)
+                {
+                    _logger.LogError("Product not found when updating item.");
+                    return OperationResult.Failure("Product not found when updating item.");
+                }
 
-                var result = await base.UpdateAsync(itemToUpdate); 
+                var producto = productoResult.Data as Producto;
+                if (producto == null)
+                {
+                    return OperationResult.Failure("Internal error: product data is invalid.");
+                }
+
+                // Actualizamos la cantidad, precio unitario y subtotal
+                itemToUpdate.Cantidad = dto.NewCantidad;
+                itemToUpdate.PrecioUnitario = producto.Precio;
+                itemToUpdate.SubTotal = producto.Precio * dto.NewCantidad;
+
+                var result = await base.UpdateAsync(itemToUpdate);
 
                 if (result.IsSuccess)
                 {
-                    _logger.LogInformation("Item quantity updated successfully.");
+                    _logger.LogInformation("Item quantity and subtotal updated successfully.");
+                    await _carritoService.UpdateCarritoTotal(itemToUpdate.CarritoId);
                 }
                 else
                 {
-                    _logger.LogError("Failed to update item quantity.");
+                    _logger.LogError("Failed to update item quantity and subtotal.");
                 }
+
                 return result;
             }
             catch (Exception ex)
@@ -133,11 +176,22 @@ namespace SWCE.Application.Services
 
             try
             {
+                // Obtener el item para saber el carritoId
+                var getItemResult = await _itemCarritoRepository.GetbyIdasync(itemId);
+                if (!getItemResult.IsSuccess || getItemResult.Data == null)
+                {
+                    _logger.LogInformation("Item not found for removal.");
+                    return OperationResult.Failure($"Item with ID {itemId} not found.");
+                }
+
+                var item = getItemResult.Data as ItemCarrito;
+
                 var result = await _itemCarritoRepository.RemoveItemAsync(itemId);
 
                 if (result.IsSuccess)
                 {
                     _logger.LogInformation("Item removed from cart successfully.");
+                    await _carritoService.UpdateCarritoTotal(item.CarritoId);
                 }
                 else
                 {
@@ -151,6 +205,7 @@ namespace SWCE.Application.Services
                 return OperationResult.Failure("An unexpected error occurred while removing item from cart.");
             }
         }
+
 
     }
 }

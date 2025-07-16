@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Validators.CarritoValidator
+namespace SWCE.Application.Extension.Validators.CarritoValidator
 {
     public class CreateCarritoValidator : AbstractValidator<CreateCarritoDto>
     {

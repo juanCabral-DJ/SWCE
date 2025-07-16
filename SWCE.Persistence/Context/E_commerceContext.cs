@@ -17,6 +17,18 @@ namespace SWCE.Persistence.Context
 
         public DbSet<Carrito> Carritos { get; set; }
         public DbSet<ItemCarrito> ItemsCarrito { get; set; }
+        public DbSet<Producto> Productos { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Producto>()
+        .HasOne(p => p.Categoria)
+        .WithMany()
+        .HasForeignKey(p => p.IdCategoria);
+        }
+
 
     }
 }

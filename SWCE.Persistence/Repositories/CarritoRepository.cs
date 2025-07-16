@@ -1,10 +1,11 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SWCE.Application.Base;
 using SWCE.Application.Dtos.Carrito;
 using SWCE.Application.Dtos.ItemCarrito;
+using SWCE.Application.Extension.Validators.CarritoValidator;
 using SWCE.Application.Interfaces.Repositories;
-using SWCE.Application.Validators.CarritoValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using SWCE.Infraestructure.Logging;
@@ -20,16 +21,15 @@ namespace SWCE.Persistence.Repositories
         private readonly ILoggerBase<Carrito> _logger;
         private readonly CreateCarritoValidator _createValidator;
         private readonly UpdateCarritoValidator _updateValidator;
-        private readonly CarritoMapper _carritoMapper;
 
-        public CarritoRepository(IConfiguration configuration, ILoggerBase<Carrito> logger, CarritoMapper carritoMapper)
+
+        public CarritoRepository(IConfiguration configuration, ILoggerBase<Carrito> logger)
         {
             _configuration = configuration;
             _connectionString = _configuration["ConnectionStrings:E-commerceConnection"];
             _logger = logger;
             _createValidator = new CreateCarritoValidator();
             _updateValidator = new UpdateCarritoValidator();
-           _carritoMapper = carritoMapper;
         }
 
         public async Task<OperationResult> Createasync(CreateCarritoDto entity)
@@ -155,6 +155,7 @@ namespace SWCE.Persistence.Repositories
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     IdUsuario = reader.GetInt32(reader.GetOrdinal("ID_Usuario")),
                                     Total = reader.GetDecimal(reader.GetOrdinal("Total")),
+                                    IsDeleted = reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
                                     Productos = new List<GetItemCarritoDto>()
                                 };
 
@@ -332,7 +333,7 @@ namespace SWCE.Persistence.Repositories
                         {
                             if (await reader.ReadAsync())
                             {
-                                var carrito = _carritoMapper.MapToGetCarritoDtoFromReader(reader);
+                                var carrito = CarritoMapper.MapToGetCarritoDtoFromReader(reader);
                                 result.IsSuccess = true;
                                 result.Data = carrito;
                                 result.Message = "Carrito found for the user.";
@@ -378,7 +379,7 @@ namespace SWCE.Persistence.Repositories
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     CarritoId = reader.GetInt32(reader.GetOrdinal("CarritoId")),
-                                    ProductoId = reader.GetInt32(reader.GetOrdinal("ID_Producto")),
+                                    IdProducto = reader.GetInt32(reader.GetOrdinal("ID_Producto")),
                                     NombreProducto = reader.GetString(reader.GetOrdinal("NombreProducto")),
                                     PrecioUnitario = reader.GetDecimal(reader.GetOrdinal("PrecioUnitario")),
                                     Cantidad = reader.GetInt32(reader.GetOrdinal("Cantidad")),
@@ -396,6 +397,8 @@ namespace SWCE.Persistence.Repositories
 
             return items;
         }
+        
+
     }
 
 }

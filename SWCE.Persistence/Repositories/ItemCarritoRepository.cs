@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SWCE.Application.Extension.Validators.ItemCarritoValidator;
 using SWCE.Application.Interfaces.Repositories.CarritoModule;
-using SWCE.Application.Validators.ItemCarritoValidator;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using SWCE.Infraestructure.Logging;
@@ -270,7 +270,7 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 var items = _context.ItemsCarrito.Where(i => i.CarritoId == carritoId);
-
+                 
                 if (!items.Any())
                 {
                     return OperationResult.Failure("No hay items para eliminar en el carrito.");
