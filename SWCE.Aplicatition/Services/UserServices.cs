@@ -92,11 +92,11 @@ namespace SWCE.Aplicatition.Services
 
                 if (!entityvalidate.IsValid)
                 {
-                   
-                    var errorMessages = string.Join(", ", entityvalidate.Errors.Select(e => e.ErrorMessage));
+                    
                     _logger.LogError("User validation failed");
-                    return OperationResult.Failure("La validación falló: " + errorMessages);
+                    return OperationResult.Failure(string.Join("", entityvalidate.Errors.Select(e => e.ErrorMessage)));
                 }
+
                 result = await _repository.Createasync(User);
 
                 _logger.LogInformation("succefully created User");
@@ -127,9 +127,8 @@ namespace SWCE.Aplicatition.Services
 
                 if (!entityvalidate.IsValid)
                 {
-                    var errorMessages = string.Join(", ", entityvalidate.Errors.Select(e => e.ErrorMessage));
                     _logger.LogError("User validation failed");
-                    return OperationResult.Failure("La validación falló: " + errorMessages);
+                    return OperationResult.Failure(string.Join("", entityvalidate.Errors.Select(e => e.ErrorMessage)));
                 }
                 result = await _repository.Updateasync(User);
 

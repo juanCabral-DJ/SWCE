@@ -37,15 +37,14 @@ namespace SWCE.Aplicatition.Services
             {
                 _logger.LogInformation("creating address entity");
 
-              
-              Address address  = AddressMapper.MapToEntityCreate(entity);
-              var addressValida = await _validar.ValidateAsync(address);
+
+                Address address = AddressMapper.MapToEntityCreate(entity);
+                var addressValida = await _validar.ValidateAsync(address);
 
                 if (!addressValida.IsValid)
                 {
-                    var errorMessages = string.Join(", ", addressValida.Errors.Select(e => e.ErrorMessage));
                     _logger.LogError("Address validation failed");
-                    return OperationResult.Failure("La validación falló: " + errorMessages);
+                    return OperationResult.Failure(string.Join("",addressValida.Errors.Select(e => e.ErrorMessage)));
                 }
 
                 result = await _Address.Createasync(address);

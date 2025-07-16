@@ -22,7 +22,7 @@ namespace SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_User
                 return new User
                 {
                     id_rol = dto.id_rol,
-                    Nombre = dto.name_user,
+                    Nombre = dto.Nombre,
                     apellido = dto.apellido,
                     email = dto.email,
                     password = dto.password,

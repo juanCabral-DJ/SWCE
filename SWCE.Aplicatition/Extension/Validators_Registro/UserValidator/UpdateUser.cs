@@ -12,6 +12,9 @@ namespace SWCE.Aplicatition.Extension.Validators_Registro.UserValidator
         public UpdateUserValidator(IRepositoryUser userRepository)
         {
             _userRepository = userRepository;
+        }
+        public UpdateUserValidator()
+        { 
 
             RuleFor(x => x.email)
             .NotEmpty().WithMessage("El email es obligatorio.")

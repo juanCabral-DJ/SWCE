@@ -10,20 +10,20 @@ namespace SWCE.Aplicatition.Extension.Validators_Registro.AddressValidator
         public CreateAddressValidator()
         {
             RuleFor(x => x.ID_Usuario)
-                .NotEmpty().WithMessage("El id del usuario no puede estar vacio")
-                .GreaterThan(0).WithMessage("El id del usuario debe ser mayor que 0");
+                .NotEmpty().WithMessage("El id del usuario no puede estar vacio.")
+                .GreaterThan(0).WithMessage(" El id del usuario debe ser mayor que 0");
 
             RuleFor(x => x.calle)
-                .NotEmpty().WithMessage("La calle no puede estar vacia")
-                .MaximumLength(255).WithMessage("La calle no puede pasar de los 255 caracteres");
+                .NotEmpty().WithMessage("La calle no puede estar vacia.")
+                .MaximumLength(20).WithMessage(" La calle no puede pasar de los 20 caracteres");
 
             RuleFor(x => x.ciudad)
-                .NotEmpty().WithMessage("La ciudad no puede estar vacia")
-                .MaximumLength(100).WithMessage("La ciudad no puede pasar de los 100 caracteres");
+                .NotEmpty().WithMessage("La ciudad no puede estar vacia.")
+                .MaximumLength(20).WithMessage(" La ciudad no puede pasar de los 20 caracteres");
 
             RuleFor(x => x.estado_provincia)
                 .NotEmpty().WithMessage("El estado o provincia no puede estar vacio")
-                .MaximumLength(100).WithMessage("EL estado o provincia no puede pasar de los 100 caracteres");
+                .MaximumLength(20).WithMessage(" El estado o provincia no puede pasar de los 20 caracteres");
 
             RuleFor(x => x.codigo_postal)
                 .NotEmpty().WithMessage("El codigo postal no puede estar vacio")
@@ -31,7 +31,7 @@ namespace SWCE.Aplicatition.Extension.Validators_Registro.AddressValidator
 
             RuleFor(x => x.pais)
                 .NotEmpty().WithMessage("El pais no puede estar vacio")
-                .MaximumLength(100).WithMessage("El pais no puede pasar de los 100 caracteres");
+                .MaximumLength(20).WithMessage("El pais no puede pasar de los 20 caracteres");
 
         }
     }

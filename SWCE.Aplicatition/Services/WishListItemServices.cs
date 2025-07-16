@@ -45,7 +45,7 @@ namespace SWCE.Aplicatition.Services
                 if (!validationresult.IsValid)
                 {
                     _logger.LogError("WishListItem entity validation failed");
-                    return OperationResult.Failure(string.Join(", ", validationresult.Errors.Select(e => e.ErrorMessage)));
+                    return OperationResult.Failure(string.Join("", validationresult.Errors.Select(e => e.ErrorMessage)));
                 }
                 result = await _repository.Createasync(item);
 
