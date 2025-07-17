@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Validators.ProductoValidators
+namespace SWCE.Application.Extension.Validators.ProductoValidators
 {
     public class CreateProductoValidator : AbstractValidator<CreateProductoDto>
     {

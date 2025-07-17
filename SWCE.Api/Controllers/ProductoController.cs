@@ -23,7 +23,7 @@ namespace SWCE.Api.Controllers
         [HttpGet ("GetAll")]
         public async Task<IActionResult> Get()
         {
-            var result = await _services.GetAllasync(p => true);
+            var result = await _services.GetAllAsync(p => true);
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -67,7 +67,7 @@ namespace SWCE.Api.Controllers
         [HttpPost("disable/{id}")]
         public async Task<IActionResult> DisableProducto(int id)
         {
-            var result = await _services.DisableAsync(id);
+            var result = await _services.Disableasync(id);
             if (!result.IsSuccess)
                 return BadRequest(new { message = result.Message });
 

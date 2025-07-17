@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Validators.Base
+namespace SWCE.Application.Extension.Validators.Base
 {
     public abstract class CuponValidator <T> : AbstractValidator<T> where T : Cupon
     {

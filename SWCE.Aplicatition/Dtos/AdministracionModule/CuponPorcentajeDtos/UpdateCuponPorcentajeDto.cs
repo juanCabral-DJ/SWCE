@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Dtos.AdministracionModule.CuponPorcentajeDtos
 {
-    public record UpdateCuponPorcentajeDto
+    public record UpdateCuponPorcentajeDto : CuponPorcentajeDtoBase
     {
-        public int id { get; set; }
-        public decimal Porcentaje { get; set; }
-        public DateTime FechaExpiracion { get; set; }
+        // Hereda las propiedades de CuponPorcentajeDtoBase
     }
 }

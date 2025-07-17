@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Dtos.AdministracionModule.CuponMontoFijoDtos
 {
-    public record UpdateCuponMontoFijoDto
+    public record UpdateCuponMontoFijoDto : CuponMotoFijoDtoBase
     {
-        public int id { get; set; }
-        public decimal Monto { get; set; }
-        public DateTime FechaExpiracion { get; set; }
+        // Hereda las propiedades de CuponMotoFijoDtoBase
     }
 }

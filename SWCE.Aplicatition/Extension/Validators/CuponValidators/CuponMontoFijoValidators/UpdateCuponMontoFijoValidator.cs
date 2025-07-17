@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Validators.CuponValidators.CuponMontoFijoValidators
+namespace SWCE.Application.Extension.Validators.CuponValidators.CuponMontoFijoValidators
 {
     public sealed class UpdateCuponMontoFijoValidator : AbstractValidator<CuponMontoFijo>
     {

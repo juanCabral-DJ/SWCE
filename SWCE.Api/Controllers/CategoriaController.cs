@@ -33,7 +33,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
         {
             // Retorna todas las categorías incluyendo inactivas si no hay filtro aplicado
             Expression<Func<Categoria, bool>> filter = _ => true;
-            var result = await _categoriaServices.GetAllasync(filter);
+            var result = await _categoriaServices.GetAllAsync(filter);
 
             if (!result.IsSuccess)
                 return BadRequest(result);
@@ -90,7 +90,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
         [HttpPost("Deshabilitar/{id}")]
         public async Task<IActionResult> Deshabilitar(int id)
         {
-            var result = await _categoriaServices.DisableAsync(id);
+            var result = await _categoriaServices.Disableasync(id);
 
             if (!result.IsSuccess)
                 return BadRequest(result);

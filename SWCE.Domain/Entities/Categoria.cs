@@ -11,9 +11,11 @@ namespace SWCE.Domain.Entities
     {
         public override int id { get; set; }
         public string? Nombre { get; set; }
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
-        public Categoria(int id, string nombre, string descripcion)
+    public Categoria() { }
+
+    public Categoria(int id, string nombre, string descripcion)
         {
             this.id = id;
             Nombre = nombre;

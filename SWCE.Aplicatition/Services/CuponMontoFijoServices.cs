@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
-using SWCE.Application.Base;
-using SWCE.Application.Base.AdministrationModuleMappers;
 using SWCE.Application.Dtos.AdministracionModule.CuponMontoFijoDtos;
+using SWCE.Application.Extension.MappersAdministrationModule;
 using SWCE.Application.Interfaces.Repositories.AdministracionModule;
 using SWCE.Application.Interfaces.Services;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
-using SWCE.Domain.Repository;
 using SWCE.Infraestructure.Logging;
+using System.Linq.Expressions;
 
 namespace SWCE.Application.Services
 {
@@ -15,18 +14,15 @@ namespace SWCE.Application.Services
     {
         private readonly IRepositorioCuponMontoFijo _cuponRepo;
         private readonly ILoggerBase<CuponMontoFijoService> _logger;
-        private readonly CuponMontoFijoMapper _mapper;
         private readonly IConfiguration _configuration;
 
         public CuponMontoFijoService(
             IRepositorioCuponMontoFijo cuponRepo,
             ILoggerBase<CuponMontoFijoService> logger,
-            CuponMontoFijoMapper mapper,
             IConfiguration configuration)
         {
             _cuponRepo = cuponRepo;
             _logger = logger;
-            _mapper = mapper;
             _configuration = configuration;
         }
 
@@ -38,7 +34,7 @@ namespace SWCE.Application.Services
             {
                 _logger.LogInformation("Creando cupon monto fijo");
 
-                var cupon = _mapper.MapToEntityCreate(entity);
+                var cupon = CuponMontoFijoMapper.MapToEntityCreate(entity);
 
                 result = await _cuponRepo.Createasync(cupon);
 
@@ -61,7 +57,7 @@ namespace SWCE.Application.Services
             {
                 _logger.LogInformation("Actualizando cupon monto fijo");
 
-                var cupon = _mapper.MapToEntity(entity);
+                var cupon = CuponMontoFijoMapper.MapToEntityUpdate(entity);
 
                 result = await _cuponRepo.Updateasync(cupon);
 
@@ -118,7 +114,7 @@ namespace SWCE.Application.Services
             return result;
         }
 
-        public async Task<OperationResult> DisableAsync(int id)
+        public async Task<OperationResult> Disableasync(int id)
         {
             try
             {
@@ -149,6 +145,10 @@ namespace SWCE.Application.Services
             }
         }
 
+        public Task<OperationResult> GetAllAsync(Expression<Func<CuponMontoFijo, bool>> filter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

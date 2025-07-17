@@ -56,7 +56,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
         [ProducesResponseType(typeof(OperationResult), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Disable(int id)
         {
-            var result = await _service.DisableAsync(id);
+            var result = await _service.Disableasync(id);
 
             if (!result.IsSuccess)
                 return BadRequest(result);

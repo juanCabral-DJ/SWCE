@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SWCE.Application.Base;
-using SWCE.Application.Base.AdministrationModuleMappers;
 using SWCE.Application.Dtos.AdministracionModule.CategoriaDto;
+using SWCE.Application.Extension.MappersAdministrationModule;
 using SWCE.Application.Interfaces.Services;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
@@ -15,18 +15,15 @@ namespace SWCE.Application.Services
     {
         private readonly IRepositorioCategoria _categoriaRepo;
         private readonly ILoggerBase<CategoriaServices> _logger;
-        private readonly CategoriaMapper _mapper;
         private readonly IConfiguration _configuration;
 
         public CategoriaServices(
             IRepositorioCategoria categoriaRepo,
             ILoggerBase<CategoriaServices> logger,
-            CategoriaMapper mapper,
             IConfiguration configuration)
         {
             _categoriaRepo = categoriaRepo;
             _logger = logger;
-            _mapper = mapper;
             _configuration = configuration;
         }
 
@@ -38,7 +35,7 @@ namespace SWCE.Application.Services
             {
                 _logger.LogInformation("Creating new Categoria");
 
-                var categoria = _mapper.MapToEntityCreate(entity);
+                var categoria = CategoriaMapper.MapToEntityCreate(entity);
 
                 result = await _categoriaRepo.Createasync(categoria);
 
@@ -61,7 +58,7 @@ namespace SWCE.Application.Services
             {
                 _logger.LogInformation("Updating Categoria");
 
-                var categoria = _mapper.MapToEntity(entity);
+                var categoria = CategoriaMapper.MapToEntityUpdate(entity);
 
                 result = await _categoriaRepo.Updateasync(categoria);
 
@@ -97,7 +94,7 @@ namespace SWCE.Application.Services
             return result;
         }
 
-        public async Task<OperationResult> GetAllasync(Expression<Func<Categoria, bool>> filter)
+        public async Task<OperationResult> GetAllAsync(Expression<Func<Categoria, bool>> filter)
         {
             OperationResult result = new();
 
@@ -133,7 +130,7 @@ namespace SWCE.Application.Services
             }
         }
 
-        public async Task<OperationResult> DisableAsync(int id)
+        public async Task<OperationResult> Disableasync(int id)
         {
             try
             {

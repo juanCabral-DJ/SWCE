@@ -1,16 +1,17 @@
 ﻿using FluentValidation;
 using SWCE.Application.Dtos.AdministracionModule.CategoriaDto;
+using SWCE.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Validators.CategoriaValidators
+namespace SWCE.Application.Extension.Validators.CategoriaValidators
 {
-    public class CreateCategoriaValidator : AbstractValidator<CreateCategoriaDto>
+    public sealed class UpdateCategoriaValidator : AbstractValidator<Categoria>
     {
-        public CreateCategoriaValidator()
+        public UpdateCategoriaValidator()
         {
             RuleFor(x => x.Nombre)
                 .NotEmpty().WithMessage("El nombre de la categoría es obligatorio")

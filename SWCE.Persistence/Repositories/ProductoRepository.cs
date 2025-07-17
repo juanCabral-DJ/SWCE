@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SWCE.Application.Dtos.AdministracionModule.ProductoDtos;
-using SWCE.Application.Validators.ProductoValidators;
+using SWCE.Application.Extension.Validators.ProductoValidators;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using SWCE.Domain.Repository;

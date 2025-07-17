@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Dtos.AdministracionModule.ProductoDtos
+namespace SWCE.Application.Dtos.AdministracionModule.CuponPorcentajeDtos
 {
-    public record DisableProductoDto : DtoBase
+    public record DisableCuponPorcentajeDto : DtoBase
     {
         public bool IsDisabled { get; set; }
     }

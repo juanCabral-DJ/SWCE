@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using SWCE.Application.Validators.CategoriaValidators;
+using SWCE.Application.Extension.Validators.CategoriaValidators;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using SWCE.Domain.Repository;

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using SWCE.Application.Validators.Base;
+using SWCE.Application.Extension.Validators.Base;
 using SWCE.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Validators.CuponValidators.CuponPorcentajeValidators
+namespace SWCE.Application.Extension.Validators.CuponValidators.CuponPorcentajeValidators
 {
     public sealed class CreateCuponPorcentajeValidator : CuponValidator<CuponPorcentaje>
     {

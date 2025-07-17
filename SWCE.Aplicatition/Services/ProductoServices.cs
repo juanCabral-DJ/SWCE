@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using SWCE.Application.Base.AdministrationModuleMappers;
 using SWCE.Application.Dtos.AdministracionModule.ProductoDtos;
+using SWCE.Application.Extension.Mapeo_Registro.Mapeo_Producto;
 using SWCE.Application.Interfaces.Services;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
@@ -15,17 +15,14 @@ namespace SWCE.Application.Services
         private readonly IRepositorioProducto _productoRepository;
         private readonly ILoggerBase<ProductoService> _logger;
         private readonly IConfiguration _configuration;
-        private readonly ProductoMapper _mapper;
 
         public ProductoService(
             IRepositorioProducto productoRepository,
             ILoggerBase<ProductoService> logger,
-            ProductoMapper mapper,
             IConfiguration configuration)
         {
             _productoRepository = productoRepository;
             _logger = logger;
-            _mapper = mapper;
             _configuration = configuration;
         }
 
@@ -37,7 +34,7 @@ namespace SWCE.Application.Services
             {
                 _logger.LogInformation("Creating Product entity");
 
-                var producto = _mapper.MapToEntityCreate(dto);
+                var producto = ProductoMapper.MapToEntityCreate(dto);
                 result = await _productoRepository.Createasync(producto);
 
                 _logger.LogInformation("Successfully created Product");
@@ -57,8 +54,8 @@ namespace SWCE.Application.Services
 
             try
             {
-                int id = entity.id;
-                Producto producto = _mapper.MapToEntity(entity, id);
+                int id = entity.Id;
+                Producto producto = ProductoMapper.MapToEntityUpdate(entity);
                 result = await _productoRepository.Updateasync(producto);
                 _logger.LogInformation("Successfully updated Product");
 
@@ -72,7 +69,7 @@ namespace SWCE.Application.Services
             return result;
         }
 
-        public async Task<OperationResult> GetAllasync(Expression<Func<Producto, bool>> filter)
+        public async Task<OperationResult> GetAllAsync(Expression<Func<Producto, bool>> filter)
         {
             OperationResult result = new OperationResult();
 
@@ -116,7 +113,7 @@ namespace SWCE.Application.Services
             return result;
         }
 
-        public async Task<OperationResult> DisableAsync(int id)
+        public async Task<OperationResult> Disableasync(int id)
         {
             try
             {

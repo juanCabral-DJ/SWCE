@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Dtos.AdministracionModule.ProductoDtos
+namespace SWCE.Application.Dtos.AdministracionModule.CuponMontoFijoDtos
 {
-    public record DisableProductoDto : DtoBase
+    public record DisableCuponMontoFijoDto : DtoBase
     {
+        // Hereda de DtoBase para incluir la propiedad Id
         public bool IsDisabled { get; set; }
     }
 }

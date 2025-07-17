@@ -8,15 +8,12 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using static SWCE.Application.Base.IServiceBase;
 
 namespace SWCE.Application.Interfaces.Services
 {
-    public interface IProductoServices
+    public interface IProductoServices : IServiceBase<Producto, CreateProductoDto, UpdateProductoDto, DisableProductoDto>
     {
-        Task<OperationResult> GetbyId(int id);
-        Task<OperationResult> GetAllasync(Expression<Func<Producto, bool>> filter);
-        Task<OperationResult> Createasync(CreateProductoDto entity);
-        Task<OperationResult> Updateasync(UpdateProductoDto entity);
-        Task<OperationResult> DisableAsync(int productoId);
+        
     }
 }

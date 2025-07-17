@@ -19,8 +19,6 @@ namespace SWCE.Persistence.Context
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Cupon> Cupones { get; set; }
-        public DbSet<Pedido> Envios { get; set; }
-        public DbSet<Pedido> Pedidos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

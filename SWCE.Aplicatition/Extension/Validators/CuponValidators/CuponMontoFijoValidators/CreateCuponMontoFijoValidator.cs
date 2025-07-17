@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using SWCE.Application.Dtos.AdministracionModule.CategoriaDto;
-using SWCE.Application.Validators.Base;
+using SWCE.Application.Extension.Validators.Base;
 using SWCE.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWCE.Application.Validators.CuponValidators.CuponMontoFijoValidators
+namespace SWCE.Application.Extension.Validators.CuponValidators.CuponMontoFijoValidators
 {
     public sealed class CreateCuponMontoFijoValidator : CuponValidator<CuponMontoFijo>
     {

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using SWCE.Application.Extension.Validators.CuponValidators.CuponMontoFijoValidators;
 using SWCE.Application.Interfaces.Repositories.AdministracionModule;
-using SWCE.Application.Validators.CuponValidators.CuponMontoFijoValidators;
 using SWCE.Domain.Base;
 using SWCE.Domain.Entities;
 using SWCE.Infraestructure.Logging;
