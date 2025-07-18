@@ -49,7 +49,7 @@ namespace SWCE.Persistence.Repositories
             }
         }
 
-        public override async Task<OperationResult> GetbyIdasync(int id)
+        /*public override async Task<OperationResult> GetbyIdasync(int id)
         {
             try
             {
@@ -62,7 +62,31 @@ namespace SWCE.Persistence.Repositories
                 _logger.LogError("Error al obtener producto: {Message}", ex);
                 return OperationResult.Failure("Ocurrió un error al obtener el producto.");
             }
+        }*/
+
+        public override async Task<OperationResult> GetbyIdasync(int id)
+        {
+            try
+            {
+                _logger.LogInformation("Obteniendo producto por ID: {Id}", id);
+
+                if (id <= 0)
+                    return OperationResult.Failure("Id inválido para buscar el producto.");
+
+                var producto = await base.GetbyIdasync(id);
+
+                if (producto == null)
+                    return OperationResult.Failure("Producto no encontrado.");
+
+                return OperationResult.Success("Producto obtenido correctamente.", producto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error al obtener producto: {Message}", ex);
+                return OperationResult.Failure("Ocurrió un error al obtener el producto.");
+            }
         }
+
 
         public override async Task<OperationResult> Createasync(Producto entity)
         {
@@ -75,7 +99,6 @@ namespace SWCE.Persistence.Repositories
                 {
                     Nombre = producto.Nombre,
                     Marca = producto.Marca,
-                    //Categoria = producto.Categoria,
                     Precio = producto.Precio,
                     Stock = producto.Stock
                 });

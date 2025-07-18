@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Extension.Validators.CuponValidators.CuponPorcentajeValidators
 {
-    public sealed class UpdateCuponPorcentajeValidator : CuponValidator<CuponPorcentaje>
+    public class UpdateCuponPorcentajeValidator : CuponValidator<CuponPorcentaje>
     {
         public UpdateCuponPorcentajeValidator()
         {

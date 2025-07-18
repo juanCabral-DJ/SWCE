@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Extension.Validators.CuponValidators.CuponMontoFijoValidators
 {
-    public sealed class CreateCuponMontoFijoValidator : CuponValidator<CuponMontoFijo>
+    public class CreateCuponMontoFijoValidator : CuponValidator<CuponMontoFijo>
     {
         public CreateCuponMontoFijoValidator()
         {

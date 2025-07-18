@@ -50,7 +50,7 @@ namespace SWCE.Application.Services
             return result;
         }
 
-        public async Task<OperationResult> Updateasync(UpdateCategoriaDto entity)
+        /*public async Task<OperationResult> Updateasync(UpdateCategoriaDto entity)
         {
             OperationResult result = new();
 
@@ -71,9 +71,33 @@ namespace SWCE.Application.Services
             }
 
             return result;
+        }*/
+
+        public async Task<OperationResult> Updateasync(UpdateCategoriaDto entity)
+        {
+            try
+            {
+                if (entity.Id <= 0)
+                    return OperationResult.Failure("El ID debe ser positivo");
+
+                if (string.IsNullOrWhiteSpace(entity.Nombre))
+                    return OperationResult.Failure("El nombre de categoría es obligatorio");
+
+                _logger.LogInformation("Updating Categoria");
+                var categoria = CategoriaMapper.MapToEntityUpdate(entity);
+                var result = await _categoriaRepo.Updateasync(categoria);
+
+                _logger.LogInformation("Successfully updated Categoria");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while updating Categoria", ex);
+                return OperationResult.Failure("Ocurrió un error al actualizar la categoría");
+            }
         }
 
-        public async Task<OperationResult> GetbyId(int id)
+        /*public async Task<OperationResult> GetbyId(int id)
         {
             OperationResult result = new();
 
@@ -92,6 +116,29 @@ namespace SWCE.Application.Services
             }
 
             return result;
+        }*/
+
+        public async Task<OperationResult> GetbyId(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                    return OperationResult.Failure("El ID debe ser positivo");
+
+                _logger.LogInformation($"Retrieving Categoria with ID: {id}");
+                var result = await _categoriaRepo.GetbyIdasync(id);
+
+                if (!result.IsSuccess || result.Data == null)
+                    return OperationResult.Failure("Categoría no encontrada");
+
+                _logger.LogInformation("Successfully retrieved Categoria");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while retrieving Categoria by ID", ex);
+                return OperationResult.Failure("Ocurrió un error al obtener la categoría");
+            }
         }
 
         public async Task<OperationResult> GetAllAsync(Expression<Func<Categoria, bool>> filter)
@@ -130,10 +177,28 @@ namespace SWCE.Application.Services
             }
         }
 
+        /*public async Task<OperationResult> Disableasync(int id)
+        {
+            try
+            {
+                _logger.LogInformation("Deshabilitando categoría en el servicio con ID: {Id}", id);
+                var result = await _categoriaRepo.DisableAsync(id);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error al deshabilitar categoría en el servicio", ex);
+                return OperationResult.Failure("Ocurrió un error al deshabilitar la categoría", ex);
+            }
+        }*/
+
         public async Task<OperationResult> Disableasync(int id)
         {
             try
             {
+                if (id <= 0)
+                    return OperationResult.Failure("El ID debe ser positivo");
+
                 _logger.LogInformation("Deshabilitando categoría en el servicio con ID: {Id}", id);
                 var result = await _categoriaRepo.DisableAsync(id);
                 return result;

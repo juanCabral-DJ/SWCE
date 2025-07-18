@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SWCE.Application.Extension.Validators.CuponValidators.CuponMontoFijoValidators
 {
-    public sealed class UpdateCuponMontoFijoValidator : AbstractValidator<CuponMontoFijo>
+    public class UpdateCuponMontoFijoValidator : AbstractValidator<CuponMontoFijo>
     {
         public UpdateCuponMontoFijoValidator()
         {
