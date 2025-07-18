@@ -14,14 +14,14 @@ namespace SWCE.Domain.Entities
         public List<ItemCarrito> productos { get; set; }
 
         public override int Id{ get; set; }
-        public int IdUsuario{ get; set; }
+        public int ID_Usuario{ get; set; }
         public decimal SubTotal { get; set; }
         public decimal Descuento { get; set; }
         public decimal Total { get; set; }
 
-        public Carrito(int id, int IdUsuario) {
+        public Carrito(int id, int ID_Usuario) {
             this.Id = id;
-            this.IdUsuario= IdUsuario;
+            this.ID_Usuario= ID_Usuario;
         }
 
     }
