@@ -20,7 +20,7 @@ namespace SWCE.Api.Controllers
         }
 
         // GET: api/<AddressController>
-        [HttpGet]
+        [HttpGet("GetUser")]
         public async Task<IActionResult> Get()
         {
             var result = await _Services.GetAllasync();

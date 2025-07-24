@@ -1,0 +1,63 @@
+﻿@model SWCE.Web1.Models.Address.CreateAddressModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>CreateAddressModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="iD_Usuario" class="control-label"></label>
+                <input asp-for="iD_Usuario" class="form-control" />
+                <span asp-validation-for="iD_Usuario" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="calle" class="control-label"></label>
+                <input asp-for="calle" class="form-control" />
+                <span asp-validation-for="calle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ciudad" class="control-label"></label>
+                <input asp-for="ciudad" class="form-control" />
+                <span asp-validation-for="ciudad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="estado_provincia" class="control-label"></label>
+                <input asp-for="estado_provincia" class="form-control" />
+                <span asp-validation-for="estado_provincia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="codigo_postal" class="control-label"></label>
+                <input asp-for="codigo_postal" class="form-control" />
+                <span asp-validation-for="codigo_postal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="pais" class="control-label"></label>
+                <input asp-for="pais" class="form-control" />
+                <span asp-validation-for="pais" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="es_predeterminada" /> @Html.DisplayNameFor(model => model.es_predeterminada)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -37,7 +37,7 @@ namespace SWCE.Persistence.Repositories
                 _logger.LogInformation("Retrieving address entities");
                 var Addresses = await base.GetAllasync(filter);
 
-                result = OperationResult.Success("Retrieving Address entities", Addresses);
+                result = OperationResult.Success("Retrieving Address entities", Addresses.Data);
             }
             catch (Exception e)
             {
@@ -62,7 +62,7 @@ namespace SWCE.Persistence.Repositories
 
                 var entity = await base.GetbyIdasync(id);
 
-                result = OperationResult.Success("Retrieving Address entity", entity);
+                result = OperationResult.Success("Retrieving Address entity", entity.Data);
 
             }
             catch (Exception ex)
@@ -153,9 +153,16 @@ namespace SWCE.Persistence.Repositories
                 if (addressupdate is null)
                     return OperationResult.Failure("InsuranceProvider entity not found.");
 
-                addressupdate.Es_predeterminada = false;
+                if (addressupdate.Es_predeterminada == true)
+                {
+                    addressupdate.Es_predeterminada = false;
+                }
+                else
+                {
+                    addressupdate.Es_predeterminada = true;
+                }
 
-                result = await base.Updateasync(addressupdate);
+                    result = await base.Updateasync(addressupdate);
             }
             catch (Exception ex)
             {
@@ -217,7 +224,7 @@ namespace SWCE.Persistence.Repositories
                 }  
 
                 var addresses = await _Context.Direcciones
-                            .Where(a => a.ID_Usuario == userId)
+                            .Where(a => a.ID_Usuario == userId && a.IsDeleted == false)
                             .ToListAsync();
 
 
