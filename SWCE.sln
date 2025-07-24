@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{EEEEAA34-ED8E-4944-AB50-9EB66FA76CD0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{07A43365-0D6F-4004-96E3-16543B475F0D}"
+	ProjectSection(SolutionItems) = preProject
+		SWCE.Persistence\Repositories\ItemCarritoRepository.cs = SWCE.Persistence\Repositories\ItemCarritoRepository.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{F20574BD-3D75-4983-8BA7-1B0F4CF95A71}"
 EndProject
