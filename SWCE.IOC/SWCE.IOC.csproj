@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SWCE.Aplicatition\SWCE.Application.csproj" />
     <ProjectReference Include="..\SWCE.Persistence\SWCE.Persistence.csproj" />
   </ItemGroup>
 
