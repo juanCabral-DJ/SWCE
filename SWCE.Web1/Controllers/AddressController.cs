@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SWCE.Web1.Models.Address;
 using SWCE.Web1.Models.User;
+using static SWCE.Web1.Models.Address.DisableAddressModel;
+using static SWCE.Web1.Models.WishListItem.DisableItemModel;
 
 namespace SWCE.Web1.Controllers
 {
@@ -240,12 +242,27 @@ namespace SWCE.Web1.Controllers
         // POST: AddressController1/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(DisableAddressModel model)
         {
+            DisableAddressResponse DisableResponse = null;
             try
             {
+
+                using (_Client)
+                {
+                    var response = await _Client.PostAsJsonAsync("Address/DisableAddressDto", model);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        DisableResponse = System.Text.Json.JsonSerializer.Deserialize<DisableAddressResponse>(responseString);
+
+                    }
+
+                }
                 return RedirectToAction(nameof(Index));
             }
+
             catch
             {
                 return View();

@@ -56,7 +56,7 @@ namespace SWCE.Api.Controllers
         }
 
         // GET api/<AddressController>/5
-        [HttpGet("idUser")]
+        [HttpGet("Item/{id}")]
         public async Task<IActionResult> GetbyUserid(int id)
         {
             var result = await _services.GetbyUserId(id);
@@ -73,7 +73,7 @@ namespace SWCE.Api.Controllers
         }
 
         // POST api/<WishListItemController>
-        [HttpPost()]
+        [HttpPost("CreateItemDto")]
         public async Task<IActionResult> Post([FromBody] CreateItemDto dto)
         {
             var result = await _services.Createasync(dto);
@@ -89,7 +89,7 @@ namespace SWCE.Api.Controllers
         }
 
         // POST api/<WishListItemController>
-        [HttpPost("Disable")]
+        [HttpPost("DisableItemDto")]
         public async Task<IActionResult> Disable([FromBody] DisableItemDto dto)
         {
             var result = await _services.Disableasync(dto);

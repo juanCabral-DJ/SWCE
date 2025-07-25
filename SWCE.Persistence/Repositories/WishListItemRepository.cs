@@ -34,7 +34,7 @@ namespace SWCE.Persistence.Repositories
                 _logger.LogInformation("Retrieving item entities");
                 var items  = await base.GetAllasync(filter);
 
-                result = OperationResult.Success("Retrieving item entities", items );
+                result = OperationResult.Success("Retrieving item entities", items.Data);
             }
             catch (Exception e)
             {
@@ -122,8 +122,8 @@ namespace SWCE.Persistence.Repositories
                 }
 
                 var items = await _Context.Lista_Deseos
-                            .Where(a => a.Id_Usuario == userId)
-                            .FirstOrDefaultAsync();
+                            .Where(a => a.Id_Usuario == userId && a.IsDeleted == false)
+                            .ToListAsync();
 
                 return OperationResult.Success("Retrieving WishListItem entity",items);
             }
@@ -147,7 +147,7 @@ namespace SWCE.Persistence.Repositories
                 }
                 var entity = await base.GetbyIdasync(id);
 
-                result = OperationResult.Success("Retrieving Item entity", entity);
+                result = OperationResult.Success("Retrieving Item entity", entity.Data);
 
             }
             catch (Exception ex)
