@@ -26,29 +26,6 @@ namespace SWCE.Application.Services
             _configuration = configuration;
         }
 
-        /*public async Task<OperationResult> Createasync(CreateCuponPorcentajeDto entity)
-        {
-            OperationResult result = new();
-
-            try
-            {
-                _logger.LogInformation("Creating percentage coupon");
-
-                var cupon = CuponPorcentajeMapper.MapToEntityCreate(entity);
-
-                result = await _cuponRepo.Createasync(cupon);
-
-                _logger.LogInformation("Successfully created CuponPorcentaje");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("An error occurred while creating CuponPorcentaje", ex);
-                result = OperationResult.Failure("An error occurred while creating the percentage coupon");
-            }
-
-            return result;
-        }*/
-
         public async Task<OperationResult> Createasync(CreateCuponPorcentajeDto entity)
         {
             OperationResult result = new();
@@ -75,29 +52,6 @@ namespace SWCE.Application.Services
 
             return result;
         }
-
-        /*public async Task<OperationResult> Updateasync(UpdateCuponPorcentajeDto entity)
-        {
-            OperationResult result = new();
-
-            try
-            {
-                _logger.LogInformation("Updating percentage coupon");
-
-                var cupon = CuponPorcentajeMapper.MapToEntityUpdate(entity);
-
-                result = await _cuponRepo.Updateasync(cupon);
-
-                _logger.LogInformation("Successfully updated CuponPorcentaje");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("An error occurred while updating CuponPorcentaje", ex);
-                result = OperationResult.Failure("An error occurred while updating the percentage coupon");
-            }
-
-            return result;
-        }*/
 
         public async Task<OperationResult> Updateasync(UpdateCuponPorcentajeDto entity)
         {

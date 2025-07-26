@@ -17,7 +17,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
             _categoriaServices = categoriaServices;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetCategoriaById")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _categoriaServices.GetbyId(id);
@@ -87,7 +87,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
             }
         }
 
-        [HttpPost("Deshabilitar/{id}")]
+        [HttpPost("DisableCategoria")]
         public async Task<IActionResult> Deshabilitar(int id)
         {
             var result = await _categoriaServices.Disableasync(id);

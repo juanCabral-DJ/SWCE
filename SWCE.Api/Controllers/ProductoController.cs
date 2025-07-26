@@ -31,7 +31,7 @@ namespace SWCE.Api.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetProductoById")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _services.GetbyId(id);
@@ -42,7 +42,7 @@ namespace SWCE.Api.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("Create")]
+        [HttpPost("CreateProducto")]
         public async Task<IActionResult> Post([FromBody] CreateProductoDto dto)
         {
             var result = await _services.Createasync(dto);
@@ -64,7 +64,7 @@ namespace SWCE.Api.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("disable/{id}")]
+        [HttpPost("DisableProduct")]
         public async Task<IActionResult> DisableProducto(int id)
         {
             var result = await _services.Disableasync(id);

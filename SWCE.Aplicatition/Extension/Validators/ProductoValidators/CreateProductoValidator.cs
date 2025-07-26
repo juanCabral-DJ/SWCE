@@ -21,9 +21,6 @@ namespace SWCE.Application.Extension.Validators.ProductoValidators
                 .NotEmpty().WithMessage("La marca es obligatoria")
                 .MaximumLength(100).WithMessage("La marca no puede exceder los 100 caracteres");
 
-            /*RuleFor(x => x.CategoriaId)
-                .NotNull().WithMessage("La categoría es obligatoria");*/
-
             RuleFor(x => x.Precio)
                 .GreaterThan(0).WithMessage("El precio debe ser mayor que 0");
 

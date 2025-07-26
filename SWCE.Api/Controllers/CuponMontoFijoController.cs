@@ -23,7 +23,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
             return HandleResult(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetbyId(id);
@@ -51,7 +51,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
             return BadRequest(result);
         }
 
-        [HttpPost("disable/{id}")]
+        [HttpPost("DisableCuponMontoFijo")]
         [ProducesResponseType(typeof(OperationResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(OperationResult), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Disable(int id)

@@ -39,7 +39,13 @@ namespace SWCE.Persistence.Repositories
             try
             {
                 _logger.LogInformation("Obteniendo todos los productos.");
-                var productos = await base.GetAllasync(filter);
+
+                var query = _context.Productos.Include(p => p.Categoria);
+
+                var productos = filter != null
+                                ? await query.Where(filter).ToListAsync()
+                                : await query.ToListAsync();
+
                 return OperationResult.Success("Productos obtenidos correctamente.", productos);
             }
             catch (Exception ex)
@@ -48,21 +54,6 @@ namespace SWCE.Persistence.Repositories
                 return OperationResult.Failure("Ocurrió un error al obtener los productos.");
             }
         }
-
-        /*public override async Task<OperationResult> GetbyIdasync(int id)
-        {
-            try
-            {
-                _logger.LogInformation("Obteniendo producto por ID: {Id}", id);
-                var producto = await base.GetbyIdasync(id);
-                return OperationResult.Success("Producto obtenido correctamente.", producto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error al obtener producto: {Message}", ex);
-                return OperationResult.Failure("Ocurrió un error al obtener el producto.");
-            }
-        }*/
 
         public override async Task<OperationResult> GetbyIdasync(int id)
         {
@@ -73,7 +64,9 @@ namespace SWCE.Persistence.Repositories
                 if (id <= 0)
                     return OperationResult.Failure("Id inválido para buscar el producto.");
 
-                var producto = await base.GetbyIdasync(id);
+                var producto = await _context.Productos
+                                             .Include(p => p.Categoria)
+                                             .FirstOrDefaultAsync(p => p.id == id);
 
                 if (producto == null)
                     return OperationResult.Failure("Producto no encontrado.");
