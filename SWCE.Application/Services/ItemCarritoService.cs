@@ -71,7 +71,7 @@ namespace SWCE.Application.Services
                 var precioUnitario = producto.Precio;
                 var subtotal = precioUnitario * dto.Cantidad;
 
-                var itemCarritoEntity = ItemCarritoMapper.MapToEntity(dto, producto.Nombre);
+                var itemCarritoEntity = ItemCarritoMapper.MapToEntity(dto);
                 itemCarritoEntity.PrecioUnitario = precioUnitario;
                 itemCarritoEntity.SubTotal = subtotal;
 

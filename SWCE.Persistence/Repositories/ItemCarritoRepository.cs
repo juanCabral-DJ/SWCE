@@ -150,8 +150,9 @@ namespace SWCE.Persistence.Repositories
                 _logger.LogInformation($"Recuperando items para Carrito con ID: {carritoId}");
 
                 var entityItems = await _context.ItemsCarrito
-                    .Where(i => i.CarritoId == carritoId && i.IsDeleted == false)
-                    .ToListAsync();
+                        .Include(item => item.Producto) 
+                        .Where(i => i.CarritoId == carritoId && i.IsDeleted == false)
+                        .ToListAsync();
 
                 if (entityItems == null || !entityItems.Any())
                 {

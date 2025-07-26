@@ -17,8 +17,8 @@ namespace SWCE.Domain.Entities
 
         [Column("ID_Producto")]
         public int IdProducto { get;  set; }
-        [NotMapped]
-        public string NombreProducto { get;  set; }
+        [ForeignKey("IdProducto")]
+        public virtual Producto Producto { get; set; }
         public decimal PrecioUnitario { get;  set; }
         public int Cantidad { get; set; }
         public decimal SubTotal { get;  set; }
@@ -36,31 +36,10 @@ namespace SWCE.Domain.Entities
             this.Id = id;
             this.CarritoId = carritoId;
             IdProducto = p.Id;
-            NombreProducto = p.Nombre;
             PrecioUnitario = p.Precio;
             Cantidad = cantidad;
-            SubTotal = calcularSubTotal();
         }
 
-        public void incrementarCantidad(int cantidad)
-        {
-            if (cantidad <= 0)
-            {
-                throw new InvalidOperationException("Cantidad inválida");
-            }
-            Cantidad =+ cantidad;
-            calcularSubTotal();
-        }
-        public void actualizarCantidad(int nuevaCantidad)
-        {
-            if (nuevaCantidad <= 0) throw new InvalidOperationException("Cantidad Invalida");
-            Cantidad = nuevaCantidad;
-            calcularSubTotal();
-        }
-
-        public decimal calcularSubTotal()
-        {
-            return PrecioUnitario * Cantidad;
-        }
+        
     }
 }

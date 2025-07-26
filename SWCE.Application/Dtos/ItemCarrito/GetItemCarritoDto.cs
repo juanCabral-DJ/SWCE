@@ -13,5 +13,6 @@ namespace SWCE.Application.Dtos.ItemCarrito
         public string? NombreProducto { get; set; }
         public decimal PrecioUnitario { get; set; }
         public decimal SubTotal { get; set; }
+
     }
 }

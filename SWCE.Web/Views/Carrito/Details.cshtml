@@ -1,0 +1,81 @@
+﻿@using SWCE.Web.Models.Carrito
+@model CarritoModel
+
+@{
+    ViewData["Title"] = "Detalles del Carrito";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h4>Datos del Carrito</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.id)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.id)</dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.total)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.total)</dd>
+    </dl>
+</div>
+
+<hr />
+<h4>Productos en el Carrito</h4>
+
+<p>
+    @Html.ActionLink("Agregar Producto", "Create", "ItemCarrito", new { carritoId = Model.id }, new { @class = "btn btn-success" })
+</p>
+
+
+@if (Model.productos != null && Model.productos.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Subtotal</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in Model.productos)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => producto.nombreProducto)</td>
+
+                    <td>
+                        <form asp-action="Edit" asp-controller="ItemCarrito" method="post" class="d-inline-flex align-items-center">
+                            <input type="hidden" name="Id" value="@producto.id" />
+                            <input type="hidden" name="CarritoId" value="@Model.id" />
+                            <input type="number" name="NewCantidad" value="@producto.cantidad" class="form-control" style="width: 80px;" min="1" />
+                            <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Actualizar</button>
+                        </form>
+                    </td>
+
+                    <td>@Html.DisplayFor(modelItem => producto.precioUnitario)</td>
+                    <td>@Html.DisplayFor(modelItem => producto.subTotal)</td>
+
+                    <td>
+                        <form asp-action="Delete" asp-controller="ItemCarrito" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@producto.id" />
+                            <input type="hidden" name="carritoId" value="@Model.id" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Este carrito no tiene productos.</p>
+}
+
+<div>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    <a asp-action="Index">Volver a la Lista</a>
+</div>

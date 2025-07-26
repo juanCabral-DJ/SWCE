@@ -18,14 +18,14 @@ public class CarritoController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
+    [HttpGet("GetAllCarts")]
     public async Task<IActionResult> GetAllCarritos()
     {
         var result = await _carritoService.GetAllAsync();
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetCartById")]
     public async Task<IActionResult> GetCarritoById(int id)
     {
         var result = await _carritoService.GetByIdAsync(id);
@@ -35,7 +35,7 @@ public class CarritoController : ControllerBase
         return NotFound(OperationResult.Failure($"Carrito with ID {id} not found."));
     }
 
-    [HttpGet("user/{userId}")]
+    [HttpGet("GetCartByUserId")]
     public async Task<IActionResult> GetActiveCarritoByUserId(int userId)
     {
         var result = await _carritoService.GetActiveCarritoByUserIdAsync(userId);
@@ -45,14 +45,14 @@ public class CarritoController : ControllerBase
         return NotFound(OperationResult.Failure($"No active carrito found for user ID {userId}."));
     }
 
-    [HttpPost]
+    [HttpPost("CreateCart")]
     public async Task<IActionResult> CreateCarrito([FromBody] CreateCarritoDto dto)
     {
         var result = await _carritoService.CreateAsync(dto);
         return result.IsSuccess ? StatusCode((int)HttpStatusCode.Created, result) : BadRequest(result);
     }
 
-    [HttpPost("update")]
+    [HttpPost("UpdateCart")]
     public async Task<IActionResult> UpdateCarrito([FromBody] UpdateCarritoDto dto)
     {
         var result = await _carritoService.UpdateAsync(dto);
@@ -62,14 +62,14 @@ public class CarritoController : ControllerBase
         return BadRequest(result);
     }
 
-    [HttpPost("disable")]
+    [HttpPost("DisableCart")]
     public async Task<IActionResult> DisableCarrito([FromBody] DisableCarritoDto dto)
     {
         var result = await _carritoService.DisableAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-    [HttpPost("clear/{carritoId}")]
+    [HttpPost("ClearCart")]
     public async Task<IActionResult> ClearCarrito(int carritoId)
     {
         var result = await _carritoService.ClearCarritoAsync(carritoId);

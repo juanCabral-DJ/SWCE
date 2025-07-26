@@ -18,21 +18,21 @@ public class ItemCarritoController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost]
+    [HttpPost("AddItem")]
     public async Task<IActionResult> AddItemToCarrito([FromBody] AddItemCarritoDto dto)
     {
         var result = await _itemCarritoService.AddItemToCarritoAsync(dto);
         return result.IsSuccess ? StatusCode((int)HttpStatusCode.Created, result) : BadRequest(result);
     }
 
-    [HttpPost("update-quantity")]
+    [HttpPost("UpdateItem")]
     public async Task<IActionResult> UpdateItemCantidad([FromBody] UpdateItemCantidadDto dto)
     {
         var result = await _itemCarritoService.UpdateItemCantidadAsync(dto);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-    [HttpPost("remove")]
+    [HttpPost("RemoveItem")]
     public async Task<IActionResult> RemoveItemFromCarrito([FromBody] DisableItemCarritoDto dto)
     {
         var result = await _itemCarritoService.RemoveItemFromCarritoAsync(dto.Id);

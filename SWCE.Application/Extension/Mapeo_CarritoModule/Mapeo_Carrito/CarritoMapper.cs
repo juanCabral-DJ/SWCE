@@ -22,6 +22,7 @@ namespace SWCE.Application.Base
                 ID_Usuario = reader.GetInt32(reader.GetOrdinal("ID_Usuario")),
                 Total = reader.GetDecimal(reader.GetOrdinal("Total")),
                 IsDeleted = reader.GetBoolean(reader.GetOrdinal("IsDeleted")),
+                CreateAt = reader.GetDateTime(reader.GetOrdinal("CreateAt")),
                 Productos = new List<GetItemCarritoDto>()
             };
         }
