@@ -233,13 +233,13 @@ namespace SWCE.Web1.Controllers
             }
         }
 
-        // GET: AddressController1/Delete/5
+        // GET: AddressController1/Edit/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: AddressController1/Delete/5
+        // POST: AddressController1/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(DisableAddressModel model)

@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<SWCE.Web1.Models.Address.AddressModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Direcciones";
 }
 
-<h1>Index</h1>
+<h1>Addresses</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create New Address</a>
 </p>
 <table class="table">
     <thead>
@@ -73,11 +73,11 @@
                 @Html.DisplayFor(modelItem => item.isDeleted)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new {   id=item.id }) |
-                @Html.ActionLink("Details", "Details", new {   id=item.id }) |
-                @Html.ActionLink("Delete", "Delete", new {   id=item.id }) |
-                @Html.ActionLink("Detailsbyuserid", "Detailsbyuserid", new { id = item.iD_Usuario }) |
-                @Html.ActionLink("DetailsbyPredeterminada", "DetailsbyPredeterminada", new { id = item.iD_Usuario })
+                @Html.ActionLink("Update Address", "Edit", new {   id=item.id }) |
+                @Html.ActionLink("Address By Id", "Details", new { id = item.id }) |
+                    @Html.ActionLink("Disable Address", "Delete", new { id = item.id }, new { @class = "text-danger" }) |
+                @Html.ActionLink("Addresses by userid", "DetailsByUserid", new { id = item.iD_Usuario }) |
+                @Html.ActionLink("Address by Predeterminada", "DetailsByPredeterminada", new { id = item.iD_Usuario })
             </td>
         </tr>
 }

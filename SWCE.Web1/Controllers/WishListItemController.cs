@@ -190,7 +190,7 @@ namespace SWCE.Web1.Controllers
             return View();
         }
 
-        // POST: WishListItemController1/Delete/5
+        // POST: WishListItemController1/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(DisableItemModel model)

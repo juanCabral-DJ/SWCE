@@ -203,7 +203,7 @@ namespace SWCE.Web1.Controllers
             return View();
         }
 
-        // POST: UserController/Delete/5
+        // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(DisableUserModel model)
