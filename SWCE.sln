@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aplication", "Aplication", "{EEEEAA34-ED8E-4944-AB50-9EB66FA76CD0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{07A43365-0D6F-4004-96E3-16543B475F0D}"
+	ProjectSection(SolutionItems) = preProject
+		Program.cs = Program.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{F20574BD-3D75-4983-8BA7-1B0F4CF95A71}"
 EndProject
@@ -13,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWCE.Aplication", "SWCE.Apl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWCE.Domain", "SWCE.Domain\SWCE.Domain.csproj", "{A3EA0042-F0E7-478D-A614-5BFCE086ED47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWCE.Web", "SWCE.Web1\SWCE.Web.csproj", "{A2E63C9D-15EE-410F-9A4C-7DFF3E84A145}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWCE.Web", "SWCE.Web1\SWCE.Web.csproj", "{A2E63C9D-15EE-410F-9A4C-7DFF3E84A145}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infraestructure", "Infraestructure", "{BF6237E2-29D2-468B-874E-9CC1323FACE4}"
 EndProject
@@ -38,9 +41,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWCE.Model", "SWCE.Model\SW
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{AD60A832-C1E7-4DE3-8727-00D5FDC03E7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWCE.Persistence.Test", "SWCE.Persistence.Test\SWCE.Persistence.Test.csproj", "{8062BC4D-AB27-47B5-A561-F20C3174335C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWCE.Persistence.Test", "SWCE.Persistence.Test\SWCE.Persistence.Test.csproj", "{8062BC4D-AB27-47B5-A561-F20C3174335C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWCE.Application.Test", "SWCE.Application.Test\SWCE.Application.Test.csproj", "{E606D296-C520-4E3B-9B1D-924E3F5FBD8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWCE.Application.Test", "SWCE.Application.Test\SWCE.Application.Test.csproj", "{E606D296-C520-4E3B-9B1D-924E3F5FBD8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
