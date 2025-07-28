@@ -90,7 +90,7 @@ namespace SWCE.Web1.Controllers
             return View(getresponse.data);
         }
 
-        public async Task<ActionResult> DetailsByUserid(int id)
+        public async Task<ActionResult> DetailsByUserid(int id_Usuario)
         {
             GetByUseridItemResponse getresponse = null;
 
@@ -98,7 +98,7 @@ namespace SWCE.Web1.Controllers
             {
                 using (_Client)
                 {
-                    var response = await _Client.GetAsync($"WishListItem/Item/{id}");
+                    var response = await _Client.GetAsync($"WishListItem/Item/{id_Usuario}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -187,7 +187,8 @@ namespace SWCE.Web1.Controllers
         // GET: WishListItemController1/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var model = new DisableItemModel { id = id };
+            return View(model);
         }
 
         // POST: WishListItemController1/Edit/5

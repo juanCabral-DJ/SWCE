@@ -6,38 +6,33 @@
 
 <h1>Addresses by userid</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+ 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.id)
+                Id
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.iD_Usuario)
+                Id del usuario
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.calle)
+                Calle
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ciudad)
+                Ciudad
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.estado_provincia)
+                Estado o provincia
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.codigo_postal)
+                Codigo postal
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.pais)
+                Pais
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.es_predeterminada)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.isDeleted)
+                ¿Es predeterminada?
             </th>
             <th></th>
         </tr>
@@ -46,31 +41,28 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.id)
+                @(item.id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.iD_Usuario)
+                @(item.iD_Usuario)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.calle)
+                @(item.calle)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ciudad)
+                @(item.ciudad)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.estado_provincia)
+                @(item.estado_provincia)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.codigo_postal)
+                @(item.codigo_postal)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.pais)
+                @(item.pais)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.es_predeterminada)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.isDeleted)
+                @(item.es_predeterminada? "Si" : "No")
             </td>
             <td>
                  
@@ -79,3 +71,6 @@
 }
     </tbody>
 </table>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

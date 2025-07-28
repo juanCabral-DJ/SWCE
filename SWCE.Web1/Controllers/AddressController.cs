@@ -89,14 +89,14 @@ namespace SWCE.Web1.Controllers
         }
 
         //Get Details Address Predeterminada
-        public async Task<ActionResult> DetailsByPredeterminada(int id)
+        public async Task<ActionResult> DetailsByPredeterminada(int iD_Usuario)
         {
             GetByPredeterminadaAddressResponse getAddressResponse = null;
             try
             {
                 using (_Client)
                 {
-                    var response = await _Client.GetAsync($"Address/Predeterminada/id?id={id}");
+                    var response = await _Client.GetAsync($"Address/Predeterminada/id?id={iD_Usuario}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -125,14 +125,14 @@ namespace SWCE.Web1.Controllers
         }
 
         //GetAll Details Address by userid
-        public async Task<ActionResult> DetailsByUserid(int id)
+        public async Task<ActionResult> DetailsByUserid(int iD_Usuario)
         {
             GetByUserIdAddressResponse getAddressResponse = null;
             try
             {
                 using (_Client)
                 {
-                    var response = await _Client.GetAsync($"Address/idUser/{id}");
+                    var response = await _Client.GetAsync($"Address/idUser/{iD_Usuario}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -236,7 +236,8 @@ namespace SWCE.Web1.Controllers
         // GET: AddressController1/Edit/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var model = new DisableAddressModel { id = id };
+            return View(model);
         }
 
         // POST: AddressController1/Edit/5

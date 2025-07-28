@@ -13,17 +13,15 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.id)
+                Id
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.id_producto)
+                Id del producto
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.id_Usuario)
+                id del usuario
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.isDeleted)
-            </th>
+            
             <th></th>
         </tr>
     </thead>
@@ -31,21 +29,19 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.id)
+                @(item.id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.id_producto)
+                @(item.id_producto)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.id_Usuario)
+                @(item.id_Usuario)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isDeleted)
-            </td>
-            <td>
-                    @Html.ActionLink("Item by id", "Details", new { id = item.id }) |
-                    @Html.ActionLink("Item by UserId", "DetailsbyUserId", new { id  = item.id_Usuario }) |
-                    @Html.ActionLink("Disable item", "Delete", new { id = item.id }, new { @class = "text-danger" })
+                    <a asp-action="DetailsbyUserid" asp-route-id_Usuario="@item.id_Usuario">Obtener por el id del usuario</a> |
+                    <a asp-action="Details" asp-route-id="@item.id">Item by id</a> |
+                    <a asp-action="Delete" asp-route-id_Usuario="@item.id" class="text-danger">Disable item</a>
+                     
             </td>
         </tr>
 }

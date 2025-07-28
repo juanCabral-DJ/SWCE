@@ -13,31 +13,28 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.id)
+                Id
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.iD_Usuario)
+                Id del usuario
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.calle)
+                Calle
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ciudad)
+                Ciudad
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.estado_provincia)
+                Estado o Provincia
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.codigo_postal)
+                Codigo postal
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.pais)
+                Pais
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.es_predeterminada)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.isDeleted)
+               ¿Es Predeterminada?
             </th>
             <th></th>
         </tr>
@@ -46,38 +43,37 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.id)
+                    @(item.id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.iD_Usuario)
+                    @(item.iD_Usuario)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.calle)
+                    @(item.calle) 
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ciudad)
+                    @(item.ciudad) 
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.estado_provincia)
+                    @(item.estado_provincia) 
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.codigo_postal)
+                    @(item.codigo_postal) 
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.pais)
+                    @(item.pais)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.es_predeterminada)
+                    @(item.es_predeterminada? "Si" : "No")
             </td>
+
             <td>
-                @Html.DisplayFor(modelItem => item.isDeleted)
-            </td>
-            <td>
-                @Html.ActionLink("Update Address", "Edit", new {   id=item.id }) |
-                @Html.ActionLink("Address By Id", "Details", new { id = item.id }) |
-                    @Html.ActionLink("Disable Address", "Delete", new { id = item.id }, new { @class = "text-danger" }) |
-                @Html.ActionLink("Addresses by userid", "DetailsByUserid", new { id = item.iD_Usuario }) |
-                @Html.ActionLink("Address by Predeterminada", "DetailsByPredeterminada", new { id = item.iD_Usuario })
+                    <a asp-action="Edit" asp-route-id="@item.id">Update Address</a> |
+                    <a asp-action="DetailsByUserid" asp-route-iD_Usuario="@item.iD_Usuario">Addresses by userid</a> |
+                    <a asp-action="Details" asp-route-id="@item.id">Address By Id</a> |
+                    <a asp-action="Delete" asp-route-id="@item.id" class="text-danger">Disable Address</a> |
+                    <a asp-action="DetailsByPredeterminada" asp-route-iD_Usuario="@item.iD_Usuario">Address by Predeterminada</a>
+
             </td>
         </tr>
 }

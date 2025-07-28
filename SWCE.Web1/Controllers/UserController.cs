@@ -200,7 +200,8 @@ namespace SWCE.Web1.Controllers
         // GET: UserController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var model = new DisableUserModel { id = id };
+            return View(model);
         }
 
         // POST: UserController/Edit/5

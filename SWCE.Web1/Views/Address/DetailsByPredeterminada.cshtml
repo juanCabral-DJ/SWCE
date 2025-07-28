@@ -7,62 +7,56 @@
 <h1>Address by Predeterminada</h1>
 
 <div>
-    <h4>AddressModel</h4>
+    <h4>Address</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.id)
+            Id
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.id)
+            @(Model.id)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.iD_Usuario)
+            Id del usuario
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.iD_Usuario)
+            @(Model.iD_Usuario)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.calle)
+            Calle
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.calle)
+            @(Model.calle)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ciudad)
+            Ciudad
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ciudad)
+            @(Model.ciudad)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.estado_provincia)
+            Estado o provincia
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.estado_provincia)
+            @(Model.estado_provincia)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.codigo_postal)
+            Codigo postal
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.codigo_postal)
+            @(Model.codigo_postal)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.pais)
+            Pais
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.pais)
+            @(Model.pais)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.es_predeterminada)
+            ¿Es predeterminada?
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.es_predeterminada)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.isDeleted)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.isDeleted)
+            @(Model.es_predeterminada? "Si" : "No")
         </dd>
     </dl>
 </div>

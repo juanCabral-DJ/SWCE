@@ -14,61 +14,43 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.id)
+                Nombre
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.id_rol)
+                Apellido
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.nombre)
+                Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.apellido)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.fecha_Creacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.isDeleted)
+                Fecha de Creación
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.id_rol)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.apellido)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.fecha_Creacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.isDeleted)
-            </td>
-            <td>
-                @Html.ActionLink("Update User", "Edit", new { id=item.id }) |
-                    @Html.ActionLink("User by id", "Details", new { id = item.id }) |
-                    @Html.ActionLink("Disable", "Delete", new { id = item.id }, new { @class = "text-danger" }) |
-                    @Html.ActionLink("User by email", "DetailsByEmail", new { email = item.email })
-
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.nombre
+                </td>
+                <td>
+                    @item.apellido
+                </td>
+                <td>
+                    @item.email
+                </td>
+                <td>
+                    @item.fecha_Creacion.ToShortDateString()
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.id">Update</a> |
+                    <a asp-action="DetailsByEmail" asp-route-email="@item.email">Obtener por el email</a> |
+                    <a asp-action="Details" asp-route-id="@item.id">Obtener por el id</a> |
+                    <a asp-action="Delete" asp-route-id="@item.id" class="text-danger">Disable</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
