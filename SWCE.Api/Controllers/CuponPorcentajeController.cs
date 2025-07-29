@@ -24,7 +24,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
             return HandleResult(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetCuponPorcentajeById")]
         [ProducesResponseType(typeof(OperationResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(OperationResult), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
@@ -51,7 +51,7 @@ namespace SWCE.Api.Controllers.AdministracionModule
             return HandleResult(result);
         }
 
-        [HttpPost("disable/{id}")]
+        [HttpPost("DisableCuponPorcentaje")]
         [ProducesResponseType(typeof(OperationResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(OperationResult), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Disable(int id)

@@ -72,6 +72,7 @@ namespace SWCE.Persistence.Repositories
                 _logger.LogInformation("Obteniendo todos los cupones de monto fijo.");
                 var cupones = await _context.Cupones
                     .OfType<CuponMontoFijo>()
+                    .AsNoTracking()
                     .ToListAsync();
                 return OperationResult.Success("Cupones obtenidos correctamente.", cupones);
             }

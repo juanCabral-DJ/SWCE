@@ -65,8 +65,6 @@ namespace SWCE.Persistence.Base
             }
             catch (Exception ex)
             {
-                /*result.IsSuccess = false;
-                result.Message = "Ha ocurrido un error al guardar los datos";*/
                 result = OperationResult.Failure("Ha ocurrido un error al guardar los datos", ex);
             }
             return result;

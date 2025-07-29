@@ -116,9 +116,8 @@ namespace SWCE.Web.Controllers
                     if (!response.IsSuccessStatusCode)
                     {
                         var errorContent = await response.Content.ReadAsStringAsync();
-                        // Puedes loguearlo o usar TempData para mostrarlo
                         ModelState.AddModelError(string.Empty, $"Error: {errorContent}");
-                        return View(model); // Devuelve el mismo modelo para que el usuario lo corrija
+                        return View(model); 
                     }
 
                 }
@@ -192,36 +191,6 @@ namespace SWCE.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // POST: ProductoController/Delete/5
-        /*[HttpPost, ActionName("Delete")]
-         [ValidateAntiForgeryToken]
-         public async Task<IActionResult> DeleteConfirmed(int id)
-         {
-             try
-             {
-                 using (var client = new HttpClient())
-                 {
-                     client.BaseAddress = new Uri(_apiBaseUrl);
-                     var response = await client.PostAsJsonAsync($"Producto/DisableProduct?id={id}");
-
-                     if (response.IsSuccessStatusCode)
-                     {
-                         return RedirectToAction(nameof(Index));
-                     }
-                     else
-                     {
-                         ModelState.AddModelError(string.Empty, "Error al eliminar el producto.");
-                     }
-                 }
-             }
-             catch (Exception ex)
-             {
-                 ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-             }
-
-             return RedirectToAction(nameof(Index));
-         }*/
 
         // POST: ProductoController/Delete/5
         [HttpPost, ActionName("Delete")]

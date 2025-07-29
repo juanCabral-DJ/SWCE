@@ -2,7 +2,7 @@
 {
     public class UpdateCuponMontoFijoModel
     {
-        public int monto { get; set; }
+        public decimal monto { get; set; }
         public int id { get; set; }
         public DateTime fechaExpiracion { get; set; }
         

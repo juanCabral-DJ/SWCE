@@ -63,6 +63,5 @@ namespace SWCE.Api.Controllers.AdministracionModule
 
             return Ok(result);
         }
-
     }
 }

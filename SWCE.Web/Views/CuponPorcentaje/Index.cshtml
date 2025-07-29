@@ -1,22 +1,22 @@
-﻿@model IEnumerable<SWCE.Web.Models.CuponMontoFijo.CuponMontoFijoModel>
+﻿@model IEnumerable<SWCE.Web.Models.CuponPorcentaje.CuponPorcentajeModel>
 
 @{
-    ViewData["Title"] = "Cupones MontoFijo";
+    ViewData["Title"] = "Index";
 }
 
-<h1>Administración Cupones</h1>
+<h1>Administración Cupones Porcentaje</h1>
 
 <p>
-    <a asp-action="Create">Crear Nuevos</a>
+    <a asp-action="Create">Crear Nuevo</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.monto)
+                @Html.DisplayNameFor(model => model.id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.id)
+                @Html.DisplayNameFor(model => model.porcentaje)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.fechaExpiracion)
@@ -31,21 +31,22 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.monto)
+                @Html.DisplayFor(modelItem => item.id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.id)
+                @Html.DisplayFor(modelItem => item.porcentaje)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.fechaExpiracion)
             </td>
-                <td>
-                    <input type="checkbox" disabled @(item.isDeleted ? "checked" : "") />
-                </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.id })
+                @*@Html.DisplayFor(modelItem => item.isDeleted)*@
+                    <input type="checkbox" disabled @(item.isDeleted ? "checked" : "") />
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.id}) |
+                @Html.ActionLink("Details", "Details", new { id=item.id}) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.id})
             </td>
         </tr>
 }
