@@ -21,9 +21,6 @@ namespace SWCE.Web1.Controllers
 
             try
             {
-                using (_Client)
-                {
-                    var response = await _Client.GetAsync("User/GetUser");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -48,7 +45,6 @@ namespace SWCE.Web1.Controllers
                     message = $"Error retrieving User {ex.Message}"
                 };
             }
-            return View(getAllUserResponse.data);
         }
 
         // GET: UserController/Details/5
@@ -85,8 +81,6 @@ namespace SWCE.Web1.Controllers
                     message = $"Error retrieving User {ex.Message}"
                 };
             }
-            return View(getByidUserResponse.data);
-            
         }
 
         // GET: UserController/Details/5
@@ -123,9 +117,7 @@ namespace SWCE.Web1.Controllers
                     message = $"Error retrieving User {ex.Message}"
                 };
             }
-            return View(getByEmailUserResponse.data);
 
-        }
 
         // GET: UserController/Create
         public ActionResult Create()
@@ -141,19 +133,6 @@ namespace SWCE.Web1.Controllers
             CreateUserResponse CreateResponse = null;
             try
             {
-                model.fecha_Creacion = DateTime.Now;
-                using (_Client)
-                {
-                    var response = await _Client.PostAsJsonAsync("User/CreateUserDto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        CreateResponse = System.Text.Json.JsonSerializer.Deserialize<CreateUserResponse>(responseString);
-
-                    }
-
-                }
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -177,18 +156,6 @@ namespace SWCE.Web1.Controllers
             EditUserResponse EditResponse = null;
             try
             {
-                using (_Client)
-                {
-                    var response = await _Client.PostAsJsonAsync("User/UpdateUserDto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        EditResponse = System.Text.Json.JsonSerializer.Deserialize<EditUserResponse>(responseString);
-
-                    }
-                    
-                }
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -218,12 +185,6 @@ namespace SWCE.Web1.Controllers
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        DisableResponse = System.Text.Json.JsonSerializer.Deserialize<DisableUserResponse>(responseString);
-
-                    }
-
-                }
                 return RedirectToAction(nameof(Index));
             }
             catch
