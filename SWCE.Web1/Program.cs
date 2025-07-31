@@ -17,6 +17,9 @@ builder.Services.AddHttpClient("Client", client =>
 
 builder.Services.AddScoped<IAPIUserRepository, APIUserRepository>();
 builder.Services.AddScoped<IAPIUserServices, APIUserServices>();
+
+builder.Services.AddScoped<IAPIAddressRepository, APIAddressRepository>();
+builder.Services.AddScoped<IAPIAddressServices, APIAddressServices>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

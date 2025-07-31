@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SWCE.Web1.Interfaces;
 using SWCE.Web1.Models.Address;
 using SWCE.Web1.Models.User;
+using System.Text.Json;
 using static SWCE.Web1.Models.Address.DisableAddressModel;
 using static SWCE.Web1.Models.WishListItem.DisableItemModel;
 
@@ -9,162 +11,120 @@ namespace SWCE.Web1.Controllers
 {
     public class AddressController : Controller
     {
-        private readonly HttpClient _Client;
+        private readonly IAPIAddressServices _api;
 
-        public AddressController(IHttpClientFactory httpClientFactory)
+        public AddressController(IAPIAddressServices api)
         {
-            _Client = httpClientFactory.CreateClient("Client");
+            _api = api;
         }
 
         // GET: AddressController1
         public async Task<ActionResult> Index()
         {
-            GetAllAddressResponse getAddressResponse = null;
-            try
-            {
-                using (_Client)
-                {
-                    var response = await _Client.GetAsync("Address");
+            var Address = await _api.GetAllAddressesAsync();
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getAddressResponse = System.Text.Json.JsonSerializer.Deserialize<GetAllAddressResponse>(responseString);
-                    }
-                    else
-                    {
-                        getAddressResponse = new GetAllAddressResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving User"
-                        };
-                    }
+            if (Address.isSuccess)
+            {
+                try
+                {
+                    return View(Address.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new List<AddressModel>());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getAddressResponse = new GetAllAddressResponse
-                {
-                    isSuccess = false,
-                    message = "Error retrieving Address"
-                };
+
+                ViewBag.ErrorMessage = Address.message;
+                return View(new List<AddressModel>()); // Devuelve una lista vacía a la vista
             }
-            return View(getAddressResponse.data);
         }
 
         // GET: AddressController1/Details/5
-        public async Task<ActionResult> Details(int id)
+       public async Task<ActionResult> Details(int id)
         {
-            GetByIdAddressResponse getAddressResponse = null;
-            try
-            {
-                using (_Client)
-                {
-                    var response = await _Client.GetAsync($"Address/{id}");
+            var Address = await _api.GetAddressByIdAsync(id);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getAddressResponse = System.Text.Json.JsonSerializer.Deserialize<GetByIdAddressResponse>(responseString);
-                    }
-                    else
-                    {
-                        getAddressResponse = new GetByIdAddressResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving User"
-                        };
-                    }
+            if (Address.isSuccess)
+            {
+                try
+                {
+                    return View(Address.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new AddressModel());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getAddressResponse = new GetByIdAddressResponse
-                {
-                    isSuccess = false,
-                    message = "Error retrieving Address"
-                };
+
+                ViewBag.ErrorMessage = Address.message;
+                return View(new AddressModel()); // Devuelve una lista vacía a la vista
             }
-            return View(getAddressResponse.data);
         }
+           
 
         //Get Details Address Predeterminada
-        public async Task<ActionResult> DetailsByPredeterminada(int iD_Usuario)
+         public async Task<ActionResult> DetailsByPredeterminada(int iD_Usuario)
         {
-            GetByPredeterminadaAddressResponse getAddressResponse = null;
-            try
-            {
-                using (_Client)
-                {
-                    var response = await _Client.GetAsync($"Address/Predeterminada/id?id={iD_Usuario}");
+            var Address = await _api.GetByUseridAdressPredeterminada(iD_Usuario);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getAddressResponse = System.Text.Json.JsonSerializer.Deserialize<GetByPredeterminadaAddressResponse>(responseString);
-                    }
-                    else
-                    {
-                        getAddressResponse = new GetByPredeterminadaAddressResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving User"
-                        };
-                    }
+            if (Address.isSuccess)
+            {
+                try
+                {
+                    return View(Address.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new AddressModel());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getAddressResponse = new GetByPredeterminadaAddressResponse
-                {
-                    isSuccess = false,
-                    message = "Error retrieving Address"
-                };
+
+                ViewBag.ErrorMessage = Address.message;
+                return View(new AddressModel()); // Devuelve una lista vacía a la vista
             }
-            return View(getAddressResponse.data);
         }
 
         //GetAll Details Address by userid
         public async Task<ActionResult> DetailsByUserid(int iD_Usuario)
         {
-            GetByUserIdAddressResponse getAddressResponse = null;
-            try
-            {
-                using (_Client)
-                {
-                    var response = await _Client.GetAsync($"Address/idUser/{iD_Usuario}");
+            var Address = await _api.GetAddressByUserIdAsync(iD_Usuario);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getAddressResponse = System.Text.Json.JsonSerializer.Deserialize<GetByUserIdAddressResponse>(responseString);
-                    }
-                    else
-                    {
-                        getAddressResponse = new GetByUserIdAddressResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving User"
-                        };
-                    }
+            if (Address.isSuccess)
+            {
+                try
+                {
+                    return View(Address.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new List<AddressModel>());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getAddressResponse = new GetByUserIdAddressResponse
-                {
-                    isSuccess = false,
-                    message = "Error retrieving Address"
-                };
+
+                ViewBag.ErrorMessage = Address.message;
+                return View(new List<AddressModel>()); // Devuelve una lista vacía a la vista
             }
-            return View(getAddressResponse.data);
         }
 
 
         // GET: AddressController1/Create
         public ActionResult Create()
         {
-            return View();
+            var model = new CreateAddressModel();
+            return View(model);
         }
 
         // POST: AddressController1/Create
@@ -172,35 +132,23 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CreateAddressModel model)
         {
-            CreateAddressResponse CreateResponse = null;
+            var Address = await _api.CreateAddressAsync(model);
+
             try
             {
-
-                using (_Client)
-                {
-                    var response = await _Client.PostAsJsonAsync("Address/CreateAddressDto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        CreateResponse = System.Text.Json.JsonSerializer.Deserialize<CreateAddressResponse>(responseString);
-
-                    }
-
-                }
                 return RedirectToAction(nameof(Index));
             }
-
             catch
             {
-                return View();
+                return View(model);
             }
-        }
+        } 
 
         // GET: AddressController1/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var model = new EditAddressModel { id = id };
+            return View(model);
         }
 
         // POST: AddressController1/Edit/5
@@ -208,33 +156,20 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(EditAddressModel model)
         {
-            EditAddressResponse EditResponse = null;
+            var Address = await _api.UpdateAddressAsync(model);
+
             try
             {
-
-                using (_Client)
-                {
-                    var response = await _Client.PostAsJsonAsync("Address/UpdateAddressDto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        EditResponse = System.Text.Json.JsonSerializer.Deserialize<EditAddressResponse>(responseString);
-
-                    }
-
-                }
                 return RedirectToAction(nameof(Index));
             }
-
             catch
             {
-                return View();
+                return View(model);
             }
         }
 
         // GET: AddressController1/Edit/5
-        public ActionResult Delete(int id)
+         public ActionResult Delete(int id)
         {
             var model = new DisableAddressModel { id = id };
             return View(model);
@@ -245,29 +180,16 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(DisableAddressModel model)
         {
-            DisableAddressResponse DisableResponse = null;
+            var Address = await _api.DisableAddressAsync(model);
+
             try
             {
-
-                using (_Client)
-                {
-                    var response = await _Client.PostAsJsonAsync("Address/DisableAddressDto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        DisableResponse = System.Text.Json.JsonSerializer.Deserialize<DisableAddressResponse>(responseString);
-
-                    }
-
-                }
                 return RedirectToAction(nameof(Index));
             }
-
             catch
             {
-                return View();
+                return View(model);
             }
-        }
+        } 
     }
 }

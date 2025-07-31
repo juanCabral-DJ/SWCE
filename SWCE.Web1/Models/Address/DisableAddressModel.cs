@@ -6,12 +6,5 @@ namespace SWCE.Web1.Models.Address
     {
         public int id { get; set; }
 
-
-        public class DisableAddressResponse
-        {
-            public string message { get; set; }
-            public bool isSuccess { get; set; }
-            public AddressModel data { get; set; }
-        }
     }
 }

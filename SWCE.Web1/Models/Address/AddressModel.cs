@@ -14,32 +14,5 @@ namespace SWCE.Web1.Models.Address
         public bool es_predeterminada { get; set; }
         public bool isDeleted { get; set; }
     }
-
-    public class GetByIdAddressResponse
-    {
-        public string message { get; set; }
-        public bool isSuccess { get; set; }
-        public  AddressModel  data { get; set; }
-    }
-
-    public class GetByPredeterminadaAddressResponse
-    {
-        public string message { get; set; }
-        public bool isSuccess { get; set; }
-        public AddressModel data { get; set; }
-    }
-
-    public class GetByUserIdAddressResponse
-    {
-        public string message { get; set; }
-        public bool isSuccess { get; set; }
-        public List<AddressModel> data { get; set; }
-    }
-
-    public class GetAllAddressResponse
-    {
-        public string message { get; set; }
-        public bool isSuccess { get; set; }
-        public List<AddressModel> data { get; set; }
-    }
+ 
 }
