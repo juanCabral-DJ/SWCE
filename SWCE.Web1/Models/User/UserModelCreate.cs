@@ -10,10 +10,5 @@
             public DateTime fecha_Creacion { get; set; }
         }
 
-    public class CreateUserResponse
-    {
-        public string message { get; set; }
-        public bool isSuccess { get; set; }
-        public object data { get; set; }
-    }
+     
 }

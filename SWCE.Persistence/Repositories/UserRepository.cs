@@ -46,7 +46,7 @@ namespace SWCE.Persistence.Repositories
                 if (presult > 0)
                 {
                     _Logger.LogInformation("User added successfully with result: {Result}", result);
-                    return OperationResult.Success("User added successfully.", entity);
+                    result = OperationResult.Success("User added successfully.", entity);
                     
                 }
                 else

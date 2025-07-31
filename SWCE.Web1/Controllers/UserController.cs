@@ -1,122 +1,100 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using SWCE.Aplicatition.Interfaces.Repositories.API_Interface;
+using SWCE.Domain.Entities.Configuration.User_Perfil;
+using SWCE.Web1.Interfaces;
 using SWCE.Web1.Models.User;
+using System.Text.Json;
+
 
 namespace SWCE.Web1.Controllers
 {
     public class UserController : Controller
     {
         private readonly HttpClient _Client;
-
-        public UserController(IHttpClientFactory httpClientFactory)
+        private readonly IAPIUserServices _api;
+        public UserController(IAPIUserServices api)
         {
-            _Client = httpClientFactory.CreateClient("Client");
+            _api = api;
         }
 
         // GET: UserController
         public async Task<ActionResult> Index()
         {
-            GetAllUserResponse getAllUserResponse = null;
+            var Users = await _api.GetAllUsersAsync();
 
-            try
+            if (Users.isSuccess)
             {
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getAllUserResponse = System.Text.Json.JsonSerializer.Deserialize<GetAllUserResponse>(responseString);
-                    }
-                    else
-                    {
-                        getAllUserResponse = new GetAllUserResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving User"
-                        };
-                    }
+                try
+                {
+                    return View(Users.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new List<UserModel>());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getAllUserResponse = new GetAllUserResponse
-                {
-                    isSuccess = false,
-                    message = $"Error retrieving User {ex.Message}"
-                };
+
+                ViewBag.ErrorMessage = Users.message;
+                return View(new List<UserModel>()); // Devuelve una lista vacía a la vista
             }
         }
 
         // GET: UserController/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            GetByIdUserResponse getByidUserResponse = null;
+            var Users = await _api.GetUserByIdAsync(id);
 
-            try
+            if (Users.isSuccess)
             {
-                using (_Client)
+                try
                 {
-                    var response = await _Client.GetAsync($"User/{id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getByidUserResponse = System.Text.Json.JsonSerializer.Deserialize<GetByIdUserResponse>(responseString);
-                    }
-                    else
-                    {
-                        getByidUserResponse = new GetByIdUserResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving User"
-                        };
-                    }
+                    return View(Users.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new UserModel());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getByidUserResponse = new GetByIdUserResponse
-                {
-                    isSuccess = false,
-                    message = $"Error retrieving User {ex.Message}"
-                };
+
+                ViewBag.ErrorMessage = Users.message;
+                return View(new UserModel()); // Devuelve una lista vacía a la vista
             }
         }
 
         // GET: UserController/Details/5
         public async Task<ActionResult> DetailsByEmail(string email)
         {
-            GetByEmailUserResponse getByEmailUserResponse = null;
+            var Users = await _api.GetUserByEmailAsync(email);
 
-            try
+            if (Users.isSuccess)
             {
-                using (_Client)
+                try
                 {
-                    var response = await _Client.GetAsync($"User/Email?email={email}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getByEmailUserResponse = System.Text.Json.JsonSerializer.Deserialize<GetByEmailUserResponse>(responseString);
-                    }
-                    else
-                    {
-                        getByEmailUserResponse = new GetByEmailUserResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving User"
-                        };
-                    }
+                    return View(Users.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new UserModel());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getByEmailUserResponse = new GetByEmailUserResponse
-                {
-                    isSuccess = false,
-                    message = $"Error retrieving User {ex.Message}"
-                };
+
+                ViewBag.ErrorMessage = Users.message;
+                return View(new UserModel()); // Devuelve una lista vacía a la vista
             }
+        }
 
 
         // GET: UserController/Create
@@ -130,39 +108,41 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(UserModelCreate model)
         {
-            CreateUserResponse CreateResponse = null;
+            var Users = await _api.CreateUserAsync(model);
+
             try
             {
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(model);
             }
         }
 
         // GET: UserController/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-             
+
             return View();
         }
 
         // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-       public async Task<ActionResult> Edit(UserModelEdit model)
+        public async Task<ActionResult> Edit(UserModelEdit model)
         {
-            EditUserResponse EditResponse = null;
+            var Users = await _api.UpdateUserAsync(model);
+
             try
             {
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(model);
             }
-        } 
+        }
 
         // GET: UserController/Delete/5
         public ActionResult Delete(int id)
@@ -176,20 +156,15 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(DisableUserModel model)
         {
-            DisableUserResponse DisableResponse = null;
+            var Users = await _api.DisableUserAsync(model);
+
             try
             {
-                using (_Client)
-                {
-                    var response = await _Client.PostAsJsonAsync("User/DisableUserDto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(model);
             }
         }
     }

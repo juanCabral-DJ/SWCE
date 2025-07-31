@@ -1,3 +1,8 @@
+using SWCE.Aplicatition.Interfaces.Repositories.API_Interface;
+using SWCE.Persistence.ApiClients;
+using SWCE.Web1.Interfaces;
+using SWCE.Web1.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
@@ -10,7 +15,8 @@ builder.Services.AddHttpClient("Client", client =>
 
 });
 
-
+builder.Services.AddScoped<IAPIUserRepository, APIUserRepository>();
+builder.Services.AddScoped<IAPIUserServices, APIUserServices>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
