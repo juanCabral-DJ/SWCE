@@ -1,7 +1,21 @@
+using SWCE.Web.Services;
+using SWCE.Web.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+
+builder.Services.AddHttpClient("Client", client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl!);
+});
+
+//Servicios
+builder.Services.AddScoped<ICategoriaHttpService, CategoriaHttpService>();
+builder.Services.AddScoped<IProductoHttpService, ProductoHttpService>();
 
 var app = builder.Build();
 

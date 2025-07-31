@@ -1,90 +1,41 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWCE.Web.Models.Categoria;
+using SWCE.Web.Services.Interfaces;
 
 namespace SWCE.Web.Controllers
 {
     public class CategoriaController : Controller
     {
-        private readonly string _apiBaseUrl = "http://localhost:5134/api/";
-        // GET: CategoriaController
+        private readonly ICategoriaHttpService _categoriaHttpService;
+
+        public CategoriaController(ICategoriaHttpService categoriaHttpService)
+        {
+            _categoriaHttpService = categoriaHttpService;
+        }
+
         public async Task<IActionResult> Index()
         {
-            GetAllCategoriaResponse getAllCategoriaResponse = null!;
-            try
+            var response = await _categoriaHttpService.GetAllCategoriasAsync();
+            if (response.isSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-
-                    var response = await client.GetAsync("Categoria/Getall");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getAllCategoriaResponse = System.Text.Json.JsonSerializer.Deserialize<GetAllCategoriaResponse>(content)!;
-                    }
-                    else
-                    {
-                        getAllCategoriaResponse = new GetAllCategoriaResponse
-                        {
-                            message = "Error al obtener las categorias",
-                            isSuccess = false,
-                            data = null
-                        };
-                    }
-                }
+                return View(response.data);
             }
-            catch (Exception ex)
-            {
-                getAllCategoriaResponse = new GetAllCategoriaResponse
-                {
-                    message = $"Error al obtener las categorias {ex.Message}",
-                    isSuccess = false,
-                    data = null
-                };
-                throw;
-            }
-
-            return View(getAllCategoriaResponse.data);
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener las categorías.";
+            return View(new List<CategoriaModel>());
         }
 
         // GET: CategoriaController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            GetCategoriaByIdResponse getCategoriaByIdResponse = null!;
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
+            var response = await _categoriaHttpService.GetCategoriaByIdAsync(id);
 
-                    var response = await client.GetAsync($"Categoria/GetCategoriaById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getCategoriaByIdResponse = System.Text.Json.JsonSerializer.Deserialize<GetCategoriaByIdResponse>(content)!;
-                    }
-                    else
-                    {
-                        getCategoriaByIdResponse = new GetCategoriaByIdResponse
-                        {
-                            message = "Error al obtener la categoria",
-                            isSuccess = false
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess)
             {
-                getCategoriaByIdResponse = new GetCategoriaByIdResponse
-                {
-                    message = $"Error al obtener la categoria {ex.Message}",
-                    isSuccess = false
-                };
+                return View(response.data);
             }
-            return View(getCategoriaByIdResponse.data);
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener los detalles de la categoría.";
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: CategoriaController/Create
@@ -96,69 +47,40 @@ namespace SWCE.Web.Controllers
         // POST: CategoriaController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCategoria model)
+        public async Task<IActionResult> Create(CategoriaModel model)
         {
-            CreateCategoriaResponse createCategoriaResponse = null!;
-            try
+            var response = await _categoriaHttpService.CreateCategoriaAsync(model);
+
+            if (response.isSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.PostAsJsonAsync("Categoria/CreateCategoria", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        createCategoriaResponse = System.Text.Json.JsonSerializer.Deserialize<CreateCategoriaResponse>(content)!;
-
-                    }
-                }
+                TempData["SuccessMessage"] = "Categoría creada correctamente.";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
-                return View();
+                TempData["ErrorMessage"] = response.message ?? "Error al crear la categoría.";
+                return View(model);
             }
+
         }
 
         // GET: CategoriaController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            GetCategoriaByIdResponse getCategoriaByIdResponse = null!;
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
+            var response = await _categoriaHttpService.GetCategoriaByIdAsync(id);
 
-                    var response = await client.GetAsync($"Categoria/GetCategoriaById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getCategoriaByIdResponse = System.Text.Json.JsonSerializer.Deserialize<GetCategoriaByIdResponse>(content)!;
-                    }
-                    else
-                    {
-                        getCategoriaByIdResponse = new GetCategoriaByIdResponse
-                        {
-                            message = "Error al obtener la categoria",
-                            isSuccess = false
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess && response.data != null)
             {
-                getCategoriaByIdResponse = new GetCategoriaByIdResponse
+                var model = new CategoriaModel
                 {
-                    message = $"Error al obtener la categoria {ex.Message}",
-                    isSuccess = false,
-                    data = null
+                    id = response.data.id,
+                    nombre = response.data.nombre,
+                    descripcion = response.data.descripcion
                 };
+                return View(model);
             }
-
-            return View(getCategoriaByIdResponse.data);
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener la categoria a editar";
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: CategoriaController/Edit/5
@@ -166,64 +88,30 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UpdateCategoriaModel model)
         {
-            UpdateCategoriaResponse updateCategoriaResponse = null!;
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.PutAsJsonAsync("Categoria/UpdateCategoria", model);
+            var response = await _categoriaHttpService.UpdateCategoriaAsync(model);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        updateCategoriaResponse = System.Text.Json.JsonSerializer.Deserialize<UpdateCategoriaResponse>(content)!;
-                    }
-                }
+            if (response.isSuccess)
+            {
+                TempData["SuccessMessage"] = response.message ?? "Categoría actualizada correctamente.";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
-                return View();
+                return View(model);
             }
         }
 
         // GET: CategoriaController/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            GetCategoriaByIdResponse getCategoriaByIdResponse = null!;
+            var response = await _categoriaHttpService.GetCategoriaByIdAsync(id);
 
-            try
+            if (response.isSuccess && response.data != null)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.GetAsync($"Categoria/GetCategoriaById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getCategoriaByIdResponse = System.Text.Json.JsonSerializer.Deserialize<GetCategoriaByIdResponse>(content)!;
-
-                        if (getCategoriaByIdResponse?.data == null)
-                        {
-                            TempData["ErrorMessage"] = "Categoría no encontrada para eliminar.";
-                            return RedirectToAction(nameof(Index));
-                        }
-                        return View(getCategoriaByIdResponse.data);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = $"Error al obtener la categoría para eliminar: {response.StatusCode}";
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
+                return View(response.data);
             }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"Error inesperado al obtener la categoría para eliminar: {ex.Message}";
-                return RedirectToAction(nameof(Index));
-            }
+            TempData["ErrorMessage"] = $"Error al obtener la categoría para eliminar: {response.message}";
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: CategoriaController/Delete/5
@@ -231,30 +119,26 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.PostAsync($"Categoria/DisableCategoria?id={id}", null);
+            var response = await _categoriaHttpService.DisableCategoriaAsync(id);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        TempData["SuccessMessage"] = "Categoría deshabilitada exitosamente.";
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        var errorContent = await response.Content.ReadAsStringAsync();
-                        TempData["ErrorMessage"] = $"Error al deshabilitar la categoría: {errorContent}";
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess)
             {
-                TempData["ErrorMessage"] = $"Error inesperado al deshabilitar la categoría: {ex.Message}";
+                TempData["SuccessMessage"] = "Categoría deshabilitada exitosamente.";
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                var productDetailsResponse = await _categoriaHttpService.GetCategoriaByIdAsync(id);
+                if (productDetailsResponse.isSuccess && productDetailsResponse.data != null)
+                {
+                    ModelState.AddModelError(string.Empty, response.message ?? "Error al deshabilitar el producto.");
+                    return View(productDetailsResponse.data);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = response.message ?? "Error al intentar deshabilitar el producto.";
+                    return RedirectToAction(nameof(Index));
+                }
             }
         }
     }

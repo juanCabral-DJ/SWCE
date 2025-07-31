@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SWCE.Web.Models.Categoria;
 using SWCE.Web.Models.Producto;
+using SWCE.Web.Services.Interfaces;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -9,87 +10,41 @@ namespace SWCE.Web.Controllers
 {
     public class ProductoController : Controller
     {
-        private readonly string _apiBaseUrl = "http://localhost:5134/api/";
+        private readonly IProductoHttpService _productoHttpService;
+
+        public ProductoController(IProductoHttpService productoHttpService)
+        {
+            _productoHttpService = productoHttpService;
+        }
+
         // GET: ProductoController
         public async Task<IActionResult> Index()
         {
-            GetAllProductoResponse getAllProductoResponse = null!;
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.GetAsync("Producto/GetAll");
+            var response = await _productoHttpService.GetAllProductosAsync();
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getAllProductoResponse = System.Text.Json.JsonSerializer.Deserialize<GetAllProductoResponse>(content)!;
-                    }
-                    else
-                    {
-                        getAllProductoResponse = new GetAllProductoResponse
-                        {
-                            message = "Error al obtener los Productos",
-                            isSuccess = false,
-                            data = null
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess)
             {
-                getAllProductoResponse = new GetAllProductoResponse()
-                {
-                    message = $"Error al obtener los productos {ex.Message}",
-                    isSuccess = false,
-                    data = null
-                };
+                return View(response.data);
             }
-
-            return View(getAllProductoResponse.data);
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener la lista de productos.";
+            return View(new List<ProductoModel>());
         }
 
         // GET: ProductoController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            GetProductoByIdResponse getProductoByIdResponse = null!;
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
+            var response = await _productoHttpService.GetProductoByIdAsync(id);
 
-                    var response = await client.GetAsync($"Producto/GetProductoById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getProductoByIdResponse = System.Text.Json.JsonSerializer.Deserialize<GetProductoByIdResponse>(content)!;
-                    }
-                    else
-                    {
-                        getProductoByIdResponse = new GetProductoByIdResponse
-                        {
-                            message = "Error al obtener el Producto",
-                            isSuccess = false
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess)
             {
-                getProductoByIdResponse = new GetProductoByIdResponse
-                {
-                    message = $"Error al obtener el Producto {ex.Message}",
-                    isSuccess = false
-                };
+                return View(response.data);
             }
-            return View(getProductoByIdResponse.data);
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener los detalles del producto.";
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: ProductoController/Create
-       public ActionResult Create()
+        public ActionResult Create()
         {
             return View();
         }
@@ -99,41 +54,40 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateProductoModel model)
         {
-            try
+            var response = await _productoHttpService.CreateProductoAsync(model);
+
+            if (response.isSuccess)
             {
-                CreateProductoResponse createProductoResponse = null!;
-                
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.PostAsJsonAsync("Producto/CreateProducto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        createProductoResponse = System.Text.Json.JsonSerializer.Deserialize<CreateProductoResponse>(content)!;
-                    }
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var errorContent = await response.Content.ReadAsStringAsync();
-                        ModelState.AddModelError(string.Empty, $"Error: {errorContent}");
-                        return View(model); 
-                    }
-
-                }
+                TempData["SuccessMessage"] = "Producto creado correctamente.";
                 return RedirectToAction(nameof(Index));
-               
             }
-            catch
+            else
             {
-                return View();
+                TempData["ErrorMessage"] = response.message ?? "Error al crear el producto.";
+                return View(model);
             }
         }
 
         // GET: ProductoController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var response = await _productoHttpService.GetProductoByIdAsync(id);
+
+            if (response.isSuccess && response.data != null)
+            {
+                var model = new UpdateProductoModel
+                {
+                    id = response.data.id,
+                    nombre = response.data.nombre,
+                    marca = response.data.marca,
+                    idCategoria = response.data.idCategoria,
+                    precio = response.data.precio,
+                    stock = response.data.stock
+                };
+                return View(model);
+            }
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener el producto a editar";
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: ProductoController/Edit/5
@@ -141,54 +95,29 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UpdateProductoModel model)
         {
-            UpdateProductoResponse updateProductoResponse = null!;
+            var response = await _productoHttpService.UpdateProductoAsync(model);
 
-            try
+            if (response.isSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.PutAsJsonAsync("Producto/Update", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        updateProductoResponse = System.Text.Json.JsonSerializer.Deserialize<UpdateProductoResponse>(content)!;
-                    }
-                }
+                TempData["SuccessMessage"] = response.message ?? "Producto actualizado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
-                return View();
+                return View(model);
             }
         }
 
         // GET: ProductoController/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            GetProductoByIdResponse getProductoByIdResponse = null!;
+            var response = await _productoHttpService.DisableProductoAsync(id);
 
-            try
+            if (response.isSuccess && response.data != null)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.GetAsync($"Producto/GetProductoById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getProductoByIdResponse = System.Text.Json.JsonSerializer.Deserialize<GetProductoByIdResponse>(content)!;
-                        return View(getProductoByIdResponse.data);
-                    }
-                }
+                return View(response.data);
             }
-            catch
-            {
-                
-            }
-
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener el producto a deshabilitar";
             return RedirectToAction(nameof(Index));
         }
 
@@ -197,28 +126,16 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.PostAsync($"Producto/DisableProduct?id={id}", null);
+            var response = await _productoHttpService.DisableProductoAsync(id);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        var errorContent = await response.Content.ReadAsStringAsync();
-                        ModelState.AddModelError(string.Empty, $"Error al eliminar el producto: {errorContent}");
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess)
             {
-                ModelState.AddModelError(string.Empty, $"Error inesperado: {ex.Message}");
+                TempData["SuccessMessage"] = response.message ?? "Producto deshabilitado correctamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                TempData["ErrorMessage"] = response.message ?? "Error al intentar deshabilitar el producto.";
                 return RedirectToAction(nameof(Index));
             }
         }

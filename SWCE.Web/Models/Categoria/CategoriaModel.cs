@@ -1,34 +1,25 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using SWCE.Web.Models.Base;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SWCE.Web.Models.Categoria
 {
-    public class CategoriaModel
+    public class CategoriaModel : CategoriaBaseModel
     {
-        public int id { get; set; }
-        public string? nombre { get; set; }
-        public string? descripcion { get; set; }
-        public bool isDeleted { get; set; }
+        // Se pueden agregar propiedades adicionales si es necesario
     }
 
-    public class GetAllCategoriaResponse
+    public class GetAllCategoriaResponse : BaseApiResponseModel
     {
-        public string? message { get; set; }
-        public bool isSuccess { get; set; }
         public List<CategoriaModel>? data { get; set; }
     }
 
-    public class GetCategoriaByIdResponse
+    public class GetCategoriaByIdResponse : BaseApiResponseModel
     {
-        public string? message { get; set; }
-        public bool isSuccess { get; set; }
         public CategoriaModel? data { get; set; }
     }
 
-    public class GetCategoriasActivasResponse
+    public class GetCategoriasActivasResponse : BaseApiResponseModel
     {
-        public int id { get; set; }
-        public string? nombre { get; set; }
-        public string? descripcion { get; set; }
-        public bool isDeleted { get; set; }
+        public List<CategoriaModel>? data { get; set; }
     }
 }

@@ -1,20 +1,15 @@
-﻿namespace SWCE.Web.Models.Producto
+﻿using SWCE.Web.Models.Base;
+using SWCE.Web.Models.Categoria;
+
+namespace SWCE.Web.Models.Producto
 {
-    public class UpdateProductoModel
+    public class UpdateProductoModel : ProductoBaseModel
     {
-        public int id { get; set; }
-        public string? nombre { get; set; }
-        public string? marca { get; set; }
-        public int idCategoria { get; set; }
-        public object? categoria { get; set; }
-        public int precio { get; set; }
-        public int stock { get; set; }
+        public CategoriaModel? categoria { get; set; }
     }
 
-    public class UpdateProductoResponse
+    public class UpdateProductoResponse : BaseApiResponseModel
     {
-        public string? message { get; set; }
-        public bool isSuccess { get; set; }
         public ProductoModel? data { get; set; }
     }
 }

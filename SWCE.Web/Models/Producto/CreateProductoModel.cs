@@ -1,19 +1,14 @@
-﻿namespace SWCE.Web.Models.Producto
+﻿using SWCE.Web.Models.Base;
+
+namespace SWCE.Web.Models.Producto
 {
-    public class CreateProductoModel
+    public class CreateProductoModel : ProductoBaseModel
     {
-        public int Id { get; set; }
-        public string? Nombre { get; set; }
-        public string? Marca { get; set; }
-        public int IdCategoria { get; set; }
-        public decimal Precio { get; set; }
-        public int Stock { get; set; }
+        //Hereda todo de ProductoBaseModel hasta ahora
     }
 
-    public class CreateProductoResponse
+    public class CreateProductoResponse : BaseApiResponseModel
     {
-        public string? message { get; set; }
-        public bool isSuccess { get; set; }
         public ProductoModel? data { get; set; }
     }
 }

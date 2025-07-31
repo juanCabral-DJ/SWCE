@@ -1,14 +1,12 @@
-﻿namespace SWCE.Web.Models.Categoria
-{
-    public class DisableCategoriaModel
-    {
-        int id { get; set; }
-    }
+﻿using SWCE.Web.Models.Base;
 
-    public class DisableCategoriaResponse
+namespace SWCE.Web.Models.Categoria
+{
+    public class DisableCategoriaModel : BaseModel
+    { }
+
+    public class DisableCategoriaResponse : BaseApiResponseModel
     {
-        public string? message { get; set; }
-        public bool isSuccess { get; set; }
-        public object? data { get; set; }
+        public DisableCategoriaModel? data { get; set; }
     }
 }
