@@ -1,136 +1,102 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SWCE.Web1.Interfaces;
 using SWCE.Web1.Models.Address;
 using SWCE.Web1.Models.WishListItem;
-using static SWCE.Web1.Models.WishListItem.DisableItemModel;
-using static SWCE.Web1.Models.WishListItem.ItemModel;
+using System.Text.Json;
+ 
 
 namespace SWCE.Web1.Controllers
 {
     public class WishListItemController : Controller
     {
-        private readonly HttpClient _Client;
+        private readonly IAPIWishListItemServices _api;
 
-        public WishListItemController(IHttpClientFactory httpClientFactory)
+        public WishListItemController(IAPIWishListItemServices api)
         {
-            _Client = httpClientFactory.CreateClient("Client");
+           _api = api;
         }
 
         // GET: WishListItemController1
         public async Task<ActionResult> Index()
         {
-            GetAllItemResponse getresponse = null;
+            var Address = await _api.GetAllItemasync();
 
-            try
+            if (Address.isSuccess)
             {
-                using (_Client)
+                try
                 {
-                    var response = await _Client.GetAsync("WishListItem");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getresponse = System.Text.Json.JsonSerializer.Deserialize<GetAllItemResponse>(responseString);
-                    }
-                    else
-                    {
-                        getresponse = new GetAllItemResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving Item"
-                        };
-                    }
+                    return View(Address.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new List<AddressModel>());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getresponse = new GetAllItemResponse
-                {
-                    isSuccess = false,
-                    message = "Error retrieving Address"
-                };
+
+                ViewBag.ErrorMessage = Address.message;
+                return View(new List<AddressModel>()); // Devuelve una lista vacía a la vista
             }
-            return View(getresponse.data);
         }
 
         // GET: WishListItemController1/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            GetByIdItemResponse getresponse = null;
+            var Address = await _api.GetbyIdasync(id);
 
-            try
+            if (Address.isSuccess)
             {
-                using (_Client)
+                try
                 {
-                    var response = await _Client.GetAsync($"WishListItem/{id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getresponse = System.Text.Json.JsonSerializer.Deserialize<GetByIdItemResponse>(responseString);
-                    }
-                    else
-                    {
-                        getresponse = new GetByIdItemResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving Item"
-                        };
-                    }
+                    return View(Address.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new AddressModel());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getresponse = new GetByIdItemResponse
-                {
-                    isSuccess = false,
-                    message = "Error retrieving Address"
-                };
+
+                ViewBag.ErrorMessage = Address.message;
+                return View(new AddressModel()); // Devuelve una lista vacía a la vista
             }
-            return View(getresponse.data);
         }
 
         public async Task<ActionResult> DetailsByUserid(int id_Usuario)
         {
-            GetByUseridItemResponse getresponse = null;
+            var Address = await _api.GetbyUserid(id_Usuario);
 
-            try
+            if (Address.isSuccess)
             {
-                using (_Client)
+                try
                 {
-                    var response = await _Client.GetAsync($"WishListItem/Item/{id_Usuario}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        getresponse = System.Text.Json.JsonSerializer.Deserialize<GetByUseridItemResponse>(responseString);
-                    }
-                    else
-                    {
-                        getresponse = new GetByUseridItemResponse
-                        {
-                            isSuccess = false,
-                            message = "Error retrieving Item"
-                        };
-                    }
+                    return View(Address.data);
+                }
+                catch (JsonException ex)
+                {
+                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
+                    return View(new List<AddressModel>());
                 }
             }
-            catch (Exception ex)
+            else
             {
-                getresponse = new GetByUseridItemResponse
-                {
-                    isSuccess = false,
-                    message = "Error retrieving Address"
-                };
+
+                ViewBag.ErrorMessage = Address.message;
+                return View(new List<AddressModel>()); // Devuelve una lista vacía a la vista
             }
-            return View(getresponse.data);
         }
 
 
         // GET: WishListItemController1/Create
         public ActionResult Create()
         {
-            return View();
+            var model = new CreateItemModel();
+            return View(model);
         }
 
         // POST: WishListItemController1/Create
@@ -138,35 +104,24 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CreateItemModel model)
         {
-            CreateItemResponse CreateResponse = null;
+            var Address = await _api.CreateItemasync(model);
+
             try
             {
-
-                using (_Client)
-                {
-                    var response = await _Client.PostAsJsonAsync("WishListItem/CreateItemDto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        CreateResponse = System.Text.Json.JsonSerializer.Deserialize<CreateItemResponse>(responseString);
-
-                    }
-
-                }
                 return RedirectToAction(nameof(Index));
             }
-
             catch
             {
-                return View();
+                return View(model);
             }
         }
 
         // GET: WishListItemController1/Edit/5
-        public ActionResult Edit(int id)
+        //No Utilizado
+        /*public ActionResult Edit(int id)
         {
-            return View();
+          
+            return View( );
         }
 
         // POST: WishListItemController1/Edit/5
@@ -182,7 +137,7 @@ namespace SWCE.Web1.Controllers
             {
                 return View();
             }
-        }
+        }*/
 
         // GET: WishListItemController1/Delete/5
         public ActionResult Delete(int id)
@@ -196,28 +151,15 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(DisableItemModel model)
         {
-            DisableItemResponse DisableResponse = null;
+            var Address = await _api.DisableItemAsync(model);
+
             try
             {
-
-                using (_Client)
-                {
-                    var response = await _Client.PostAsJsonAsync("WishListItem/DisableItemDto", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        DisableResponse = System.Text.Json.JsonSerializer.Deserialize<DisableItemResponse>(responseString);
-
-                    }
-
-                }
                 return RedirectToAction(nameof(Index));
             }
-
             catch
             {
-                return View();
+                return View(model);
             }
         }
     }

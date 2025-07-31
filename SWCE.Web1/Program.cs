@@ -20,6 +20,10 @@ builder.Services.AddScoped<IAPIUserServices, APIUserServices>();
 
 builder.Services.AddScoped<IAPIAddressRepository, APIAddressRepository>();
 builder.Services.AddScoped<IAPIAddressServices, APIAddressServices>();
+
+builder.Services.AddScoped<IAPIWishListItemRepository, APIWishListItemRepository>();
+builder.Services.AddScoped<IAPIWishListItemServices, APIWishListItemServices>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
