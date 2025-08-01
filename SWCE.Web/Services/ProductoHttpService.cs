@@ -1,125 +1,39 @@
-﻿using SWCE.Web.Models.Producto;
+﻿using SWCE.Web.Models.Base;
+using SWCE.Web.Models.Producto;
+using SWCE.Web.Services.Base;
 using SWCE.Web.Services.Interfaces;
 
 namespace SWCE.Web.Services
 {
-    public class ProductoHttpService : IProductoHttpService
+    public class ProductoHttpService : HttpServiceBase ,IProductoHttpService
     {
-        private readonly HttpClient _httpClient;
-
-        public ProductoHttpService(IHttpClientFactory httpClientFactory)
+        public ProductoHttpService(IHttpClientFactory httpClientFactory) : base (httpClientFactory)
         {
-            _httpClient = httpClientFactory.CreateClient("Client");
+
         }
-        public async Task<GetAllProductoResponse> GetAllProductosAsync()
+        public async Task<ModelResponse<List<ProductoModel>>> GetAllProductosAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync("Producto/GetAll");
-                response.EnsureSuccessStatusCode();
-
-                var content = await response.Content.ReadAsStringAsync();
-                return System.Text.Json.JsonSerializer.Deserialize<GetAllProductoResponse>(content)!;
-            }
-            catch (Exception ex)
-            {
-                return new GetAllProductoResponse
-                {
-                    isSuccess = false,
-                    message = $"Error al obtener los Productos: {ex.Message}"
-                };
-            }
+            return await GetAsync<List<ProductoModel>>("Producto/GetAll");
         }
 
-        public async Task<GetProductoByIdResponse> GetProductoByIdAsync(int id)
+        public async Task<ModelResponse<ProductoModel>> GetProductoByIdAsync(int id)
         {
-            try
-            {
-                var response = await _httpClient.GetAsync($"Producto/GetProductoById?id={id}");
-                response.EnsureSuccessStatusCode();
-                var content = await response.Content.ReadAsStringAsync();
-                return System.Text.Json.JsonSerializer.Deserialize<GetProductoByIdResponse>(content)!;
-            }
-            catch(Exception ex)
-            {
-                return new GetProductoByIdResponse
-                {
-                    isSuccess = false,
-                    message = $"Error al obtener el Producto con ID {id}: {ex.Message}"
-                };
-            }
+            return await GetAsync<ProductoModel>($"Producto/GetProductoById?id={id}");
         }
 
-        public async Task<CreateProductoResponse> CreateProductoAsync(CreateProductoModel producto)
+        public async Task<ModelResponse<CreateProductoModel>> CreateProductoAsync(CreateProductoModel producto)
         {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("Producto/CreateProducto", producto);
-                var content = await response.Content.ReadAsStringAsync();
-                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<CreateProductoResponse>(content)!;
-
-                if(!response.IsSuccessStatusCode || !apiResponse.isSuccess)
-                {
-                    apiResponse.message = apiResponse.message ?? $"La API devolvió un error de estado: {response.StatusCode}.";
-                }
-                return apiResponse;
-            }
-            catch (Exception ex)
-            {
-                return new CreateProductoResponse
-                {
-                    isSuccess = false,
-                    message = $"Error al crear el Producto: {ex.Message}"
-                };
-            }
+            return await PostAsync<CreateProductoModel>("Producto/CreateProducto", producto);
         }
 
-        public async Task<UpdateProductoResponse> UpdateProductoAsync(UpdateProductoModel producto)
+        public async Task<ModelResponse<UpdateProductoModel>> UpdateProductoAsync(UpdateProductoModel producto)
         {
-            try
-            {
-                var response = await _httpClient.PutAsJsonAsync("Producto/Update", producto);
-                var content = await response.Content.ReadAsStringAsync();
-                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<UpdateProductoResponse>(content)!;
-
-                if (!response.IsSuccessStatusCode || !apiResponse.isSuccess)
-                {
-                    apiResponse.message = apiResponse.message ?? $"La API devolvió un error de estado: {response.StatusCode}.";
-                }
-                return apiResponse;
-            }
-            catch (Exception ex)
-            {
-                return new UpdateProductoResponse
-                {
-                    isSuccess = false,
-                    message = $"Error al actualizar el Producto: {ex.Message}"
-                };
-            }
+            return await PutAsync<UpdateProductoModel>("Producto/Update", producto);
         }
 
-        public async Task<DisableProductoResponse> DisableProductoAsync(int id)
+        public async Task<ModelResponse<DisableProductoModel>> DisableProductoAsync(int id)
         {
-            try
-            {
-                var response = await _httpClient.PostAsync($"Producto/DisableProduct?id={id}", null);
-                var content = await response.Content.ReadAsStringAsync();
-                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<DisableProductoResponse>(content)!;
-
-                if (!response.IsSuccessStatusCode || !apiResponse.isSuccess)
-                {
-                    apiResponse.message = apiResponse.message ?? $"La API devolvió un error de estado: {response.StatusCode}.";
-                }
-                return apiResponse;
-            }
-            catch (Exception ex)
-            {
-                return new DisableProductoResponse
-                {
-                    isSuccess = false,
-                    message = $"Error al deshabilitar el Producto con ID {id}: {ex.Message}"
-                };
-            }
+            return await PostAsync<DisableProductoModel>($"Producto/DisableProduct?id={id}", null!);
         }
     }
 }

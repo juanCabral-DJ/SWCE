@@ -7,9 +7,4 @@ namespace SWCE.Web.Models.Categoria
     {
         
     }
-
-    public class CreateCategoriaResponse : BaseApiResponseModel
-    {
-        public CategoriaModel? data { get; set; }
-    }
 }

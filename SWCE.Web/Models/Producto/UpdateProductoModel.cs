@@ -7,9 +7,4 @@ namespace SWCE.Web.Models.Producto
     {
         public CategoriaModel? categoria { get; set; }
     }
-
-    public class UpdateProductoResponse : BaseApiResponseModel
-    {
-        public ProductoModel? data { get; set; }
-    }
 }

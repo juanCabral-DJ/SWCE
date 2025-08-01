@@ -1,3 +1,5 @@
+using SWCE.Web.Controllers;
+using SWCE.Web.Models.Cupones.CuponPorcentaje;
 using SWCE.Web.Services;
 using SWCE.Web.Services.Interfaces;
 
@@ -8,6 +10,7 @@ builder.Services.AddControllersWithViews();
 
 var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
 
+//Cliente HTTP 
 builder.Services.AddHttpClient("Client", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl!);
@@ -16,6 +19,8 @@ builder.Services.AddHttpClient("Client", client =>
 //Servicios
 builder.Services.AddScoped<ICategoriaHttpService, CategoriaHttpService>();
 builder.Services.AddScoped<IProductoHttpService, ProductoHttpService>();
+builder.Services.AddScoped<ICuponMontoFijoHttpService, CuponMontoFijoHttpService>();
+builder.Services.AddScoped<ICuponPorcentajeHttpService, CuponPorcentajeHttpService>();
 
 var app = builder.Build();
 

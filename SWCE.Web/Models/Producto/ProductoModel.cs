@@ -8,14 +8,4 @@ namespace SWCE.Web.Models.Producto
     {
         public CategoriaModel? categoria { get; set; }
     }
-
-    public class GetProductoByIdResponse : BaseApiResponseModel
-    {
-        public ProductoModel? data { get; set; }
-    }
-
-    public class GetAllProductoResponse : BaseApiResponseModel
-    {
-        public List<ProductoModel>? data { get; set; }
-    }
 }

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWCE.Web.Models.Categoria;
-using SWCE.Web.Models.CuponMontoFijo;
+using SWCE.Web.Models.Cupones.CuponMontoFijo;
+using SWCE.Web.Models.Producto;
+using SWCE.Web.Services;
+using SWCE.Web.Services.Interfaces;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -9,81 +12,37 @@ namespace SWCE.Web.Controllers
 {
     public class CuponMontoFijoController : Controller
     {
-        private readonly string _apiBaseUrl = "http://localhost:5134/api/";
+        private readonly ICuponMontoFijoHttpService _cuponMontoFijoHttpService;
+
+        public CuponMontoFijoController(ICuponMontoFijoHttpService cuponMontoFijoHttpService)
+        {
+            _cuponMontoFijoHttpService = cuponMontoFijoHttpService;
+        }
 
         // GET: CuponMontoFijoController
         public async Task<IActionResult> Index()
         {
-            GetAllCuponMontoFijoResponse getAllCuponMontoFijoResponse = null!;
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.GetAsync("CuponMontoFijo/GetAll");
+            var response = await _cuponMontoFijoHttpService.GetAllCuponMontoFijoAsync();
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getAllCuponMontoFijoResponse = JsonSerializer.Deserialize<GetAllCuponMontoFijoResponse>(content)!;
-                    }
-                    else
-                    {
-                        getAllCuponMontoFijoResponse = new GetAllCuponMontoFijoResponse
-                        {
-                            message = $"Error al obtener los cupones de monto fijo. Estado: {response.StatusCode}",
-                            isSuccess = false
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess)
             {
-                getAllCuponMontoFijoResponse = new GetAllCuponMontoFijoResponse
-                {
-                    message = $"Error inesperado al obtener los cupones de monto fijo: {ex.Message}",
-                    isSuccess = false,
-                    data = null
-                };
+                return View(response.data);
             }
-            return View(getAllCuponMontoFijoResponse.data);
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener los cupones de monto fijo.";
+            return View(new List<CuponMontoFijoModel>());
         }
 
         // GET: CuponMontoFijoController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            GetByIdCuponMontoFijoResponse getByIdCuponMontoFijoResponse = null!;
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.GetAsync($"CuponMontoFijo/GetById?id={id}");
+            var response = await _cuponMontoFijoHttpService.GetCuponMontoFijoByIdAsync(id);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getByIdCuponMontoFijoResponse = JsonSerializer.Deserialize<GetByIdCuponMontoFijoResponse>(content)!;
-
-                        if (getByIdCuponMontoFijoResponse?.data == null)
-                        {
-                            TempData["ErrorMessage"] = "Cupón de monto fijo no encontrado.";
-                            return RedirectToAction(nameof(Index));
-                        }
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = $"Error al obtener el cupón de monto fijo: {response.StatusCode}";
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess)
             {
-                TempData["ErrorMessage"] = $"Error inesperado al obtener el cupón de monto fijo: {ex.Message}";
-                return RedirectToAction(nameof(Index));
+                return View(response.data);
             }
-            return View(getByIdCuponMontoFijoResponse.data);
+            TempData["ErrorMessage"] = $"Error al obtener el cupón de monto fijo.";
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: CuponMontoFijoController/Create
@@ -95,38 +54,18 @@ namespace SWCE.Web.Controllers
         // POST: CuponMontoFijoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCuponMontoFijoModel model) 
+        public async Task<IActionResult> Create(CreateCuponMontoFijoModel model)
         {
-            try
+            var response = await _cuponMontoFijoHttpService.CreateCuponMontoFijoAsync(model);
+
+            if (response.isSuccess)
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.PostAsJsonAsync("CuponMontoFijo/Create", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        TempData["SuccessMessage"] = "Cupón de monto fijo creado exitosamente.";
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        var errorContent = await response.Content.ReadAsStringAsync();
-                        TempData["ErrorMessage"] = $"Error al crear el cupón de monto fijo: {errorContent}";
-                        ModelState.AddModelError(string.Empty, $"Error: {errorContent}");
-                        return View(model);
-                    }
-                }
+                TempData["SuccessMessage"] = "Cupón de monto fijo creado exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
+            else
             {
-                TempData["ErrorMessage"] = $"Error inesperado al crear el cupón de monto fijo: {ex.Message}";
-                ModelState.AddModelError(string.Empty, $"Error inesperado: {ex.Message}");
+                TempData["ErrorMessage"] = response.message ?? "Error al crear el cupon de monto fijo.";
                 return View(model);
             }
         }
@@ -134,50 +73,20 @@ namespace SWCE.Web.Controllers
         // GET: CuponMontoFijoController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            GetByIdCuponMontoFijoResponse getByIdCuponMontoFijoResponse = null!;
-            try
+            var response = await _cuponMontoFijoHttpService.GetCuponMontoFijoByIdAsync(id);
+
+            if (response.isSuccess && response.data != null)
             {
-                using (var client = new HttpClient())
+                var updateModel = new UpdateCuponMontoFijoModel
                 {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.GetAsync($"CuponMontoFijo/GetById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getByIdCuponMontoFijoResponse = JsonSerializer.Deserialize<GetByIdCuponMontoFijoResponse>(content, new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        })!;
-
-                        if (getByIdCuponMontoFijoResponse?.data == null)
-                        {
-                            TempData["ErrorMessage"] = "Cupón de monto fijo no encontrado para editar.";
-                            return RedirectToAction(nameof(Index));
-                        }
-
-                        // Mapear CuponMontoFijoModel a UpdateCuponMontoFijoModel
-                        var updateModel = new UpdateCuponMontoFijoModel
-                        {
-                            id = getByIdCuponMontoFijoResponse.data.id,
-                            monto = getByIdCuponMontoFijoResponse.data.monto,
-                            fechaExpiracion = getByIdCuponMontoFijoResponse.data.fechaExpiracion
-                        };
-
-                        return View(updateModel);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = $"Error al obtener el cupón de monto fijo para edición: {response.StatusCode}";
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
+                    id = response.data.id,
+                    monto = response.data.monto,
+                    fechaExpiracion = response.data.fechaExpiracion
+                };
+                return View(updateModel);
             }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"Error inesperado al obtener el cupón de monto fijo para edición: {ex.Message}";
-                return RedirectToAction(nameof(Index));
-            }
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener el cupón de monto fijo para edición.";
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -186,36 +95,16 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UpdateCuponMontoFijoModel model)
         {
-            try
+            var response = await _cuponMontoFijoHttpService.UpdateCuponMontoFijoAsync(model);
+
+            if (response.isSuccess)
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.PutAsJsonAsync("CuponMontoFijo/Update", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        TempData["SuccessMessage"] = "Cupón de monto fijo actualizado exitosamente.";
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        var errorContent = await response.Content.ReadAsStringAsync();
-                        TempData["ErrorMessage"] = $"Error al actualizar el cupón de monto fijo: {errorContent}";
-                        ModelState.AddModelError(string.Empty, $"Error: {errorContent}");
-                        return View(model);
-                    }
-                }
+                TempData["SuccessMessage"] = "Cupón de monto fijo actualizado exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
+            else
             {
-                TempData["ErrorMessage"] = $"Error inesperado al actualizar el cupón de monto fijo: {ex.Message}";
-                ModelState.AddModelError(string.Empty, $"Error inesperado: {ex.Message}");
+                ModelState.AddModelError(string.Empty, response.message ?? "Error al actualizar el cupon.");
                 return View(model);
             }
         }
@@ -223,39 +112,14 @@ namespace SWCE.Web.Controllers
         // GET: CuponMontoFijoController/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            GetByIdCuponMontoFijoResponse getByIdCuponMontoFijoResponse = null!;
+            var response = await _cuponMontoFijoHttpService.GetCuponMontoFijoByIdAsync(id);
 
-            try
+            if (response.isSuccess && response.data != null)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.GetAsync($"CuponMontoFijo/GetById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        getByIdCuponMontoFijoResponse = JsonSerializer.Deserialize<GetByIdCuponMontoFijoResponse>(content)!;
-
-                        if (getByIdCuponMontoFijoResponse?.data == null)
-                        {
-                            TempData["ErrorMessage"] = "Cupón de monto fijo no encontrado para deshabilitar.";
-                            return RedirectToAction(nameof(Index));
-                        }
-                        return View(getByIdCuponMontoFijoResponse.data);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = $"Error al obtener el cupón de monto fijo para deshabilitar: {response.StatusCode}";
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
+                return View(response.data);
             }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"Error inesperado al obtener el cupón de monto fijo para deshabilitar: {ex.Message}";
-                return RedirectToAction(nameof(Index));
-            }
+            TempData["ErrorMessage"] = response.message ?? "Error al obtener el cupón de monto fijo para deshabilitar.";
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: CuponMontoFijoController/Delete/5
@@ -263,30 +127,26 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiBaseUrl);
-                    var response = await client.PostAsync($"CuponMontoFijo/DisableCuponMontoFijo?id={id}", null);
+            var response = await _cuponMontoFijoHttpService.DisableCuponMontoFijoAsync(id);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        TempData["SuccessMessage"] = "Cupón de monto fijo deshabilitado exitosamente.";
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        var errorContent = await response.Content.ReadAsStringAsync();
-                        TempData["ErrorMessage"] = $"Error al deshabilitar el cupón de monto fijo: {errorContent}";
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (response.isSuccess)
             {
-                TempData["ErrorMessage"] = $"Error inesperado al deshabilitar el cupón de monto fijo: {ex.Message}";
+                TempData["SuccessMessage"] = "Cupón de monto fijo deshabilitado exitosamente.";
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                var cuponDetailsResponse = await _cuponMontoFijoHttpService.GetCuponMontoFijoByIdAsync(id);
+                if (cuponDetailsResponse.isSuccess && cuponDetailsResponse.data != null)
+                {
+                    ModelState.AddModelError(string.Empty, response.message ?? "Error al deshabilitar el cupon de monto fijo.");
+                    return View(cuponDetailsResponse.data);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = response.message ?? "Error al intentar deshabilitar el cupon de monto fijo.";
+                    return RedirectToAction(nameof(Index));
+                }
             }
         }
     }
