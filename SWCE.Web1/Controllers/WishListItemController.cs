@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SWCE.Web1.Interfaces;
+using SWCE.Domain.Entities.Configuration.User_Perfil;
+using SWCE.Web1.HttpServices.Interfaces;
 using SWCE.Web1.Models.Address;
+using SWCE.Web1.Models.User;
 using SWCE.Web1.Models.WishListItem;
 using System.Text.Json;
- 
+
 
 namespace SWCE.Web1.Controllers
 {
@@ -20,74 +22,53 @@ namespace SWCE.Web1.Controllers
         // GET: WishListItemController1
         public async Task<ActionResult> Index()
         {
-            var Address = await _api.GetAllItemasync();
+            var item = await _api.GetAllItemasync();
 
-            if (Address.isSuccess)
+            if (item.isSuccess)
             {
-                try
-                {
-                    return View(Address.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new List<AddressModel>());
-                }
+                return View(item.data);
+
             }
             else
             {
 
-                ViewBag.ErrorMessage = Address.message;
-                return View(new List<AddressModel>()); // Devuelve una lista vacía a la vista
+                ViewBag.ErrorMessage = item.message;
+                return View(new List<ItemModel>()); // Devuelve una lista vacía a la vista
             }
         }
 
         // GET: WishListItemController1/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            var Address = await _api.GetbyIdasync(id);
+            var item = await _api.GetbyIdasync(id);
 
-            if (Address.isSuccess)
+            if (item.isSuccess)
             {
-                try
-                {
-                    return View(Address.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new AddressModel());
-                }
+                return View(item.data);
+
             }
             else
             {
 
-                ViewBag.ErrorMessage = Address.message;
-                return View(new AddressModel()); // Devuelve una lista vacía a la vista
+                ViewBag.ErrorMessage = item.message;
+                return View(new List<ItemModel>()); // Devuelve una lista vacía a la vista
             }
         }
 
         public async Task<ActionResult> DetailsByUserid(int id_Usuario)
         {
-            var Address = await _api.GetbyUserid(id_Usuario);
+            var item = await _api.GetbyUserid(id_Usuario);
 
-            if (Address.isSuccess)
+            if (item.isSuccess)
             {
-                try
-                {
-                    return View(Address.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new List<AddressModel>());
-                }
+                return View(item.data);
+
             }
             else
             {
 
-                ViewBag.ErrorMessage = Address.message;
-                return View(new List<AddressModel>()); // Devuelve una lista vacía a la vista
+                ViewBag.ErrorMessage = item.message;
+                return View(new List<ItemModel>()); // Devuelve una lista vacía a la vista
             }
         }
 
@@ -104,13 +85,13 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CreateItemModel model)
         {
-            var Address = await _api.CreateItemasync(model);
+            var Item = await _api.CreateItemasync(model);
 
-            try
+            if (Item.isSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
                 return View(model);
             }
@@ -118,26 +99,7 @@ namespace SWCE.Web1.Controllers
 
         // GET: WishListItemController1/Edit/5
         //No Utilizado
-        /*public ActionResult Edit(int id)
-        {
-          
-            return View( );
-        }
-
-        // POST: WishListItemController1/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }*/
+ 
 
         // GET: WishListItemController1/Delete/5
         public ActionResult Delete(int id)
@@ -151,13 +113,13 @@ namespace SWCE.Web1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(DisableItemModel model)
         {
-            var Address = await _api.DisableItemAsync(model);
+            var Item = await _api.DisableItemAsync(model);
 
-            try
+            if (Item.isSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
                 return View(model);
             }

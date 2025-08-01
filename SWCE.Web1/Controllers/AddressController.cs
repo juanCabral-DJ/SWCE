@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SWCE.Web1.Interfaces;
+using SWCE.Web1.HttpServices.Interfaces;
 using SWCE.Web1.Models.Address;
 using SWCE.Web1.Models.User;
 using System.Text.Json;
@@ -25,15 +25,7 @@ namespace SWCE.Web1.Controllers
 
             if (Address.isSuccess)
             {
-                try
-                {
-                    return View(Address.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new List<AddressModel>());
-                }
+                    return View(Address.data);  
             }
             else
             {
@@ -49,16 +41,8 @@ namespace SWCE.Web1.Controllers
             var Address = await _api.GetAddressByIdAsync(id);
 
             if (Address.isSuccess)
-            {
-                try
-                {
-                    return View(Address.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new AddressModel());
-                }
+            { 
+                    return View(Address.data); 
             }
             else
             {
@@ -76,15 +60,8 @@ namespace SWCE.Web1.Controllers
 
             if (Address.isSuccess)
             {
-                try
-                {
-                    return View(Address.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new AddressModel());
-                }
+                 
+                    return View(Address.data); 
             }
             else
             {
@@ -101,15 +78,7 @@ namespace SWCE.Web1.Controllers
 
             if (Address.isSuccess)
             {
-                try
-                {
                     return View(Address.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new List<AddressModel>());
-                }
             }
             else
             {
@@ -134,12 +103,13 @@ namespace SWCE.Web1.Controllers
         {
             var Address = await _api.CreateAddressAsync(model);
 
-            try
+            if (Address.isSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
+
                 return View(model);
             }
         } 
@@ -158,12 +128,13 @@ namespace SWCE.Web1.Controllers
         {
             var Address = await _api.UpdateAddressAsync(model);
 
-            try
+            if (Address.isSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
+            else
+            { 
+
                 return View(model);
             }
         }
@@ -182,12 +153,13 @@ namespace SWCE.Web1.Controllers
         {
             var Address = await _api.DisableAddressAsync(model);
 
-            try
+            if (Address.isSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
+
                 return View(model);
             }
         } 

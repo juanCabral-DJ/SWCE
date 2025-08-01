@@ -1,7 +1,10 @@
+using SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_address;
+using SWCE.Aplicatition.Extension.Mapeo_Registro.Mapeo_User;
 using SWCE.Aplicatition.Interfaces.Repositories.API_Interface;
 using SWCE.Persistence.ApiClients;
-using SWCE.Web1.Interfaces;
-using SWCE.Web1.Services;
+using SWCE.Web1.HttpServices.Interfaces;
+using SWCE.Web1.HttpServices.MappingAPI;
+using SWCE.Web1.HttpServices.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,10 @@ builder.Services.AddHttpClient("Client", client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 
 });
+
+builder.Services.AddSingleton<MapAddress>();
+builder.Services.AddSingleton<MapUser>();
+builder.Services.AddSingleton<MapItem>();
 
 builder.Services.AddScoped<IAPIUserRepository, APIUserRepository>();
 builder.Services.AddScoped<IAPIUserServices, APIUserServices>();

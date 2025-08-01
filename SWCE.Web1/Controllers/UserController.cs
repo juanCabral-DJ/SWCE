@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using SWCE.Aplicatition.Interfaces.Repositories.API_Interface;
 using SWCE.Domain.Entities.Configuration.User_Perfil;
-using SWCE.Web1.Interfaces;
+using SWCE.Web1.HttpServices.Interfaces;
 using SWCE.Web1.Models.User;
 using System.Text.Json;
 
@@ -27,16 +27,9 @@ namespace SWCE.Web1.Controllers
             var Users = await _api.GetAllUsersAsync();
 
             if (Users.isSuccess)
-            {
-                try
-                {
-                    return View(Users.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new List<UserModel>());
-                }
+            { 
+                    return View(Users.data); 
+                 
             }
             else
             {
@@ -52,16 +45,9 @@ namespace SWCE.Web1.Controllers
             var Users = await _api.GetUserByIdAsync(id);
 
             if (Users.isSuccess)
-            {
-                try
-                {
+            { 
                     return View(Users.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new UserModel());
-                }
+                
             }
             else
             {
@@ -78,15 +64,8 @@ namespace SWCE.Web1.Controllers
 
             if (Users.isSuccess)
             {
-                try
-                {
+                
                     return View(Users.data);
-                }
-                catch (JsonException ex)
-                {
-                    ViewBag.ErrorMessage = "Error al procesar los datos recibidos de la API.";
-                    return View(new UserModel());
-                }
             }
             else
             {
@@ -110,11 +89,10 @@ namespace SWCE.Web1.Controllers
         {
             var Users = await _api.CreateUserAsync(model);
 
-            try
-            {
+            if (Users.isSuccess) { 
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
                 return View(model);
             }
@@ -123,8 +101,8 @@ namespace SWCE.Web1.Controllers
         // GET: UserController/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-
-            return View();
+            var model = new UserModelEdit();
+            return View(model);
         }
 
         // POST: UserController/Edit/5
@@ -134,11 +112,11 @@ namespace SWCE.Web1.Controllers
         {
             var Users = await _api.UpdateUserAsync(model);
 
-            try
+            if (Users.isSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
                 return View(model);
             }
@@ -158,11 +136,11 @@ namespace SWCE.Web1.Controllers
         {
             var Users = await _api.DisableUserAsync(model);
 
-            try
+            if (Users.isSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
                 return View(model);
             }

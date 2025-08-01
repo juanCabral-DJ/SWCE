@@ -10,163 +10,43 @@ using System.Threading.Tasks;
 
 namespace SWCE.Persistence.ApiClients
 {
-    public class APIWishListItemRepository : IAPIWishListItemRepository
+    public class APIWishListItemRepository : APIRepositoryBase, IAPIWishListItemRepository
     {
         private readonly HttpClient _client;
 
-        public APIWishListItemRepository(IHttpClientFactory httpClientFactory)
+        public APIWishListItemRepository(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
         {
-            _client = httpClientFactory.CreateClient("Client");
+
         }
 
         public async Task<OperationResult> CreateItemasync(CreateItemDto entity)
         {
-            OperationResult result = new OperationResult();
+            return await PostAsync("WishListItem/CreateItemDto", entity);
 
-            try
-            {
-                var response = await _client.PostAsJsonAsync("WishListItem/CreateItemDto", entity);
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error creating Items");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error creating Items: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
         }
 
         public async Task<OperationResult> DisableItemAsync(DisableItemDto entity)
         {
-            OperationResult result = new OperationResult();
+            return await PostAsync("WishListItem/DisableItemDto", entity);
 
-            try
-            {
-                var response = await _client.PostAsJsonAsync("WishListItem/DisableItemDto", entity);
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error disabling Items");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error disabling Items: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
         }
 
         public async Task<OperationResult> GetAllItemasync()
         {
-            OperationResult result = new OperationResult();
+            return await GetAsync("WishListItem");
 
-            try
-            {
-                var response = await _client.GetAsync("WishListItem");
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error retrieving Items");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error retrieving Items: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
         }
 
         public async Task<OperationResult> GetbyIdasync(int id)
         {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var response = await _client.GetAsync($"WishListItem/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error retrieving Items");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error retrieving Items: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
+            return await GetAsync($"WishListItem/{id}");
+        
         }
 
         public async Task<OperationResult> GetbyUserid(int id)
         {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var response = await _client.GetAsync($"WishListItem/Item/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error retrieving Items");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error retrieving Items: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
+            return await GetAsync($"WishListItem/Item/{id}");
+        
         }
     }
 }

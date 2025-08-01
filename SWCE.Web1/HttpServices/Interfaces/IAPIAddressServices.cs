@@ -5,7 +5,7 @@ using SWCE.Web1.Models.Base;
 using SWCE.Web1.Models.User;
 using System.Text.Json;
 
-namespace SWCE.Web1.Interfaces
+namespace SWCE.Web1.HttpServices.Interfaces
 {
     public interface IAPIAddressServices
     {

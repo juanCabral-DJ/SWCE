@@ -15,201 +15,43 @@ using static NHibernate.Engine.Query.CallableParser;
 
 namespace SWCE.Persistence.ApiClients
 {
-    public class APIUserRepository : IAPIUserRepository
+    public class APIUserRepository : APIRepositoryBase, IAPIUserRepository
     {
         private readonly HttpClient _client;
 
-        public APIUserRepository(IHttpClientFactory httpClientFactory)
+        public APIUserRepository(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
         {
-            _client = httpClientFactory.CreateClient("Client");
+          
         }
 
         public async Task<OperationResult> CreateUserAsync(CreateUserDto user)
         {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var response = await _client.PostAsJsonAsync($"User/CreateUserDto", user);
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error creating user");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error creating user: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
+            return await  PostAsync($"User/CreateUserDto", user);
+ 
         }
 
         public async Task<OperationResult> DisableUserAsync(DisableUserDto user)
         {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var response = await _client.PostAsJsonAsync($"User/DisableUserDto", user);
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error retrieving user");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error retrieving user: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
+            return await  PostAsync($"User/DisableUserDto", user);
         }
 
         public async Task<OperationResult> GetAllUsersAsync()
         {
-             OperationResult result = new OperationResult();
-
-            try
-            {
-                  var response = await _client.GetAsync("User/GetUser");
-                if (response.IsSuccessStatusCode) 
-                { 
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-                    
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error retrieving users");
-                }
-                    
-
-            }
-            catch(Exception ex)
-            {
-                result = OperationResult.Failure($"Error retrieving users: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
+             return await GetAsync("User/GetUser");
         }
 
         public async Task<OperationResult> GetUserByEmailAsync(string email)
         {
-
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var response = await _client.GetAsync($"User/Email?email={email}");
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error retrieving user");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error retrieving user: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
+            return  await  GetAsync($"User/Email?email={email}");
         }
 
         public async Task<OperationResult> GetUserByIdAsync(int id)
         {
-
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var response = await _client.GetAsync($"User/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error retrieving user");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error retrieving user: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
+            return await GetAsync($"User/{id}");
         }
-
         public async Task<OperationResult> UpdateUserAsync(UpdateUserDto user)
         {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var response = await _client.PostAsJsonAsync($"User/UpdateUserDto", user);
-
-                if (response.IsSuccessStatusCode)
-                {
-
-                    result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                }
-                else
-                {
-                    result = OperationResult.Failure("Error retrieving user");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result = OperationResult.Failure($"Error retrieving user: {ex.Message}");
-            }
-            finally
-            {
-
-            }
-            return result;
+            return await PostAsync($"User/UpdateUserDto", user);
         }
     }
 }

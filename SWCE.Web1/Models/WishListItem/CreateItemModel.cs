@@ -6,10 +6,4 @@
         public int id_Usuario { get; set; }
     }
 
-    public class CreateItemResponse
-    {
-        public string message { get; set; }
-        public bool isSuccess { get; set; }
-        public ItemModel data { get; set; }
-    }
 }
