@@ -1,94 +1,44 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SWCE.Web.Extension.Mapper;
 using SWCE.Web.Models.Carrito;
+using SWCE.Web.Services.Interfaces;
 
 namespace SWCE.Web.Controllers
 {
     public class CarritoController : Controller
     {
+        private readonly ICarritoService _carritoService;
+
+        public CarritoController(ICarritoService carritoService)
+        {
+            _carritoService = carritoService;
+        }
+
         // GET: CarritoController
         public async Task<IActionResult> Index()
         {
-            List<CarritoModel> carritos = new List<CarritoModel>();
-
-            try
+            var carritos = await _carritoService.GetAllCarritosAsync();
+            if (carritos.isSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.GetAsync("Carrito/GetAllCarts");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-
-                        var options = new System.Text.Json.JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        };
-
-                        var getAllCarritoResponse = System.Text.Json.JsonSerializer.Deserialize<GetAllCarritoResponse>(responseString, options);
-
-                        if (getAllCarritoResponse != null && getAllCarritoResponse.isSuccess)
-                        {
-                            carritos = getAllCarritoResponse.data;
-                        }
-                    }
-                }
+                return View(carritos.data);
             }
-            catch (Exception ex)
-            {
-                carritos = new List<CarritoModel>();
-            }
+            TempData["ErrorMessage"] = carritos.message ?? "Error retrieving carritos.";
+            return View(new List<CarritoModel>());
 
-            return View(carritos);
         }
 
         // GET: CarritoController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            GetCarritoResponse getCarritoResponse = null;
-            try
+            var carritos = await _carritoService.GetCarritoByIdAsync(id);
+            if (carritos.isSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.GetAsync($"Carrito/GetCartById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-
-                        var options = new System.Text.Json.JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        };
-
-                        getCarritoResponse = System.Text.Json.JsonSerializer.Deserialize<GetCarritoResponse>(responseString, options);
-
-                    }
-                    else
-                    {
-                        getCarritoResponse = new GetCarritoResponse
-                        {
-                            message = "No se encontró el carrito",
-                            isSuccess = false,
-                            data = null
-                        };
-                    }
-                }
+                return View(carritos.data);
             }
-            catch (Exception)
-            {
-                getCarritoResponse = new GetCarritoResponse
-                {
-                    message = "Error al obtener el carrito",
-                    isSuccess = false,
-                    data = null
-                };
-                throw;
-            }
-            return View(getCarritoResponse.data);
+            TempData["ErrorMessage"] = carritos.message ?? "Error retrieving carrito details.";
+            return RedirectToAction(nameof(Index));
+
         }
 
         // GET: CarritoController/Create
@@ -100,187 +50,78 @@ namespace SWCE.Web.Controllers
         // POST: CarritoController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CarritoCreateModel model)
+        public async Task<IActionResult> Create(CreateCarritoModel model)
         {
-            CarritoCreateResponse createResponse = null;
-            try
+            if (ModelState.IsValid)
             {
-                using (var client = new HttpClient())
+                var carrito = await _carritoService.CreateCarritoAsync(model);
+                if (carrito.isSuccess)
                 {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-
-                    var response = await client.PostAsJsonAsync("Carrito/CreateCart", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        createResponse = System.Text.Json.JsonSerializer.Deserialize<CarritoCreateResponse>(responseString);
-                    }
-                }
                     return RedirectToAction(nameof(Index));
+                }
             }
-            catch
-            {
-                return View();
-            }
+            TempData["ErrorMessage"] = "Error creating carrito. Please check the details and try again.";
+            return View(model);
         }
 
         // GET: CarritoController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            GetCarritoResponse getCarritoResponse = null;
-            try
+            var carrito = await _carritoService.GetCarritoByIdAsync(id);
+            if (carrito.isSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.GetAsync($"Carrito/GetCartById?id={id}");
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-
-                        var options = new System.Text.Json.JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        };
-
-                        getCarritoResponse = System.Text.Json.JsonSerializer.Deserialize<GetCarritoResponse>(responseString, options);
-
-                    }
-                    else
-                    {
-                        getCarritoResponse = new GetCarritoResponse
-                        {
-                            message = "No se encontró el carrito",
-                            isSuccess = false,
-                            data = null
-                        };
-                    }
-                }
+                var modelParaVista = carrito.data.ToEditViewModel(); 
+                return View(modelParaVista);
             }
-            catch (Exception)
-            {
-                getCarritoResponse = new GetCarritoResponse
-                {
-                    message = "Error al obtener el carrito",
-                    isSuccess = false,
-                    data = null
-                };
-                throw;
-            }
-            return View(getCarritoResponse.data);
+            TempData["ErrorMessage"] = carrito.message ?? "Error retrieving carrito for editing.";
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: CarritoController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task <IActionResult>Edit(CarritoEditModel model)
+        public async Task <IActionResult>Edit(EditCarritoModel model)
         {
-            CarritoEditResponse editResponse = null;
-            try
+            if (ModelState.IsValid)
             {
-                using (var client = new HttpClient())
+                var carrito = await _carritoService.UpdateCarritoAsync(model);
+                if (carrito.isSuccess)
                 {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.PostAsJsonAsync("Carrito/UpdateCart", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        var options = new System.Text.Json.JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        };
-
-                        editResponse = System.Text.Json.JsonSerializer.Deserialize<CarritoEditResponse>(responseString, options);
-
-                        if (editResponse != null && editResponse.isSuccess)
-                        {
-                            return RedirectToAction(nameof(Index));
-                        }
-                    }
-                    else
-                    {
-                        editResponse = new CarritoEditResponse
-                        {
-                            message = "Error al actualizar el carrito",
-                            isSuccess = false,
-                            data = null
-                        };
-                    }
-                }
                     return RedirectToAction(nameof(Index));
+                }
             }
-            catch
-            {
-                return View();
-            }
+            TempData["ErrorMessage"] = "Error updating carrito.";
+            return View(model);
         }
 
         // GET: CarritoController/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-
-            GetCarritoResponse getCarritoResponse = null;
-            try
+            var carrito = await _carritoService.GetCarritoByIdAsync(id);
+            if (carrito.isSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.GetAsync($"Carrito/GetCartById?id={id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseString = await response.Content.ReadAsStringAsync();
-                        var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                        getCarritoResponse = System.Text.Json.JsonSerializer.Deserialize<GetCarritoResponse>(responseString, options);
-
-                        if (getCarritoResponse?.data == null)
-                        {
-                            return RedirectToAction(nameof(Index));
-                        }
-                    }
-                }
+                return View(carrito.data);
             }
-            catch (Exception ex)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            TempData["ErrorMessage"] = carrito.message ?? "Error retrieving carrito for deletion.";
+            return RedirectToAction(nameof(Index));
 
-            return View(getCarritoResponse.data);
         }
 
         // POST: CarritoController/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DisableCarritoModel model)
         {
-
-            var model = new { Id = id };
-
-            try
+            var response = await _carritoService.DeleteCarritoAsync(model);
+            
+            if (response.isSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-
-
-                    var response = await client.PostAsJsonAsync("Carrito/DisableCart", model);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
+                return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
-            {
-
-                return View(id); 
-            }
-
-            return RedirectToAction(nameof(Delete), new { id = id });
+            
+            TempData["ErrorMessage"] = response.message ?? "Error deleting carrito.";
+            return RedirectToAction(nameof(Index));
         }
 
     }

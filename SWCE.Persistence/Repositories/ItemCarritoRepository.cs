@@ -106,10 +106,17 @@ namespace SWCE.Persistence.Repositories
 
                 if (existingItem != null)
                 {
+                    if (existingItem.IsDeleted)
+                    {
+                        existingItem.IsDeleted = false;
+                        existingItem.Cantidad = item.Cantidad;
+                    }
+                    else
+                    {
+                        existingItem.Cantidad += item.Cantidad;
+                    }
+
                     existingItem.PrecioUnitario = item.PrecioUnitario;
-
-                    existingItem.Cantidad += item.Cantidad;
-
                     existingItem.SubTotal = existingItem.Cantidad * existingItem.PrecioUnitario;
 
                     var updateResult = await base.Updateasync(existingItem);

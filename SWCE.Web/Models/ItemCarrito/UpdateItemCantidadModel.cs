@@ -1,8 +1,9 @@
-﻿namespace SWCE.Web.Models.ItemCarrito
+﻿using SWCE.Web.Models.Base;
+
+namespace SWCE.Web.Models.ItemCarrito
 {
-    public class UpdateItemCantidadModel
+    public class UpdateItemCantidadModel : BaseModel
     {
-        public int Id { get; set; } 
         public int NewCantidad { get; set; }
         public int CarritoId { get; set; } 
     }

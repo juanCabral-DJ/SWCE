@@ -13,6 +13,6 @@ namespace SWCE.Domain.Base
             this.IsDeleted = false;
         }
 
-        public bool? IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; } = false;
     }
 }
