@@ -1,83 +1,45 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SWCE.Web.Common;
 using SWCE.Web.Models;
+using SWCE.Web.Repositories.Interfaces;
 
 namespace SWCE.Web.Controllers
 {
     public class EnvioController : Controller
     {
+        private readonly IEnvioHttpService _envioHttpService;
+        public EnvioController(IEnvioHttpService envioHttpService)
+        {
+            _envioHttpService = envioHttpService;
+        }
+
         // GET: EnvioController
         public async Task<IActionResult> Index()
         {
-            GetAllEnvioModelResponse getAllEnvioModelResponse = null;
-
-            try
+            var envios = await _envioHttpService.GetAllEnviosAsync();
+            if (!envios.IsSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.GetAsync("Envio/GetEnvios");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonResponse = await response.Content.ReadAsStringAsync();
-                        getAllEnvioModelResponse = System.Text.Json.JsonSerializer.Deserialize<GetAllEnvioModelResponse>(jsonResponse);
-                    }
-                    else
-                    {
-                        getAllEnvioModelResponse = new GetAllEnvioModelResponse
-                        {
-                            message = "Error al obtener los envíos",
-                            isSuccess = false,
-                        };
-                    }
-                }
+                TempData["ErrorMessage"] = envios.Message;
+                return View(new List<EnvioModel>());
             }
-            catch (Exception ex)
-            {
-                getAllEnvioModelResponse = new GetAllEnvioModelResponse
-                {
-                    message = $"Error al obtener los envíos {ex.Message}",
-                    isSuccess = false,
-                };
-            };
-                return View(getAllEnvioModelResponse.data ?? new List<EnvioModel>());
+
+            return View(envios.Data);
         }
 
         // GET: EnvioController/Details/5
         public async Task<IActionResult> Details(int id)
-        {
-            GetEnvioByIdModelResponse getEnvioByIdModelResponse = null;
+        {         
+           var envios = await _envioHttpService.GetEnvioByIdAsync(id);
+            if (!envios.IsSuccess)
+            {
+            
+            TempData["ErrorMessage"] = "Hubo un error inesperado: " + envios.Message;
+            return View(new EnvioModel());
 
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.GetAsync($"Envio/{id}");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonResponse = await response.Content.ReadAsStringAsync();
-                        getEnvioByIdModelResponse = System.Text.Json.JsonSerializer.Deserialize<GetEnvioByIdModelResponse>(jsonResponse);
-                    }
-                    else
-                    {
-                        getEnvioByIdModelResponse = new GetEnvioByIdModelResponse
-                        {
-                            message = "Error al obtener los envíos",
-                            isSuccess = false,
-                        };
-                    }
-                }
             }
-            catch (Exception ex)
-            {
-                getEnvioByIdModelResponse = new GetEnvioByIdModelResponse
-                {
-                    message = $"Error al obtener los envíos {ex.Message}",
-                    isSuccess = false,
-                };
-            };
-            return View(getEnvioByIdModelResponse.data);
+           return View(envios.Data);
+            
         }
 
         // GET: EnvioController/Create
@@ -91,80 +53,31 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EnvioCreateModel model)
         {
-            EnvioCreateModelResponse envioResponse = null;
-            try
-            {
-                using (var client = new HttpClient())
+            var envioResponse = await _envioHttpService.CreateEnvioAsync(model);
+                if (envioResponse.IsSuccess)
                 {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.PostAsJsonAsync($"Envio/CreateEnvio", model);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonResponse = await response.Content.ReadAsStringAsync();
-                        envioResponse = System.Text.Json.JsonSerializer.Deserialize<EnvioCreateModelResponse>(jsonResponse);
-
-                        if (envioResponse.isSuccess)
-                        {
-                            TempData["Succcess Message"] = "Envío creado correctamente";
-                            return RedirectToAction(nameof(Index));
-                        }
-                        else
-                        {
-                            TempData["Error Message"] = envioResponse.message;
-                        }
-                    }
-                    else
-                    {
-                        envioResponse = new EnvioCreateModelResponse
-                        {
-                            message = "Error al crear el envío",
-                            isSuccess = false,
-                        };
-                    }
+                  TempData["SucccessMessage"] = "Envío creado correctamente";
+                  return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                  TempData["ErrorMessage"] = envioResponse.Message;
                 }
                 return View(model);
-            }
-            catch
-            {
-                return View(model);
-            }
         }
 
         // GET: EnvioController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            GetEnvioByIdModelResponse getEnvioByIdModelResponse = null;
 
-            try
+            var result = await _envioHttpService.GetEnvioByIdAsync(id);
+
+            if (!result.IsSuccess || result.Data == null)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.GetAsync($"Envio/{id}");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonResponse = await response.Content.ReadAsStringAsync();
-                        getEnvioByIdModelResponse = System.Text.Json.JsonSerializer.Deserialize<GetEnvioByIdModelResponse>(jsonResponse);
-                    }
-                    else
-                    {
-                        getEnvioByIdModelResponse = new GetEnvioByIdModelResponse
-                        {
-                            message = "Error al obtener los envíos",
-                            isSuccess = false,
-                        };
-                    }
-                }
+                TempData["ErrorMessage"] = result.Message ?? "No se encontró el envío.";
+                return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
-            {
-                getEnvioByIdModelResponse = new GetEnvioByIdModelResponse
-                {
-                    message = $"Error al obtener los envíos {ex.Message}",
-                    isSuccess = false,
-                };
-            };
-            return View(getEnvioByIdModelResponse.data);
+            return View(result.Data);
         }
 
         // POST: EnvioController/Edit/5
@@ -172,43 +85,17 @@ namespace SWCE.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EnvioEditModel model)
         {
-            EnvioEditModelResponse envioResponse = null;
-            try
+            var envioResponse = await _envioHttpService.UpdateEnvioAsync(model);
+            if (envioResponse.IsSuccess)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5134/api/");
-                    var response = await client.PostAsJsonAsync($"Envio/UpdateEnvioDto", model);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonResponse = await response.Content.ReadAsStringAsync();
-                        envioResponse = System.Text.Json.JsonSerializer.Deserialize<EnvioEditModelResponse>(jsonResponse);
-
-                        if (envioResponse.isSuccess)
-                        {
-                            TempData["Succcess Message"] = "Envío editado correctamente";
-                            return RedirectToAction(nameof(Index));
-                        }
-                        else
-                        {
-                            TempData["Error Message"] = envioResponse.message;
-                        }
-                    }
-                    else
-                    {
-                        envioResponse = new EnvioEditModelResponse
-                        {
-                            message = "Error al editar el envío",
-                            isSuccess = false,
-                        };
-                    }
-                }
-                    return View(model);
+                TempData["SucccessMessage"] = "Envío actualizado correctamente";
+                return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
-                return View(model);
+                TempData["ErrorMessage"] = envioResponse.Message;
             }
+            return View(model);
         }
 
     }

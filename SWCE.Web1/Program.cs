@@ -5,7 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddHttpClient<IEnvioRepositoryW, EnvioRepositoryW>();  
+
+var EnvioApiBaseUrl = builder.Configuration["ApiSettings:EnvioApiBaseUrl"] ?? throw new InvalidOperationException("EnvioApiBaseUrl is not configured in ApiSettings.");
+builder.Services.AddHttpClient<IEnvioHttpService, EnvioHttpService>(client =>
+{
+    client.BaseAddress = new Uri(EnvioApiBaseUrl);
+});
 
 
 

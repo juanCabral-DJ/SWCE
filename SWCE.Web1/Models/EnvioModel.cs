@@ -18,9 +18,9 @@
 
     public class GetEnvioByIdModelResponse
     {
-        public string message { get; set; }
+        public string? message { get; set; }
         public bool isSuccess { get; set; }
-        public EnvioModel data { get; set; }
+        public EnvioModel? data { get; set; }
     }
 
 
